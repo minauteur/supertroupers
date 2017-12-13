@@ -1,0 +1,6 @@
+[package]
+name = "supertroupers"
+version = "0.1.0"
+authors = ["minauteur <Thompennington@gmail.com>"]
+
+[dependencies]
