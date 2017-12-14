@@ -1,6 +1,8 @@
 use std::collections::HashMap;
 extern crate supertroupers;
 extern crate hyphenation;
+extern crate markov;
+extern crate serde;
 #[macro_use] extern crate text_io;
 use supertroupers::gen::Markov;
 use hyphenation::{Standard, FullTextHyphenation};
