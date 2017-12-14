@@ -5,6 +5,8 @@ extern crate markov;
 extern crate serde;
 #[macro_use] extern crate text_io;
 use supertroupers::gen::Markov;
+use supertroupers::util;
+
 use hyphenation::{Standard, FullTextHyphenation};
 use hyphenation::Language::{English_US};
 use hyphenation::hyphenator::Hyphenation;
