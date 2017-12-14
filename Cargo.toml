@@ -5,3 +5,5 @@ authors = ["minauteur <Thompennington@gmail.com>"]
 
 [dependencies]
 rand = "0.3"
+# slog = "*"
+hyphenation = "0.6"
