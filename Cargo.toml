@@ -7,3 +7,4 @@ authors = ["minauteur <Thompennington@gmail.com>"]
 rand = "0.3"
 # slog = "*"
 hyphenation = "0.6"
+text_io = "*"
