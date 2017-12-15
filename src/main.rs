@@ -3,12 +3,13 @@ extern crate supertroupers;
 extern crate hyphenation;
 extern crate markov;
 extern crate serde;
-#[macro_use] extern crate text_io;
+#[macro_use]
+extern crate text_io;
 use supertroupers::gen::Markov;
 use supertroupers::util;
 
 use hyphenation::{Standard, FullTextHyphenation};
-use hyphenation::Language::{English_US};
+use hyphenation::Language::English_US;
 use hyphenation::hyphenator::Hyphenation;
 
 // Load hyphenation data for American English from the pattern repository.
@@ -36,7 +37,7 @@ fn main() {
     println!("generator output:");
     let x = map.generate_sentence();
     println!("raw OP: {}", &x);
-    let y: Standard  = x.fulltext_hyphenate(&english_us);
+    let y: Standard = x.fulltext_hyphenate(&english_us);
     let v: Vec<&str> = y.collect();
     println!("{:?}", v);
 }
