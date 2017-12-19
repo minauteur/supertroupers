@@ -55,11 +55,12 @@ pub fn read_file() {
     for (num, line) in reader.lines().enumerate() {
         let l = line.unwrap();
         let mut line_rd: String = l.chars().collect();
+        line_rd.trim_left();
         let new_len = line_rd.trim_right().len();
         line_rd.truncate(new_len);
         let un_squished = &line_rd[..];
-        let content = un_squished.split_whitespace().collect::<Vec<_>>().join(" ");
-           write!(writer, "{}", content);
+        let content = un_squished.split_whitespace().collect::<Vec<_>>();
+        write!(writer, "{:?}", content);
         }
      
     }
