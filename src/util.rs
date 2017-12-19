@@ -27,6 +27,7 @@ pub fn format_txt() {
                             let index = chars.find('.').unwrap_or_default();
                             chars.insert(index, '\n' as char);
                         }
+                        else {continue}
                     },
                     r => {
                         let index = chars.find('\n').unwrap_or_default();
@@ -36,9 +37,17 @@ pub fn format_txt() {
                 }
             }
             writeln!(writer, "{}", chars).unwrap();
-        
         // if num % 4 == 1 {
         //     writeln!(writer, "{}", l).unwrap();
         // }
     }
+}
+
+pub fn read_file() {
+    let path = PathBuf::from(&LOC_SEED_DIR);
+    let txt_src = File::open(&path).unwrap();
+    let txt_dest = File::create("C:\\Users\\Minauteur\\Desktop\\output.txt").expect("Couldn't create destination file for output!");
+    let reader = BufReader::new(&txt_src);
+    let writer = BufWriter::new(&txt_dest);
+
 }
