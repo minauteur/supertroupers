@@ -9,7 +9,7 @@ use std::io;
 use std::path::PathBuf;
 
 
-static LOC_SEED_DIR: &'static str = "C:\\Users\\Minauteur\\Desktop\\shakespeare.txt";
+static LOC_SEED_DIR: &'static str = "shakespeare.txt";
 
 pub fn format_txt() {
     let p = PathBuf::from(&LOC_SEED_DIR);
@@ -49,7 +49,7 @@ pub fn format_txt() {
 pub fn read_file() {
     let path = PathBuf::from(&LOC_SEED_DIR);
     let txt_src = File::open(&path).unwrap();
-    let txt_dest = File::create("C:\\Users\\Minauteur\\Desktop\\output.txt").expect("Couldn't create destination file for output!");
+    let txt_dest = File::create("output.txt").expect("Couldn't create destination file for output!");
     let reader = BufReader::new(&txt_src);
     let mut writer = BufWriter::new(&txt_dest);
     for (num, line) in reader.lines().enumerate() {
