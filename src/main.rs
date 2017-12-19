@@ -2,7 +2,7 @@ use std::collections::HashMap;
 extern crate supertroupers;
 extern crate hyphenation;
 extern crate markov;
-extern crate serde;
+//extern crate serde;
 #[macro_use]
 extern crate text_io;
 use supertroupers::gen::Markov;
@@ -13,7 +13,6 @@ use hyphenation::Language::English_US;
 use hyphenation::hyphenator::Hyphenation;
 
 // Load hyphenation data for American English from the pattern repository.
-
 
 fn main() {
     let english_us = hyphenation::load(English_US).unwrap();
@@ -40,4 +39,5 @@ fn main() {
     let y: Standard = x.fulltext_hyphenate(&english_us);
     let v: Vec<&str> = y.collect();
     println!("{:?}", v);
+    util::format_txt();
 }
