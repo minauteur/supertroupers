@@ -1,11 +1,13 @@
 //!Utilities Module
 //!Various Helper functions and error definitions used throughout the project live here
+
 use std::io::{BufReader, BufWriter, Read, Write};
 // use std::fmt::Write;
 use std::io::BufRead;
 use std::fs::File;
 use std::io;
 use std::path::PathBuf;
+
 
 static LOC_SEED_DIR: &'static str = "C:\\Users\\Minauteur\\Desktop\\shakespeare.txt";
 
@@ -55,7 +57,9 @@ pub fn read_file() {
         let mut line_rd: String = l.chars().collect();
         let new_len = line_rd.trim_right().len();
         line_rd.truncate(new_len);
-           write!(writer, "{}", line_rd);
+        let un_squished = &line_rd[..];
+        let content = un_squished.split_whitespace().collect::<Vec<_>>().join(" ");
+           write!(writer, "{}", content);
         }
      
     }
