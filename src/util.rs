@@ -1,6 +1,7 @@
 //!Utilities Module
 //!Various Helper functions and error definitions used throughout the project live here
 use std::io::{BufReader, BufWriter, Read, Write};
+// use std::fmt::Write;
 use std::io::BufRead;
 use std::fs::File;
 use std::io;
@@ -48,6 +49,13 @@ pub fn read_file() {
     let txt_src = File::open(&path).unwrap();
     let txt_dest = File::create("C:\\Users\\Minauteur\\Desktop\\output.txt").expect("Couldn't create destination file for output!");
     let reader = BufReader::new(&txt_src);
-    let writer = BufWriter::new(&txt_dest);
-
-}
+    let mut writer = BufWriter::new(&txt_dest);
+    for (num, line) in reader.lines().enumerate() {
+        let l = line.unwrap();
+        let mut line_rd: String = l.chars().collect();
+        let new_len = line_rd.trim_right().len();
+        line_rd.truncate(new_len);
+           write!(writer, "{}", line_rd);
+        }
+     
+    }

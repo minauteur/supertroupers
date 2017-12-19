@@ -27,9 +27,9 @@ fn main() {
     println!("and another?");
     let term_two: String = read!("{}\n");
     map.parse(&term_two);
-    println!("one more!");
-    let term_three: String = read!("{}\n");
-    map.parse(&term_three);
+    //println!("one more!");
+    //let term_three: String = read!("{}\n");
+    //map.parse(&term_three);
     // map.parse("each child a pram");
     //map.parse("and bug a carapace");
     //println!("input parsed!");
@@ -39,5 +39,5 @@ fn main() {
     let y: Standard = x.fulltext_hyphenate(&english_us);
     let v: Vec<&str> = y.collect();
     println!("{:?}", v);
-    util::format_txt();
+    util::read_file();
 }
