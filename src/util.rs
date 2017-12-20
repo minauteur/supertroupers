@@ -52,14 +52,14 @@ pub fn read_file() {
     let txt_dest = File::create("output.txt").expect("Couldn't create destination file for output!");
     let reader = BufReader::new(&txt_src);
     let mut writer = BufWriter::new(&txt_dest);
-    for (num, line) in reader.lines().enumerate() {
-        let l = line.unwrap();
-        let mut line_rd: String = l.chars().collect();
-        line_rd.trim_left();
-        let new_len = line_rd.trim_right().len();
-        line_rd.truncate(new_len);
-        let un_squished = &line_rd[..];
-        let content = un_squished.split_whitespace().collect::<Vec<_>>();
+    for (num, l) in reader.lines().enumerate() {
+        let line = l.unwrap();
+        let mut current_ln: String = line.chars().collect();
+        current_ln.trim_left();
+        let at_newline = current_ln.trim_right().len();
+        current_ln.truncate(at_newline);
+        let line_vec = &current_ln[..];
+        let content = line_vec.split_whitespace().collect::<Vec<_>>();
         write!(writer, "{:?}", content);
         }
      
