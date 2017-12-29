@@ -1,6 +1,7 @@
 //!Utilities Module
 //!Various Helper functions and error definitions used throughout the project live here
 
+
 use std::io::{BufReader, BufWriter, Read, Write};
 // use std::fmt::Write;
 use std::io::BufRead;
@@ -8,8 +9,24 @@ use std::fs::File;
 use std::io;
 use std::path::PathBuf;
 
+use serde_derive;
+use serde::{Serialize, Deserialize};
+use serde_json::*;
 
 static LOC_SEED_DIR: &'static str = "shakespeare.txt";
+
+#[derive(Serialize, Deserialize)]
+pub struct PoetryAPIResp {
+title: String,
+author: String,
+lines: Poem,
+
+}
+#[derive(Serialize, Deserialize)]
+pub struct Poem {
+    linecount: i32,
+    lines: Vec<String>,
+}
 
 pub fn format_txt() {
     let p = PathBuf::from(&LOC_SEED_DIR);
@@ -45,6 +62,7 @@ pub fn format_txt() {
         // }
     }
 }
+
 
 pub fn read_file() {
     let path = PathBuf::from(&LOC_SEED_DIR);
