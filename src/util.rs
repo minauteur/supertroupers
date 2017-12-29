@@ -1,6 +1,7 @@
 //!Utilities Module
 //!Various Helper functions and error definitions used throughout the project live here
 
+
 use std::io::{BufReader, BufWriter, Read, Write};
 // use std::fmt::Write;
 use std::io::BufRead;
@@ -8,8 +9,24 @@ use std::fs::File;
 use std::io;
 use std::path::PathBuf;
 
+use serde_derive;
+use serde::{Serialize, Deserialize};
+use serde_json::*;
 
 static LOC_SEED_DIR: &'static str = "shakespeare.txt";
+
+#[derive(Serialize, Deserialize)]
+pub struct PoetryAPIResp {
+title: String,
+author: String,
+lines: Poem,
+
+}
+#[derive(Serialize, Deserialize)]
+pub struct Poem {
+    linecount: i32,
+    lines: Vec<String>,
+}
 
 pub fn format_txt() {
     let p = PathBuf::from(&LOC_SEED_DIR);
@@ -46,20 +63,21 @@ pub fn format_txt() {
     }
 }
 
+
 pub fn read_file() {
     let path = PathBuf::from(&LOC_SEED_DIR);
     let txt_src = File::open(&path).unwrap();
     let txt_dest = File::create("output.txt").expect("Couldn't create destination file for output!");
     let reader = BufReader::new(&txt_src);
     let mut writer = BufWriter::new(&txt_dest);
-    for (num, l) in reader.lines().enumerate() {
-        let line = l.unwrap();
-        let mut current_ln: String = line.chars().collect();
-        current_ln.trim_left();
-        let at_newline = current_ln.trim_right().len();
-        current_ln.truncate(at_newline);
-        let line_vec = &current_ln[..];
-        let content = line_vec.split_whitespace().collect::<Vec<_>>();
+    for (num, line) in reader.lines().enumerate() {
+        let l = line.unwrap();
+        let mut line_rd: String = l.chars().collect();
+        line_rd.trim_left();
+        let new_len = line_rd.trim_right().len();
+        line_rd.truncate(new_len);
+        let un_squished = &line_rd[..];
+        let content = un_squished.split_whitespace().collect::<Vec<_>>();
         write!(writer, "{:?}", content);
         }
      
