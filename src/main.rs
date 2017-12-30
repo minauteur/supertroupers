@@ -23,10 +23,17 @@ use std::collections::HashMap;
 // Load hyphenation data for American English from the pattern repository.
 
 fn main() {
-    let author = Some(String::from("William Shakespeare"));
-    let title = Some(String::from("Winter"));
+    println!("Search for an Author?");
+    let a_prompt: String = read!("{}");
+    println!("and a title?");
+    let t_prompt: String = read!("{}");
+    let author = Some(a_prompt);
+    let title = Some(t_prompt);
     let mut req: http::Request = http::RequestBuilder::new().with_params(author, title);
     let hash = http::get_response(req);
+    let ser = http::serialize(hash);
+    let string = http::pretty_print(ser);
+    
     //println!("hash-stuffs: {:?}", &hash);
     let english_us = hyphenation::load(English_US).unwrap();
     let mut map = Markov::new();

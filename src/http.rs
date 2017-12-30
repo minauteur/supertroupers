@@ -1,6 +1,7 @@
 //!HTTP Module
 //!This file contains the necessary logic for making http requests to both
 //!poetrydb.org and the phoneme API for serialization
+ #![feature(try_trait)]
 use std::path::{Path, PathBuf};
 use reqwest;
 #[macro_use()]
@@ -11,7 +12,7 @@ use serde::{Serialize, Deserialize};
 
 use text_io;
 use std::collections::HashMap;
-
+//use std::ops::Try;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct AuthorsList {
@@ -48,13 +49,6 @@ impl RequestBuilder {
     }
 }
 
-pub fn get_response(req: Request) -> serde_json::Value {
-    //let mut author_names: AuthorsList = Vec::new(String::new());
-    let map: serde_json::Value = reqwest::get(&req.url).unwrap().json().unwrap();
-    println!("response contents: {:?}", &map);
-    map
-}
-
 impl Request {
     pub fn with_params(&mut self, author: Option<String>, title: Option<String>) -> Request {
         
@@ -83,5 +77,29 @@ impl Request {
         Request {
             url: self.url.clone(),
         }
+    }
+}
+
+pub fn get_response(req: Request) -> reqwest::Result<(reqwest::Response)> {
+    //let mut author_names: AuthorsList = Vec::new(String::new());
+    let res = reqwest::get(&req.url)?;
+    Ok((res))
+}
+pub fn serialize(mut resp: reqwest::Result<reqwest::Response>) -> reqwest::Result<(serde_json::Value)> {
+    if resp.is_ok() {
+        let data: serde_json::Value = resp.unwrap().json()?;
+        return Ok((data));
+    } else { 
+        return Err(resp.unwrap_err());
+    }
+}
+pub fn pretty_print(res: reqwest::Result<(serde_json::Value)>) -> serde_json::Result<(String)> {
+    if res.is_ok() {
+        let j_string = serde_json::to_string_pretty(&res.unwrap())?;
+        println!("json from pretty_print(): {}", &j_string);
+        return Ok((j_string));
+    } else {
+        println!("something went wrong in pretty_print()");
+        return Ok((res.unwrap_err().to_string()));
     }
 }
