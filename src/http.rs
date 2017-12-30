@@ -29,44 +29,59 @@ pub struct SinglePoem {
     lines: Vec<String>,
     l_num: i32,
 }
-
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct RequestBuilder {
     author: Option<String>,
     title: Option<String>,
 }
-
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Request {
-    url: PathBuf,
+    url: String,
 }
 
 impl RequestBuilder {
     pub fn new() -> Request {
-        let mut request = PathBuf::from("http://poetrydb.org/");
+        let mut request = String::from("http://poetrydb.org/");
         Request {
             url: request,
         }
     }
-    pub fn new_with_params(author: Option<String>, title: Option<String>) -> Request {
-        let mut request = RequestBuilder::new();
-        let a: String = match author {
+}
+
+pub fn get_response(req: Request) -> serde_json::Value {
+    //let mut author_names: AuthorsList = Vec::new(String::new());
+    let map: serde_json::Value = reqwest::get(&req.url).unwrap().json().unwrap();
+    println!("response contents: {:?}", &map);
+    map
+}
+
+impl Request {
+    pub fn with_params(&mut self, author: Option<String>, title: Option<String>) -> Request {
+        
+        let a = match author.clone() {
             Some(auth_name) => auth_name,
-            None => String::from("author"),
-        };
-        let t: String = match title {
-            Some(text_name) => format!(",{}", text_name),
             None => String::from(""),
         };
-        request.url.push(&a);
-        request.url.push(&t);
-        Request {
-            url: request.url,
+        let t = match title.clone() {
+            Some(text_name) => text_name,
+            None => String::from(""),
+        };
+        if author.is_some() && title.is_none() {
+            let single_author = format!("author/{}/title", &a);
+            &self.url.push_str(&single_author);
+        } else if author.is_none() && title.is_none() {
+            let authors = format!("author");
+            &self.url.push_str(&authors);
+        } else if author.is_some() && title.is_some() {
+            let author_title = format!("author,title/{};{}",&a, &t);
+            &self.url.push_str(&author_title);
+        } else if author.is_none() && title.is_some() {
+            let single_title = format!("title/{}", &t);
+            &self.url.push_str(&single_title);
         }
-    }
-    pub fn get_authors() -> AuthorsList {
-             //let mut author_names: AuthorsList = Vec::new(String::new());
-        let author_names: HashMap<String, Vec<String>> = reqwest::get("http://poetrydb.org/author").unwrap().json().unwrap();
-        AuthorsList {
-            authors: author_names,
+        println!("request string: {:?}", &self.url);
+        Request {
+            url: self.url.clone(),
         }
     }
 }

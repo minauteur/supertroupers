@@ -23,7 +23,11 @@ use std::collections::HashMap;
 // Load hyphenation data for American English from the pattern repository.
 
 fn main() {
-    http::RequestBuilder::get_authors();
+    let author = Some(String::from("William Shakespeare"));
+    let title = Some(String::from("Winter"));
+    let mut req: http::Request = http::RequestBuilder::new().with_params(author, title);
+    let hash = http::get_response(req);
+    //println!("hash-stuffs: {:?}", &hash);
     let english_us = hyphenation::load(English_US).unwrap();
     let mut map = Markov::new();
     println!("What is your name, bard!?");
