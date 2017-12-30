@@ -12,6 +12,7 @@ extern crate text_io;
 
 use supertroupers::gen::Markov;
 use supertroupers::util;
+use supertroupers::http;
 
 use hyphenation::{Standard, FullTextHyphenation};
 use hyphenation::Language::English_US;
@@ -22,6 +23,7 @@ use std::collections::HashMap;
 // Load hyphenation data for American English from the pattern repository.
 
 fn main() {
+    http::RequestBuilder::get_authors();
     let english_us = hyphenation::load(English_US).unwrap();
     let mut map = Markov::new();
     println!("What is your name, bard!?");
@@ -46,5 +48,5 @@ fn main() {
     let y: Standard = x.fulltext_hyphenate(&english_us);
     let v: Vec<&str> = y.collect();
     println!("{:?}", v);
-    util::read_file();
+    //util::read_file();
 }
