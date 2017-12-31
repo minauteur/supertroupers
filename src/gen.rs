@@ -4,6 +4,10 @@ extern crate rand;
 use self::rand::{thread_rng, Rng};
 use std::collections::HashMap;
 
+use hyphenation::{Standard, FullTextHyphenation};
+use hyphenation::Language::English_US;
+use hyphenation::hyphenator::Hyphenation;
+
 //Example invocation moved from main.rs to avoid clutter
 //    // let english_us = hyphenation::load(English_US).unwrap();
     // let mut map = Markov::new();

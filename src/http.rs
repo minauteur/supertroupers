@@ -129,16 +129,16 @@ impl Request {
             None => String::from(""),
         };
         if author.is_some() && title.is_none() {
-            let single_author = format!("author/{}/title", &a);
+            let single_author = format!("author/{}/title", &a.trim_right());
             &self.url.push_str(&single_author);
         } else if author.is_none() && title.is_none() {
             let authors = format!("author");
             &self.url.push_str(&authors);
         } else if author.is_some() && title.is_some() {
-            let author_title = format!("author,title/{};{}", &a, &t);
+            let author_title = format!("author,title/{};{}", &a.trim_right(), &t.trim_right());
             &self.url.push_str(&author_title);
         } else if author.is_none() && title.is_some() {
-            let single_title = format!("title/{}", &t);
+            let single_title = format!("title/{}", &t.trim_right());
             &self.url.push_str(&single_title);
         }
         println!("request string: {:?}", &self.url);
