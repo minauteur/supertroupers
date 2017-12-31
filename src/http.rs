@@ -58,9 +58,9 @@ impl BasicSearch {
         let a = match io::stdin().read_line(&mut author) {
             Ok(n) => {
                 if author == "\n".to_string() {
-                    println!("Author not given");
+                    println!("No author entered.");
                 } else {
-                    println!("Read Author: {}", author);
+                    println!("Searching author: {}", author);
                 }
             }
             Err(error) => println!("error: {}", error),
@@ -70,9 +70,9 @@ impl BasicSearch {
         let t = match io::stdin().read_line(&mut title) {
             Ok(n) => {
                 if title == "\n".to_string() {
-                    println!("Title not given.");
+                    println!("No title entered.");
                 } else {
-                    println!("Read title: {}", title);
+                    println!("Searching title: {}", title);
                 }
             }
             Err(error) => {
@@ -84,10 +84,6 @@ impl BasicSearch {
                 println!("read newline, author == None");
                 None
             }
-            "Test2" => {
-                println!("2");
-                Some("Test2".to_string())
-            }
             string => Some(string.to_string()),
         };
         let title: Option<String> = match title.as_ref() {
@@ -95,14 +91,10 @@ impl BasicSearch {
                 println!("read newline, title == None");
                 None
             }
-            "Test2" => {
-                println!("2");
-                Some("Test2".to_string())
-            }
             string => Some(string.to_string()),
         };
-        println!("author == {:?}", author);
-        println!("title == {:?}", title);
+        println!("checking author value... author == {:?}", author);
+        println!("checking title value... title == {:?}", title);
 
         let mut req: Request = RequestBuilder::new().with_params(author, title);
         let resp = get_response(req);
