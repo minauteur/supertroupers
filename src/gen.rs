@@ -4,6 +4,28 @@ extern crate rand;
 use self::rand::{thread_rng, Rng};
 use std::collections::HashMap;
 
+//Example invocation moved from main.rs to avoid clutter
+//    // let english_us = hyphenation::load(English_US).unwrap();
+    // let mut map = Markov::new();
+    // println!("What is your name, bard!?");
+    // let name: String = read!("{}");
+    // println!("Hail, {}, mucho gusto!", &name);
+    // println!("give us a line!");
+    // let term_seed: String = read!("{}");
+    // map.parse(&term_seed);
+    // println!("and another?");
+    // let term_two: String = read!("{}");
+    // map.parse(&term_two);
+
+    // println!("generator output:");
+    // let x = map.generate_sentence();
+    // println!("raw OP: {}", &x);
+    // let y: Standard = x.fulltext_hyphenate(&english_us);
+    // let v: Vec<&str> = y.collect();
+    // println!("{:?}", v);
+    // //util::read_file();
+
+
 pub struct Markov {
     map: HashMap<String, Vec<String>>,
 }

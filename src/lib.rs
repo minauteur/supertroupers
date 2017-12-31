@@ -11,7 +11,8 @@ extern crate reqwest;
 extern crate text_io;
 extern crate markov;
 
-#[macro_use] extern crate serde_derive;
+#[macro_use]
+extern crate serde_derive;
 
 extern crate serde;
 extern crate serde_json;
