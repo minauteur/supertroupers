@@ -4,9 +4,11 @@ extern crate rand;
 use self::rand::{thread_rng, Rng};
 use std::collections::HashMap;
 
-use hyphenation::{Standard, FullTextHyphenation};
-use hyphenation::Language::English_US;
-use hyphenation::hyphenator::Hyphenation;
+// ?? extern crate hyphenation;
+
+//use hyphenation::{Standard, FullTextHyphenation};
+//use hyphenation::Language::English_US;
+//use hyphenation::hyphenator::Hyphenation;
 
 //Example invocation moved from main.rs to avoid clutter
 //    // let english_us = hyphenation::load(English_US).unwrap();
@@ -29,6 +31,8 @@ use hyphenation::hyphenator::Hyphenation;
     // println!("{:?}", v);
     // //util::read_file();
 
+
+//random comments on everything
 
 pub struct Markov {
     map: HashMap<String, Vec<String>>,
