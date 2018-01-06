@@ -15,14 +15,18 @@ use serde;
 use util;
 use text_io;
 use std::collections::HashMap;
-use std::sync::{Arc,Mutex};
+use std::sync::{Arc, Mutex};
+use std::ops::{Deref, DerefMut};
+use std::result;
+use std::sync;
+use std::io::Error;
 //use std::ops::Try;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct AuthorsList {
     authors: Vec<String>,
 }
-
+#[derive(Debug, Clone)]
 pub struct LinesFeeder {
   pub queue: Arc<Mutex<Vec<String>>>,
 }
@@ -38,6 +42,7 @@ pub struct Poem {
     lines: Vec<String>,
     title: String,
 }
+
 
 pub struct SinglePoem {
     title: String,
@@ -68,7 +73,7 @@ pub struct BasicSearch {
 
 
 impl BasicSearch {
-    pub fn author_title() -> BasicSearch {
+    pub fn author_title(mut feeder: LinesFeeder) -> BasicSearch {
 
         println!("Search for an Author?");
         let author = util::read_in_ln();
@@ -83,7 +88,7 @@ impl BasicSearch {
         let resp = get_response(req);
         let serialized = serialize(resp);
         // let poem = get_lines(serialized);
-        let string = pretty_print(serialized);
+        let string = pretty_print(serialized, feeder);
         return BasicSearch {
             results: match string {
                 Ok(s) => s,
@@ -172,7 +177,30 @@ pub fn serialize(
     }
 }
 
-pub fn pretty_print(res: reqwest::Result<(serde_json::Value)>) -> serde_json::Result<(String)> {
+
+
+impl LinesFeeder {
+    pub fn new() -> LinesFeeder {
+        let arc_mut_vec: Arc<Mutex<Vec<String>>> = Arc::new(Mutex::new(Vec::new()));
+        return LinesFeeder {
+            queue: arc_mut_vec,
+        }
+    }
+
+    pub fn add_lines(&mut self, mut poem: Poem) -> Result<LinesFeeder, Error> {
+        let mut queued = match self.queue.lock() {
+            Ok(vec)=>vec,
+            Err(e) =>  e.into_inner(),
+        };
+        for line in poem.lines.iter() {
+            queued.deref_mut().push(line.clone());
+        }
+        println!("total lines stored: {:?}", queued.len());
+        return Ok((self.clone()));
+    }
+}
+
+pub fn pretty_print(res: reqwest::Result<(serde_json::Value)>, mut feeder: LinesFeeder) -> serde_json::Result<(String)> {
     //this if allows us to unwrap res safely. If res.is_ok() {...} will only execute the block if it returns with an Ok result--which is what we'd be unwrapping in the block that follows
     if res.is_ok() {
         //vv here vv
@@ -184,9 +212,11 @@ pub fn pretty_print(res: reqwest::Result<(serde_json::Value)>) -> serde_json::Re
         //because of how indexing works in Rust, we need to make index a "ref" to inspect it instead of binding it with "let". This prevents the value of j_string/check_obj from being mutated when we do evaluate it.
         let ref index = check_obj[0];
         //we know that if we've returned an object, there should be enough fields to represent a "poem" type, so we go ahead and deserialize into that below
-        let p: Poem = serde_json::from_value(index.to_owned())?;
+        let mut p: Poem = serde_json::from_value(index.to_owned())?;
+        
         //then we know we want the lines, so to access a property/field of an instantiated type we use standard dot notation, so var.property (in this case, p.lines)
-        println!("got lines! {:?}", p.lines);
+        println!("got lines! {:?}", &p.lines);
+        feeder.add_lines(p);
         println!("json from pretty_print(): {}", &j_string);
         return Ok((j_string));
     } else {
