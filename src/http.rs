@@ -11,14 +11,14 @@ use std::io;
 use serde_json;
 use serde::{Serialize, Deserialize};
 use serde;
-
+use util;
 use text_io;
 use std::collections::HashMap;
 //use std::ops::Try;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct AuthorsList {
-    authors: HashMap<String, Vec<String>>,
+    authors: Vec<String>,
 }
 
 pub struct AuthorWorks {
@@ -59,48 +59,45 @@ pub struct BasicSearch {
     results: String,
 }
 
+
+
 impl BasicSearch {
     pub fn author_title() -> BasicSearch {
         println!("Search for an Author?");
-        let mut author = String::new();
-        let a = match io::stdin().read_line(&mut author) {
-            Ok(n) => {
-                if author == "\n".to_string() {
-                    println!("No author entered.");
-                } else {
-                    println!("Searching author: {}", author);
-                }
-            }
-            Err(error) => println!("error: {}", error),
-        };
+        // let mut author = String::new();
+        let author = util::read_in_ln();
+        // match io::stdin().read_line(&mut author) {
+        //     Ok(n) => {
+        //         if author == "\n".to_string() {
+        //             println!("No author entered.");
+        //         } else {
+        //             println!("Searching author: {}", author);
+        //         }
+        //     }
+        //     Err(error) => println!("error: {}", error),
+        // };
         println!("and a title?");
-        let mut title = String::new();
-        let t = match io::stdin().read_line(&mut title) {
-            Ok(n) => {
-                if title == "\n".to_string() {
-                    println!("No title entered.");
-                } else {
-                    println!("Searching title: {}", title);
-                }
-            }
-            Err(error) => {
-                println!("error: {}", error);
-            }
-        };
-        let author: Option<String> = match author.as_ref() {
-            "\n" => {
-                println!("read newline, author == None");
-                None
-            }
-            string => Some(string.to_string()),
-        };
-        let title: Option<String> = match title.as_ref() {
-            "\n" => {
-                println!("read newline, title == None");
-                None
-            }
-            string => Some(string.to_string()),
-        };
+        let title = util::read_in_ln();
+        // let mut title = String::new();
+        // let t = match io::stdin().read_line(&mut title) {
+        //     Ok(n) => {
+        //         if title == "\n".to_string() {
+        //             println!("No title entered.");
+        //         } else {
+        //             println!("Searching title: {}", title);
+        //         }
+        //     }
+        //     Err(error) => {
+        //         println!("error: {}", error);
+        //     }
+        // };
+        // let author: Option<String> = match author.as_ref() {
+        //     "\n" => {
+        //         println!("read newline, author == None");
+        //         None
+        //     }
+        //     string => Some(string.to_string()),
+        // };
         println!("checking author value... author == {:?}", author);
         println!("checking title value... title == {:?}", title);
 
@@ -155,16 +152,39 @@ pub fn get_response(req: Request) -> reqwest::Result<(reqwest::Response)> {
     let res = reqwest::get(&req.url)?;
     Ok((res))
 }
-
+pub fn resp_value_branch(mut response: reqwest::Response) -> reqwest::Result<(String)> {
+    let data: serde_json::Value = response.json()?;
+    let map: HashMap<String, Vec<String>> = serde_json::from_value(data.clone()).unwrap();
+    if map.contains_key("authors") {
+        let v = map.get("authors").unwrap();
+        let list: AuthorsList = AuthorsList {
+            authors: v.to_owned(),
+        };
+        println!("\"authors\": \n{:?}", &list.authors);
+        return Ok((list.authors.join(" ")));
+    } else { 
+        return Ok((serde_json::to_string_pretty(&data).expect("couldn't unwrap text from Object!")));
+    }
+}
 pub fn serialize(
     mut resp: reqwest::Result<reqwest::Response>,
 ) -> reqwest::Result<(serde_json::Value)> {
     if resp.is_ok() {
         let data: serde_json::Value = resp.unwrap().json()?;
+        match &data {
+            &serde_json::Value::Array(ref x) => {
+                println!("got Array!");
+            }
+            &serde_json::Value::Object(ref y) => {
+                println!("got Object!")
+            }
+            _=> println!("something else!"),
+        }
         // let d_str: String = serde_json::to_string(&data.clone()).unwrap();
         // let poem: Poem = serde_json::from_str(&d_str).unwrap();
         // println!("no problem, here are the lines! \n{:?}", &poem);
-        println!("here is our serde value: {:?}", &data[0]);
+        // let ref index = &data[0];
+        // println!("here is our serde value at index 0: {:?}", data[0]);
         return Ok((data));
     } else {
         return Err(resp.unwrap_err());
@@ -173,8 +193,11 @@ pub fn serialize(
 
 pub fn pretty_print(res: reqwest::Result<(serde_json::Value)>) -> serde_json::Result<(String)> {
     if res.is_ok() {
-        let j_string = serde_json::to_string_pretty(&res.unwrap()[0])?;
-        let p: Poem = serde_json::from_str(&j_string)?;
+        let res = res.unwrap();
+        let j_string = serde_json::to_string_pretty(&res.clone())?;
+        let check_obj: serde_json::Value = serde_json::from_str(&j_string.clone())?;
+        let ref index = check_obj[0];
+        let p: Poem = serde_json::from_value(index.to_owned())?;
         println!("got lines! {:?}", p.lines);
         println!("json from pretty_print(): {}", &j_string);
         return Ok((j_string));
