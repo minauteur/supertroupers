@@ -172,13 +172,20 @@ pub fn serialize(
     if resp.is_ok() {
         let data: serde_json::Value = resp.unwrap().json()?;
         match &data {
-            &serde_json::Value::Array(ref x) => {
+            &serde_json::Value::Array(ref arr) => {
                 println!("got Array!");
+                let msg: String = serde_json::to_string_pretty(&arr.clone()).unwrap();
             }
-            &serde_json::Value::Object(ref y) => {
-                println!("got Object!")
+            &serde_json::Value::Object(ref obj) => {
+                println!("got Object!");
+                let msg: String = serde_json::to_string_pretty(&obj.clone()).unwrap();
+                println!("Object: {}", &msg);
             }
-            _=> println!("something else!"),
+            _=> {
+                println!("got... something else!");                
+                let msg: String = serde_json::to_string_pretty(&data.clone()).unwrap();
+                println!("something else: {}", &msg);
+            }
         }
         // let d_str: String = serde_json::to_string(&data.clone()).unwrap();
         // let poem: Poem = serde_json::from_str(&d_str).unwrap();
