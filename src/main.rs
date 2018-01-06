@@ -20,13 +20,13 @@ use std::sync::{Arc, Mutex};
 
 fn main() {
     let mut feed: Arc<Mutex<Vec<String>>> = Arc::new(Mutex::new(Vec::new()));
-    let mut line_container: LinesFeeder = LinesFeeder {
+    let mut feeder: LinesFeeder = LinesFeeder {
         queue: feed,
     };
-    
+
     loop {
 
-        http::BasicSearch::author_title();
+        http::BasicSearch::author_title(feeder.clone());
 
     }
 }
