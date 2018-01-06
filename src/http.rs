@@ -30,7 +30,7 @@ pub struct Poem {
     author: String,
     linecount: i32,
     lines: Vec<String>,
-    title: String,    
+    title: String,
 }
 
 pub struct SinglePoem {
@@ -127,7 +127,10 @@ impl Request {
             None => String::from(""),
         };
         if author.is_some() && title.is_none() {
-            println!("No title given... \nreturning list of titles for names matching substrings to provided input...");
+            println!(
+                "No title given... \n
+                returning list of titles for names matching substrings to provided input..."
+            );
             let single_author = format!("author/{}/title", &a.trim_right());
             &self.url.push_str(&single_author);
         } else if author.is_none() && title.is_none() {
@@ -152,26 +155,28 @@ pub fn get_response(req: Request) -> reqwest::Result<(reqwest::Response)> {
     let res = reqwest::get(&req.url)?;
     Ok((res))
 }
+
 pub fn resp_value_branch(mut response: reqwest::Response) -> reqwest::Result<(String)> {
     let data: serde_json::Value = response.json()?;
     let map: HashMap<String, Vec<String>> = serde_json::from_value(data.clone()).unwrap();
     if map.contains_key("authors") {
         let v = map.get("authors").unwrap();
-        let list: AuthorsList = AuthorsList {
-            authors: v.to_owned(),
-        };
+        let list: AuthorsList = AuthorsList { authors: v.to_owned() };
         println!("\"authors\": \n{:?}", &list.authors);
         return Ok((list.authors.join(" ")));
-    } else { 
-        return Ok((serde_json::to_string_pretty(&data).expect("couldn't unwrap text from Object!")));
+    } else {
+        return Ok(
+            (serde_json::to_string_pretty(&data).expect("couldn't unwrap text from Object!")),
+        );
     }
 }
+
 pub fn serialize(
     mut resp: reqwest::Result<reqwest::Response>,
 ) -> reqwest::Result<(serde_json::Value)> {
     if resp.is_ok() {
-        let data: serde_json::Value = resp.unwrap().json()?;
-        match &data {
+        let json_val: serde_json::Value = resp.unwrap().json()?;
+        match &json_val {
             &serde_json::Value::Array(ref arr) => {
                 println!("got Array!");
                 let msg: String = serde_json::to_string_pretty(&arr.clone()).unwrap();
@@ -181,9 +186,9 @@ pub fn serialize(
                 let msg: String = serde_json::to_string_pretty(&obj.clone()).unwrap();
                 println!("Object: {}", &msg);
             }
-            _=> {
-                println!("got... something else!");                
-                let msg: String = serde_json::to_string_pretty(&data.clone()).unwrap();
+            _ => {
+                println!("got... something else!");
+                let msg: String = serde_json::to_string_pretty(&json_val.clone()).unwrap();
                 println!("something else: {}", &msg);
             }
         }
@@ -192,7 +197,7 @@ pub fn serialize(
         // println!("no problem, here are the lines! \n{:?}", &poem);
         // let ref index = &data[0];
         // println!("here is our serde value at index 0: {:?}", data[0]);
-        return Ok((data));
+        return Ok((json_val));
     } else {
         return Err(resp.unwrap_err());
     }
