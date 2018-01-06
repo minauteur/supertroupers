@@ -180,6 +180,7 @@ pub fn serialize(
             &serde_json::Value::Array(ref arr) => {
                 println!("got Array!");
                 let msg: String = serde_json::to_string_pretty(&arr.clone()).unwrap();
+                println!("Array: {}", &msg);
             }
             &serde_json::Value::Object(ref obj) => {
                 println!("got Object!");
