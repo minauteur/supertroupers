@@ -19,8 +19,8 @@ use supertroupers::http;
 
 fn main() {
     loop {
-    
-    http::BasicSearch::author_title();
+
+        http::BasicSearch::author_title();
 
     }
 }

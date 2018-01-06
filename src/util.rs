@@ -27,6 +27,24 @@ pub struct Poem {
     lines: Vec<String>,
 }
 
+pub fn read_in_ln() -> Option<String> {
+    let mut out = String::new();
+    let input = match io::stdin().read_line(&mut out) {
+        Ok(n) => {
+            if out == "\n".to_string() {
+                println!("no author entered.");
+                return None;
+            } else {
+                return Some(out);
+            }
+        }
+        Err(error) => {
+            println!("error reading input: {}", error);
+            return None;
+        }
+    };
+}
+
 pub fn format_txt() {
     let p = PathBuf::from(&LOC_SEED_DIR);
     let f = File::open(&p).unwrap();
