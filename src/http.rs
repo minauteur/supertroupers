@@ -210,14 +210,18 @@ pub fn pretty_print(res: reqwest::Result<(serde_json::Value)>, mut feeder: Lines
         //if we've returned an object, our pretty print function will return Null for the selection we'd like to print--which we don't want, so we create a reference to an indexed value if the return is an object, reading the 0th element (the first element) in the object.
         let check_obj: serde_json::Value = serde_json::from_str(&j_string.clone())?;
         //because of how indexing works in Rust, we need to make index a "ref" to inspect it instead of binding it with "let". This prevents the value of j_string/check_obj from being mutated when we do evaluate it.
-        let ref index = check_obj[0];
+        let ref index = match &check_obj {
+            &serde_json::Value::Object(ref obj) => check_obj[0].to_owned(),
+            &serde_json::Value::Array(ref arr) => arr[0].to_owned(),
+            &_ => check_obj[0].to_owned(),
+        };
         //we know that if we've returned an object, there should be enough fields to represent a "poem" type, so we go ahead and deserialize into that below
-        let mut p: Poem = serde_json::from_value(index.to_owned())?;
+        let mut p: Poem = serde_json::from_value(index.clone().to_owned())?;
         
         //then we know we want the lines, so to access a property/field of an instantiated type we use standard dot notation, so var.property (in this case, p.lines)
         println!("got lines! {:?}", &p.lines);
         feeder.add_lines(p);
-        println!("json from pretty_print(): {}", &j_string);
+        // println!("json from pretty_print(): {}", &j_string);
         return Ok((j_string));
     } else {
         println!("something went wrong in pretty_print()");

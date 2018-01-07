@@ -48,7 +48,8 @@ fn main() {
             let mut chain = Chain::new();
             let deref = lines.deref().clone();
             chain.feed(deref);
-            println!("You swill your thoughts and words begin to swirl--a thought takes shape!\n{:?}", chain.generate());
+            let output = chain.generate();
+            println!("You swill your thoughts and words begin to swirl--an ORIGINAL thought takes shape!\n{:?}", output);
         } else {
             println!("I didn't want to make a stupid poem anyways...");       
         }
