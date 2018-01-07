@@ -23,35 +23,39 @@ use std::sync::{Arc, Mutex};
 use dialoguer::Confirmation;
 use console::Term;
 
-fn confirm() -> io::Result<(bool)> {
-    Ok((Confirmation::new("Draw from your experience and create something new?").interact()?))
-
-}
-
-fn main() {
-    let mut feed: Arc<Mutex<Vec<String>>> = Arc::new(Mutex::new(Vec::new()));
-    let mut feeder: LinesFeeder = LinesFeeder {
-        queue: feed,
-    };
-
-
-    loop {
-
-        http::BasicSearch::author_title(feeder.clone());
-        println!("Do you want to pause and write a poem?");
+fn poem_prompt(feeder: LinesFeeder) {
+        println!("Do you want to pause and write a poem?");    
         if util::read_y_n() {
             println!("Sweet, lets do it!");
             let lines = match feeder.queue.lock() {
                 Ok(vec)=>vec,
                 Err(e) => e.into_inner(),
             };
-            let mut chain = Chain::new();
             let deref = lines.deref().clone();
-            chain.feed(deref);
-            let output = chain.generate();
-            println!("You swill your thoughts and words begin to swirl--an ORIGINAL thought takes shape!\n{:?}", output);
+            if !deref.is_empty() {
+                let mut chain: Chain<String> = Chain::new();
+                chain.feed(deref);
+                let output = chain.generate();
+                let formatted = format!("Your Poem:\n{}", lines.deref().clone().join("\n"));
+                println!("You swill your thoughts and words begin to swirl--an ORIGINAL thought takes shape!\n{}", formatted);                
+            } else {
+                println!("Yeah, you should probably read more...");
+            }
         } else {
             println!("I didn't want to make a stupid poem anyways...");       
         }
+
+}
+
+
+fn main() {
+    let mut feed: Arc<Mutex<Vec<String>>> = Arc::new(Mutex::new(Vec::new()));
+    let mut feeder: LinesFeeder = LinesFeeder {
+        queue: feed,
+    };
+    loop {
+
+        http::BasicSearch::author_title(feeder.clone());
+        poem_prompt(feeder.clone());
     }
 }
