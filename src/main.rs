@@ -13,7 +13,8 @@ use std::io;
 
 #[macro_use]
 extern crate text_io;
-
+use markov::Chain;
+use std::ops::Deref;
 use supertroupers::gen::Markov;
 use supertroupers::util;
 use supertroupers::http;
@@ -32,15 +33,24 @@ fn main() {
     let mut feeder: LinesFeeder = LinesFeeder {
         queue: feed,
     };
-    let term = Term::stdout();
+
+
     loop {
 
         http::BasicSearch::author_title(feeder.clone());
-        if Confirmation::new("keep searching?").interact_on(&term).unwrap() {
+        println!("Do you want to pause and write a poem?");
+        if util::read_y_n() {
             println!("Sweet, lets do it!");
+            let lines = match feeder.queue.lock() {
+                Ok(vec)=>vec,
+                Err(e) => e.into_inner(),
+            };
+            let mut chain = Chain::new();
+            let deref = lines.deref().clone();
+            chain.feed(deref);
+            println!("You swill your thoughts and words begin to swirl--a thought takes shape!\n{:?}", chain.generate());
         } else {
-            println!("I didn't want to make a stupid poem anyways...");
-            break
+            println!("I didn't want to make a stupid poem anyways...");       
         }
     }
 }
