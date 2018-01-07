@@ -1,7 +1,6 @@
 //!Utilities Module
 //!Various Helper functions and error definitions used throughout the project live here
 
-
 use std::io::{BufReader, BufWriter, Read, Write};
 // use std::fmt::Write;
 use std::io::BufRead;
@@ -27,12 +26,44 @@ pub struct Poem {
     lines: Vec<String>,
 }
 
+pub fn read_y_n()-> bool {
+    loop {
+        println!("Continue? Y/N");
+        let i = read_in_ln();
+        match i {
+            Some(s) => {
+                match s.trim() {
+                    "Y" | "y" => {
+                        println!("read Y");                 
+                        return true;
+                    }
+                    "N" | "n" => {
+                        println!("read N");
+                        return false;
+                    }
+                    _ => {
+                        println!("lets try that again...");
+                        continue
+                    }
+                }
+            }
+            None => {
+                println!("lets try that again, shall we?");
+                continue
+            }
+        }
+    }
+}
+
 pub fn read_in_ln() -> Option<String> {
     let mut out = String::new();
     let input = match io::stdin().read_line(&mut out) {
         Ok(n) => {
             if out == "\n".to_string() {
-                println!("no author entered.");
+                    println!("Nothing entered.");                    
+                    return None;
+            } else if out == "\r".to_string() {
+                println!("Nothing entered.");
                 return None;
             } else {
                 return Some(out);
