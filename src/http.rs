@@ -8,6 +8,7 @@ use reqwest;
 use serde_derive;
 use std::io;
 use std::io::Read;
+use markov::Chain;
 
 use serde_json;
 use serde::{Serialize, Deserialize};
@@ -193,7 +194,11 @@ impl LinesFeeder {
             Err(e) =>  e.into_inner(),
         };
         for line in poem.lines.iter() {
-            queued.deref_mut().push(line.clone());
+            queued.deref_mut().push(line.clone().to_owned());
+            // if we need individual words
+            // for word in line.split_whitespace() {
+            //     queued.deref_mut().push(word.clone().to_owned());
+            // }
         }
         println!("total lines stored: {:?}", queued.len());
         return Ok((self.clone()));
