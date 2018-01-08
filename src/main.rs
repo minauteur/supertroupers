@@ -34,7 +34,9 @@ fn poem_prompt(feeder: LinesFeeder) {
             };
             let deref = lock.deref().clone();
             if !&deref.is_empty() {
-                chain.feed(deref.clone());
+                for string in deref.clone() {
+                    chain.feed_str(&string.clone());
+                }
                 // chain.feed(deref);
                 // chain.feed(line_words);
                 for line in chain.str_iter_for(deref.len()) {
