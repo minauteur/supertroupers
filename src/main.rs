@@ -32,15 +32,23 @@ fn poem_prompt(feeder: LinesFeeder) {
                 Ok(vec)=>vec,
                 Err(e) => e.into_inner(),
             };
-            let deref = lock.deref().clone();
+            let deref = lock.deref();
             if !&deref.is_empty() {
                 for string in deref.clone() {
                     chain.feed_str(&string.clone());
                 }
                 // chain.feed(deref);
                 // chain.feed(line_words);
-                for line in chain.str_iter_for(deref.len()) {
-                    println!("{:?}", chain.generate_str());
+                if deref.len() > 50 {
+                    println!("We've stored quite a few lines. \n Would you like to cut it down to 20 lines?")
+                } if util::read_y_n() {
+                    for line in chain.str_iter_for(20) {
+                        println!("{}", chain.generate_str());
+                    }
+                } else {
+                    for line in chain.str_iter_for(deref.len()) {
+                        println!("{}", chain.generate_str());
+                    }
                 }
                 // let output = chain.generate();
                 // let formatted = format!("Your Poem:\n{:?}", chain.generate_str_from_token(&token));
