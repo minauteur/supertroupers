@@ -85,7 +85,7 @@ impl BasicSearch {
         println!("checking author value... author == {:?}", author);
         println!("checking title value... title == {:?}", title);
 
-        let mut req: Request = RequestBuilder::new().with_params(author, title);
+        let req: Request = RequestBuilder::new().with_params(author, title);
         let resp = get_response(req);
         let serialized = serialize(resp);
         // let poem = get_lines(serialized);
@@ -142,15 +142,25 @@ pub fn get_response(req: Request) -> reqwest::Result<(reqwest::Response)> {
 
 pub fn branch_eval(resp: reqwest::Result<reqwest::Response>) -> reqwest::Result<(serde_json::Value)> {
     if resp.is_ok() {
-        let mut json_val: serde_json::Value = resp.unwrap().json()?; 
+        let json_val: serde_json::Value = resp.unwrap().json()?; 
         match &json_val {
             &serde_json::Value::Array(ref arr) => {
                 println!("got Array!");
+                for obj_val in &arr[..] {
+                    match obj_val.get("lines") {
+                        Some(lines) => println!("got some lines out of the array! {}", lines.to_string()),
+                        None => println!("couldn't get any lines from this array."),
+                    }
+                }
                 let msg: String = serde_json::to_string_pretty(&arr.clone()).unwrap();
                 println!("Array: {}", &msg);
             }
             &serde_json::Value::Object(ref obj) => {
                 println!("got Object!");
+                match &obj.get("lines") {
+                    &Some(lines) => println!("got some lines from the object! {}", lines.to_string()),
+                    &None => println!("couldn't get any lines from this object!"),
+                }
                 let msg: String = serde_json::to_string_pretty(&obj.clone()).unwrap();
                 println!("Object: {}", &msg);
             }
@@ -166,7 +176,7 @@ pub fn branch_eval(resp: reqwest::Result<reqwest::Response>) -> reqwest::Result<
     }
 }
 pub fn serialize(
-    mut resp: reqwest::Result<reqwest::Response>,
+    resp: reqwest::Result<reqwest::Response>,
 ) -> reqwest::Result<(serde_json::Value)> {
     if resp.is_ok() {
         let branch = branch_eval(resp)?;
@@ -178,7 +188,11 @@ pub fn serialize(
     }
 }
 
-
+pub enum Feed {
+    Poem(Poem),
+    Lines(Vec<String>),
+    Single(String)
+}
 
 impl LinesFeeder {
     pub fn new() -> LinesFeeder {
@@ -188,7 +202,18 @@ impl LinesFeeder {
         }
     }
 
-    pub fn add_lines(&mut self, mut poem: Poem) -> Result<LinesFeeder, Error> {
+    pub fn add_lines(&mut self, poem: Poem) -> Result<LinesFeeder, Error> {
+        // let stored_lines: Vec<String> = match material {
+        //     Feed::Poem(p) => {
+        //         p.lines
+        //     }
+        //     Feed::Lines(vec) => {
+        //         vec
+        //     }
+        //     Feed::Single(string) => {
+        //         vec![string]
+        //     }
+        // };
         let mut queued = match self.queue.lock() {
             Ok(vec)=>vec,
             Err(e) =>  e.into_inner(),
@@ -223,7 +248,7 @@ pub fn pretty_print(res: reqwest::Result<(serde_json::Value)>, mut feeder: Lines
             &_ => check_obj[0].to_owned(),
         };
         //we know that if we've returned an object, there should be enough fields to represent a "poem" type, so we go ahead and deserialize into that below
-        let mut p: Poem = serde_json::from_value(index.clone().to_owned())?;
+        let p: Poem = serde_json::from_value(index.clone().to_owned())?;
         
         //then we know we want the lines, so to access a property/field of an instantiated type we use standard dot notation, so var.property (in this case, p.lines)
         println!("got lines! {:?}", &p.lines);

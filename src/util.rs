@@ -1,13 +1,14 @@
 //!Utilities Module
 //!Various Helper functions and error definitions used throughout the project live here
-
+use gen;
+use http::LinesFeeder;
 use std::io::{BufReader, BufWriter, Read, Write};
 // use std::fmt::Write;
 use std::io::BufRead;
 use std::fs::File;
 use std::io;
 use std::path::PathBuf;
-
+use std::ops::Deref;
 use serde_derive;
 use serde::{Serialize, Deserialize};
 use serde_json::*;
@@ -34,11 +35,11 @@ pub fn read_y_n()-> bool {
             Some(s) => {
                 match s.trim() {
                     "Y" | "y" => {
-                        println!("read Y");                 
+                        println!("read \"Y\" or \"y\". Confirmed!");                 
                         return true;
                     }
                     "N" | "n" => {
-                        println!("read N");
+                        println!("read \"N\" or \"n\". Canceled!");
                         return false;
                     }
                     _ => {
@@ -76,6 +77,64 @@ pub fn read_in_ln() -> Option<String> {
     };
 }
 
+pub fn read_int()-> i32 {
+    loop {
+        println!("Enter a whole number...");
+        let mut user_input = String::new();
+        let output = match io::stdin().read_line(&mut user_input) {
+            Ok(int) => {
+                match user_input.trim().parse::<i32>() {
+                    Ok(number) => return number,
+                    Err(..) => {
+                        println!("that wasn't a number!\nYou entered: \"{}\"", user_input.trim());
+                        continue
+                    }
+                }
+            }
+            Err(error) => {
+                println!("error reading input: {}", error);
+                println!("let's try again");
+                continue
+            }
+        };
+    }
+}
+pub fn poem_prompt(feeder: LinesFeeder) {
+        println!("Do you want to pause and write a poem?");    
+        if read_y_n() {
+            println!("Sweet, lets do it!");
+            //in order to access our persistent storage, within its structure Arc<Mutex<Vec<String>
+            //we first need to acquire a "lock", which confirms to us no other thread can attempt
+            //to access the underlying data. The error returns a "view" of the data anyway as a fail-safe
+            //and because we only need to read what's in the store, that's fine.
+            let mut lock = match feeder.queue.lock() {
+                Ok(vec)=>vec,
+                Err(e) => e.into_inner(),
+            };
+            //Now that we've acquired our MutexGuard from matcing against .lock(), we have an Arc<Vec<String>
+            //it helps to think about the data you need as trapped in a room puzzle. 
+            //It needs to move from the inside-out! Mutex-->MutexGuard-->Arc-->Deref-->Usable Data
+            //This level of integrity is most definitely overkill right now, but it will help us immensely if we
+            //end up including any online/multiplayer features requiring server-related functionality.
+            //Deref is a trait implemented for the Arc type, included in rust's "sync" package, that 
+            //converts an Arc<T> into T while maintaining an active count in memory of accessors of the value 
+            //T holds (via the deref trait), ARC meaning Atomic Reference Counter.
+            let vec = lock.deref().clone();
+            //after dereferencing our Arc, all we have left to do is give the Vec<String> to our seed/generate
+            //function. We need to clone the dereferenced Arc<String<Vec>> to avoid it getting wrapped up again
+            //in the next function. this prevents it from being a reference, which gen::seed_and_generate()
+            //won't accept
+            //but first--we need to make sure it isn't empty!
+            if !&vec.is_empty() {
+                gen::seed_and_generate(vec);             
+            } else {
+                    println!("Yeah, you should probably read more...");
+            }
+        } else {
+            println!("I didn't want to make a stupid poem anyways...");       
+        }
+
+}
 pub fn format_txt() {
     let p = PathBuf::from(&LOC_SEED_DIR);
     let f = File::open(&p).unwrap();

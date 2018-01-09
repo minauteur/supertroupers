@@ -3,10 +3,11 @@
 extern crate rand;
 use self::rand::{thread_rng, Rng};
 use std::collections::HashMap;
-
+use markov::Chain;
 use hyphenation::{Standard, FullTextHyphenation};
 use hyphenation::Language::English_US;
 use hyphenation::hyphenator::Hyphenation;
+use util;
 
 //Example invocation moved from main.rs to avoid clutter
 //    // let english_us = hyphenation::load(English_US).unwrap();
@@ -90,4 +91,24 @@ impl Markov {
 fn next_key(key: &str, value: &str) -> String {
     let last_word = key.split(" ").last().expect("could not get last word");
     format!("{} {}", last_word, value)
+}
+
+pub fn seed_and_generate(seed_store: Vec<String>) {
+    let mut chain = Chain::new();
+    for string in &seed_store {
+        chain.feed_str(string);
+    }
+    if seed_store.len() > 30 {
+        println!("More than 30 lines seeded. Specify a number of lines to generate?");
+        println!("(Entering N/n will generate lines == number of seeds provided)");
+    } if util::read_y_n() {
+        let num = util::read_int();
+        for line in chain.str_iter_for(num as usize) {
+            println!("{}", chain.generate_str());
+        }
+    } else {
+        for line in chain.str_iter_for(seed_store.len()) {
+            println!("{}", chain.generate_str());
+        }
+    }
 }
