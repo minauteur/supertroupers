@@ -9,9 +9,7 @@ use std::fs::File;
 use std::io;
 use std::path::PathBuf;
 use std::ops::Deref;
-use serde_derive;
-use serde::{Serialize, Deserialize};
-use serde_json::*;
+
 
 static LOC_SEED_DIR: &'static str = "shakespeare.txt";
 

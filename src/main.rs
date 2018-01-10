@@ -22,7 +22,7 @@ fn main() {
 
     loop {
 
-        http::BasicSearch::author_title(feeder.clone());
+        http::search_author_title(feeder.clone());
         util::poem_prompt(feeder.clone());
 
     }
