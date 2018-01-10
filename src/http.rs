@@ -22,11 +22,8 @@ pub struct LinesFeeder {
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct Poem {
-    author: String,
-    linecount: i32,
+pub struct PoemLines {
     lines: Vec<String>,
-    title: String,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -111,56 +108,53 @@ pub fn extract_lines(
 
     let json: serde_json::Value = response.json()?;
 
-    lines_search(json.clone(), feeder);
+    lines_search(json.clone(), feeder).expect("something went wrong searching for lines!");
 
     return Ok((json));
 }
 
 pub fn lines_search(
-    mut json_val: serde_json::Value,
+    json_val: serde_json::Value,
     mut feeder: LinesFeeder,
 ) -> Result<serde_json::Value, serde_json::Error> {
     // let json_val: serde_json::Value = resp.json()?;
     match &json_val {
         &serde_json::Value::Array(ref arr) => {
             println!("got Array!");
+            let array_string: String = serde_json::to_string_pretty(&arr)?;
+            println!("Array: {}", &array_string);
             for obj_val in &arr[..] {
                 match obj_val.get("lines") {
                     Some(content) => {
-                        println!("got some lines out of the array! {}", &content.to_string());
-                        let mut lines_found: Vec<String> = Vec::new();
-                        for line in serde_json::to_string_pretty(content)?.lines() {
-                            if !line.is_empty() {
-                                line.trim();
-                                lines_found.push(line.to_string());
-                            }
-                        }
-                        feeder.add_lines(lines_found);
+                        println!("found some lines in the Array!");
+                        let poem: PoemLines = PoemLines {
+                                lines: serde_json::from_value(content.clone()).unwrap()
+                            };
+                        println!("got line values from Object in Array! \n{}", 
+                            &poem.lines.join("\n"));
+                        feeder.add_lines(poem.lines)
+                            .expect("something went wrong adding lines from array!");
                     }
                     None => println!("couldn't get any lines from this array."),
                 }
             }
-            let array_string: String = serde_json::to_string_pretty(&arr)?;
-            println!("Array: {}", &array_string);
         }
         &serde_json::Value::Object(ref obj) => {
             println!("got Object!");
+            let object_string: String = serde_json::to_string_pretty(&obj)?;
+            println!("Object Searched for lines: \n{}", &object_string);
             match &obj.get("lines") {
                 &Some(content) => {
-                    println!("got some lines from the object! {}", &content.to_string());
-                    let mut lines_found: Vec<String> = Vec::new();
-                    for line in serde_json::to_string_pretty(content)?.lines() {
-                        if !line.is_empty() {
-                            line.trim();
-                            lines_found.push(line.to_string());
-                        }
-                    }
-                    feeder.add_lines(lines_found);
+                    println!("found some lines in the Object!");
+                    let poem: PoemLines = PoemLines {
+                        lines: serde_json::from_value(content.clone()).unwrap()
+                    };
+                    println!("got line values from Object! \n{}", &poem.lines.join("\n"));                    
+                    feeder.add_lines(poem.lines)
+                        .expect("something went wrong adding lines from object!");
                 }
                 &None => println!("couldn't get any lines from this object!"),
             }
-            let object_string: String = serde_json::to_string_pretty(&obj)?;
-            println!("Object Searched for lines: \n{}", &object_string);
         }
         _ => {
             println!("got... something else!");
@@ -177,14 +171,17 @@ impl LinesFeeder {
         return LinesFeeder { queue: arc_mut_vec };
     }
 
-    pub fn add_lines(&mut self, lines: Vec<String>) -> Result<LinesFeeder, Error> {
+    pub fn add_lines(&mut self, content: Vec<String>) -> Result<LinesFeeder, Error> {
 
         let mut queued = match self.queue.lock() {
             Ok(vec) => vec,
             Err(e) => e.into_inner(),
         };
-        for each_line in lines.iter() {
-            queued.deref_mut().push(each_line.to_owned());
+        for each_line in content {
+            if !each_line.is_empty() {
+                each_line.trim();
+                queued.deref_mut().push(each_line.to_owned());
+            }
             // if we need individual words
             // for word in line.split_whitespace() {
             //     queued.deref_mut().push(word.clone().to_owned());

@@ -25,7 +25,7 @@ pub struct Poem {
 
 pub fn read_y_n() -> bool {
     loop {
-        println!("Continue? Y/N");
+        println!("? Y/N ?");
         let i = read_in_ln();
         match i {
             Some(s) => {
@@ -106,7 +106,7 @@ pub fn poem_prompt(feeder: LinesFeeder) {
         //we first need to acquire a "lock", which confirms to us no other thread can attempt
         //to access the underlying data. The error returns a "view" of the data anyway as a
         //fail-safe and because we only need to read what's in the store, that's fine.
-        let mut lock = match feeder.queue.lock() {
+        let lock = match feeder.queue.lock() {
             Ok(vec) => vec,
             Err(e) => e.into_inner(),
         };
@@ -116,7 +116,7 @@ pub fn poem_prompt(feeder: LinesFeeder) {
         //It needs to move from the inside-out! Mutex-->MutexGuard-->Arc-->Deref-->Usable Data
         //This level of integrity is most definitely overkill right now, but it will help us
         //immensely if we end up including any online/multiplayer features requiring server-related
-        //functionality. Deref is a trait implemented for the Arc type, included in rust's "sync"
+        //functionality. Deref is a trait implemented for the Arc type, included in rust's "ops"
         //package, that converts an Arc<T> into T while maintaining an active count in memory of
         //accessors of T (via the deref trait), ARC meaning Atomic Reference Counter
         let vec = lock.deref().clone();
