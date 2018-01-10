@@ -3,7 +3,7 @@
 //!poetrydb.org and the phoneme API for serialization
 use reqwest;
 
-use serde_json;
+use serde_json::{self, Value};
 use util;
 
 use std::sync::{Arc, Mutex};
@@ -36,9 +36,6 @@ pub struct RequestBuilder {
     author: Option<String>,
     title: Option<String>,
 }
-
-impl RequestBuilder {}
-
 
 pub fn search_author_title(feeder: LinesFeeder) -> Result<(), reqwest::Error> {
 
@@ -99,27 +96,21 @@ impl Request {
     }
 }
 
-pub fn extract_lines(
-    req: Request,
-    feeder: LinesFeeder,
-) -> Result<serde_json::Value, reqwest::Error> {
+pub fn extract_lines(req: Request, feeder: LinesFeeder) -> Result<Value, reqwest::Error> {
 
     let mut response = reqwest::get(&req.url)?;
 
-    let json: serde_json::Value = response.json()?;
+    let json: Value = response.json()?;
 
     lines_search(json.clone(), feeder).expect("something went wrong searching for lines!");
 
     return Ok((json));
 }
 
-pub fn lines_search(
-    json_val: serde_json::Value,
-    mut feeder: LinesFeeder,
-) -> Result<serde_json::Value, serde_json::Error> {
+pub fn lines_search(json_val: Value, mut feeder: LinesFeeder) -> Result<Value,Error> {
     // let json_val: serde_json::Value = resp.json()?;
     match &json_val {
-        &serde_json::Value::Array(ref arr) => {
+        &Value::Array(ref arr) => {
             println!("got Array!");
             let array_string: String = serde_json::to_string_pretty(&arr)?;
             println!("Array: {}", &array_string);
@@ -139,7 +130,7 @@ pub fn lines_search(
                 }
             }
         }
-        &serde_json::Value::Object(ref obj) => {
+        &Value::Object(ref obj) => {
             println!("got Object!");
             let object_string: String = serde_json::to_string_pretty(&obj)?;
             println!("Object Searched for lines: \n{}", &object_string);
