@@ -18,7 +18,7 @@ pub struct AuthorsList {
 }
 #[derive(Debug, Clone)]
 pub struct LinesFeeder {
-  pub queue: Arc<Mutex<Vec<String>>>,
+    pub queue: Arc<Mutex<Vec<String>>>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -40,26 +40,24 @@ pub struct RequestBuilder {
     title: Option<String>,
 }
 
-impl RequestBuilder {
-
-}
+impl RequestBuilder {}
 
 
-pub fn search_author_title(feeder: LinesFeeder) -> Result<(),reqwest::Error> {
+pub fn search_author_title(feeder: LinesFeeder) -> Result<(), reqwest::Error> {
 
-        println!("Search for an Author?");
-        let author = util::read_in_ln();
+    println!("Search for an Author?");
+    let author = util::read_in_ln();
 
-        println!("and a title?");
-        let title = util::read_in_ln();
+    println!("and a title?");
+    let title = util::read_in_ln();
 
-        println!("checking author value... author == {:?}", author);
-        println!("checking title value... title == {:?}", title);
+    println!("checking author value... author == {:?}", author);
+    println!("checking title value... title == {:?}", title);
 
-        let request: Request = Request::new().with_params(author, title);
-        extract_lines(request, feeder)?;
-        // let poem = get_lines(serialized);
-        return Ok(());
+    let request: Request = Request::new().with_params(author, title);
+    extract_lines(request, feeder)?;
+    // let poem = get_lines(serialized);
+    return Ok(());
 }
 
 
@@ -104,46 +102,32 @@ impl Request {
     }
 }
 
-pub fn extract_lines(req: Request, feeder: LinesFeeder) -> Result<serde_json::Value, reqwest::Error> {
-    
+pub fn extract_lines(
+    req: Request,
+    feeder: LinesFeeder,
+) -> Result<serde_json::Value, reqwest::Error> {
+
     let mut response = reqwest::get(&req.url)?;
-    
+
     let json: serde_json::Value = response.json()?;
-    
+
     lines_search(json.clone(), feeder);
-    
+
     return Ok((json));
 }
 
-pub fn lines_search(mut json_val: serde_json::Value, mut feeder: LinesFeeder) -> Result<serde_json::Value, serde_json::Error> {
-        // let json_val: serde_json::Value = resp.json()?; 
-        match &json_val {
-            &serde_json::Value::Array(ref arr) => {
-                println!("got Array!");
-                for obj_val in &arr[..] {
-                    match obj_val.get("lines") {
-                        Some(content) => {
-                            println!("got some lines out of the array! {}", &content.to_string());
-                            let mut lines_found: Vec<String> = Vec::new();
-                            for line in serde_json::to_string_pretty(content)?.lines() {
-                                if !line.is_empty() {
-                                    line.trim();
-                                    lines_found.push(line.to_string());
-                                }
-                            }
-                            feeder.add_lines(lines_found);
-                        }
-                        None => println!("couldn't get any lines from this array."),
-                    }
-                }
-                let array_string: String = serde_json::to_string_pretty(&arr)?;
-                println!("Array: {}", &array_string);
-            }
-            &serde_json::Value::Object(ref obj) => {
-                println!("got Object!");
-                match &obj.get("lines") {
-                    &Some(content) => {
-                        println!("got some lines from the object! {}", &content.to_string());
+pub fn lines_search(
+    mut json_val: serde_json::Value,
+    mut feeder: LinesFeeder,
+) -> Result<serde_json::Value, serde_json::Error> {
+    // let json_val: serde_json::Value = resp.json()?;
+    match &json_val {
+        &serde_json::Value::Array(ref arr) => {
+            println!("got Array!");
+            for obj_val in &arr[..] {
+                match obj_val.get("lines") {
+                    Some(content) => {
+                        println!("got some lines out of the array! {}", &content.to_string());
                         let mut lines_found: Vec<String> = Vec::new();
                         for line in serde_json::to_string_pretty(content)?.lines() {
                             if !line.is_empty() {
@@ -153,32 +137,50 @@ pub fn lines_search(mut json_val: serde_json::Value, mut feeder: LinesFeeder) ->
                         }
                         feeder.add_lines(lines_found);
                     }
-                    &None => println!("couldn't get any lines from this object!"),
-                }
-                let object_string: String = serde_json::to_string_pretty(&obj)?;
-                println!("Object Searched for lines: \n{}", &object_string);
-            }
-            _ => {
-                println!("got... something else!");
-                    println!("Didn't know enough to serialize this!");
+                    None => println!("couldn't get any lines from this array."),
                 }
             }
-        
-        return Ok((json_val));
+            let array_string: String = serde_json::to_string_pretty(&arr)?;
+            println!("Array: {}", &array_string);
+        }
+        &serde_json::Value::Object(ref obj) => {
+            println!("got Object!");
+            match &obj.get("lines") {
+                &Some(content) => {
+                    println!("got some lines from the object! {}", &content.to_string());
+                    let mut lines_found: Vec<String> = Vec::new();
+                    for line in serde_json::to_string_pretty(content)?.lines() {
+                        if !line.is_empty() {
+                            line.trim();
+                            lines_found.push(line.to_string());
+                        }
+                    }
+                    feeder.add_lines(lines_found);
+                }
+                &None => println!("couldn't get any lines from this object!"),
+            }
+            let object_string: String = serde_json::to_string_pretty(&obj)?;
+            println!("Object Searched for lines: \n{}", &object_string);
+        }
+        _ => {
+            println!("got... something else!");
+            println!("Didn't know enough to serialize this!");
+        }
     }
+
+    return Ok((json_val));
+}
 
 impl LinesFeeder {
     pub fn new() -> LinesFeeder {
         let arc_mut_vec: Arc<Mutex<Vec<String>>> = Arc::new(Mutex::new(Vec::new()));
-        return LinesFeeder {
-            queue: arc_mut_vec,
-        }
+        return LinesFeeder { queue: arc_mut_vec };
     }
 
     pub fn add_lines(&mut self, lines: Vec<String>) -> Result<LinesFeeder, Error> {
 
         let mut queued = match self.queue.lock() {
-            Ok(vec)=>vec,
+            Ok(vec) => vec,
             Err(e) => e.into_inner(),
         };
         for each_line in lines.iter() {

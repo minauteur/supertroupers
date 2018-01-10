@@ -15,10 +15,8 @@ use std::sync::{Arc, Mutex};
 
 fn main() {
     let feed_store: Arc<Mutex<Vec<String>>> = Arc::new(Mutex::new(Vec::new()));
-    
-    let feeder: http::LinesFeeder = http::LinesFeeder {
-        queue: feed_store,
-    };
+
+    let feeder: http::LinesFeeder = http::LinesFeeder { queue: feed_store };
 
     loop {
 

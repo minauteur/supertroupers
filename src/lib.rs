@@ -7,8 +7,7 @@ extern crate hyphenation;
 
 extern crate reqwest;
 
-#[macro_use]
-extern crate text_io;
+
 extern crate markov;
 
 #[macro_use]
@@ -19,4 +18,3 @@ extern crate serde_json;
 extern crate indicatif;
 extern crate dialoguer;
 extern crate console;
-
