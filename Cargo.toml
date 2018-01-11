@@ -11,7 +11,7 @@ text_io = "*"
 markov = "*"
 serde = "1.0"
 
-
+term = "*"
 serde_derive = "1.0"
 reqwest = "*"
 

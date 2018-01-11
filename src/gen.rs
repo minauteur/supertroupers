@@ -1,6 +1,7 @@
 //!Gen Module
 //!This file contains behaviors and functions critical to text generation
 extern crate rand;
+extern crate term;
 
 use markov::Chain;
 
@@ -16,7 +17,6 @@ pub fn seed_and_generate(seed_store: Vec<String>) {
             let x = format!("{}", a_c.generate_str());
             name_string.push_str(&x);
         }
-        // println!("|---------------------------Author: {} ------------------", name_vec);    
     for string in seed_store.clone() {
         chain.feed_str(&string);
     }
@@ -38,9 +38,9 @@ pub fn seed_and_generate(seed_store: Vec<String>) {
 
         }
     }
-                println!("|========================================================================|
-                |        author: {}
-                |==================================================================|", name_string);
+    println!("|========================================================================|
+              |        author: {}
+              |========================================================================|", name_string);
     } else {
         println!("|--------------------------------------------------------");
         for line in chain.str_iter_for(seed_store.len()) {
@@ -51,6 +51,7 @@ pub fn seed_and_generate(seed_store: Vec<String>) {
                 
             }
         }
-        println!("    ||-----|author: {}|-----||", name_string);
-    }   
+    println!("|========================================================================|
+              |        author: {}
+              |========================================================================|", name_string);    }   
 }

@@ -18,3 +18,4 @@ extern crate serde_json;
 extern crate indicatif;
 extern crate dialoguer;
 extern crate console;
+extern crate term;
