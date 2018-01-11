@@ -3,7 +3,7 @@
 //!poetrydb.org and the phoneme API for serialization
 use reqwest;
 
-use serde_json;
+use serde_json::{self, Value};
 use util;
 
 use std::sync::{Arc, Mutex};
@@ -14,7 +14,7 @@ use std::io::Error;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct AuthorsList {
-    authors: Vec<String>,
+   pub authors: Vec<String>,
 }
 #[derive(Debug, Clone)]
 pub struct LinesFeeder {
@@ -36,10 +36,20 @@ pub struct RequestBuilder {
     author: Option<String>,
     title: Option<String>,
 }
-
-impl RequestBuilder {}
-
-
+impl PoemLines {
+    pub fn new()->PoemLines {
+        PoemLines {
+            lines: Vec::new()
+        }
+    }
+    pub fn from_value(mut self, json_val: &Value) -> Result<(PoemLines),(serde_json::Error)> {
+        let content: Vec<String> = serde_json::from_value(json_val.clone())?;
+        self = PoemLines {
+            lines: content,
+        };
+        return Ok((self));
+    }
+}
 pub fn search_author_title(feeder: LinesFeeder) -> Result<(), reqwest::Error> {
 
     println!("Search for an Author?");
@@ -99,57 +109,59 @@ impl Request {
     }
 }
 
-pub fn extract_lines(
-    req: Request,
-    feeder: LinesFeeder,
-) -> Result<serde_json::Value, reqwest::Error> {
+
+pub fn extract_lines(req: Request, feeder: LinesFeeder) -> Result<Value, reqwest::Error> {
 
     let mut response = reqwest::get(&req.url)?;
 
-    let json: serde_json::Value = response.json()?;
+    let json: Value = response.json()?;
 
-    lines_search(json.clone(), feeder).expect("something went wrong searching for lines!");
+    lines_search(json.clone(), feeder).expect("Something went wrong searching for lines!");
 
     return Ok((json));
 }
 
-pub fn lines_search(
-    json_val: serde_json::Value,
-    mut feeder: LinesFeeder,
-) -> Result<serde_json::Value, serde_json::Error> {
+pub fn lines_search(json_val: Value, mut feeder: LinesFeeder) -> Result<Value,serde_json::Error> {
     // let json_val: serde_json::Value = resp.json()?;
     match &json_val {
-        &serde_json::Value::Array(ref arr) => {
+        &Value::Array(ref arr) => {
             println!("got Array!");
             let array_string: String = serde_json::to_string_pretty(&arr)?;
-            println!("Array: {}", &array_string);
+            println!("---------------------------------------------------------");
+            println!("JSON Array: \n{}", &array_string);
+            println!("---------------------------------------------------------");
             for obj_val in &arr[..] {
                 match obj_val.get("lines") {
                     Some(content) => {
                         println!("found some lines in the Array!");
-                        let poem: PoemLines = PoemLines {
-                                lines: serde_json::from_value(content.clone()).unwrap()
-                            };
-                        println!("got line values from Object in Array! \n{}", 
+                        let poem = PoemLines::new().from_value(&content)?;
+                        println!("---------------------------------------------------------");
+                        println!("got line values! \n{}", 
                             &poem.lines.join("\n"));
+                        println!("---------------------------------------------------------");
                         feeder.add_lines(poem.lines)
                             .expect("something went wrong adding lines from array!");
                     }
-                    None => println!("couldn't get any lines from this array."),
+                    None => { 
+                        println!("couldn't get any lines from this array.");
+                        break;
+                    }
                 }
             }
         }
-        &serde_json::Value::Object(ref obj) => {
+        &Value::Object(ref obj) => {
             println!("got Object!");
             let object_string: String = serde_json::to_string_pretty(&obj)?;
-            println!("Object Searched for lines: \n{}", &object_string);
+            println!("---------------------------------------------------------");
+            println!("JSON Object: \n{}", &object_string);
+            println!("---------------------------------------------------------");
             match &obj.get("lines") {
                 &Some(content) => {
                     println!("found some lines in the Object!");
-                    let poem: PoemLines = PoemLines {
-                        lines: serde_json::from_value(content.clone()).unwrap()
-                    };
-                    println!("got line values from Object! \n{}", &poem.lines.join("\n"));                    
+                    let poem = PoemLines::new().from_value(&content)?;
+                    println!("---------------------------------------------------------");
+                    println!("got line values! \n{}", &poem.lines.join("\n"));    
+                    println!("---------------------------------------------------------");                
                     feeder.add_lines(poem.lines)
                         .expect("something went wrong adding lines from object!");
                 }
@@ -187,7 +199,9 @@ impl LinesFeeder {
             //     queued.deref_mut().push(word.clone().to_owned());
             // }
         }
-        println!("total lines stored: {}", queued.len());
+        println!("---------------------------------------------------------");
+        println!("    total lines stored:   {}", queued.len());
+        println!("---------------------------------------------------------");
         return Ok((self.clone()));
     }
 }
