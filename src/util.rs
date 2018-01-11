@@ -88,9 +88,9 @@ pub fn read_int() -> i32 {
     }
 }
 pub fn poem_prompt(feeder: LinesFeeder) {
-    println!("Do you want to pause and write a poem?");
+    println!("Do you want to pause and curate a poem?");
     if read_y_n() {
-        println!("Sweet, lets do it!");
+        println!("Sweet! let\'s find an author!\n");
         //in order to access our persistent storage, within its structure Arc<Mutex<Vec<String>
         //we first need to acquire a "lock", which confirms to us no other thread can attempt
         //to access the underlying data. The error returns a "view" of the data anyway as a

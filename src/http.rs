@@ -14,7 +14,7 @@ use std::io::Error;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct AuthorsList {
-    authors: Vec<String>,
+   pub authors: Vec<String>,
 }
 #[derive(Debug, Clone)]
 pub struct LinesFeeder {
@@ -142,7 +142,10 @@ pub fn lines_search(json_val: Value, mut feeder: LinesFeeder) -> Result<Value,se
                         feeder.add_lines(poem.lines)
                             .expect("something went wrong adding lines from array!");
                     }
-                    None => println!("couldn't get any lines from this array."),
+                    None => { 
+                        println!("couldn't get any lines from this array.");
+                        break;
+                    }
                 }
             }
         }
