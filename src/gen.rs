@@ -130,13 +130,13 @@ pub fn seed_and_generate(seed_store: Vec<String>) {
         chain.feed_str(&string);
     }
     println!("---------------------------------------------------------------------");
-    println!("\n     The bard approaches... and queries...\n    \"Now then, what have we here?\"\n");
+    println!("\n     The bard approaches... and queries...\n    \"Now then, what's this?\"\n");
     if seed_store.len() > 30 {
-        println!("\n     \"Quite a bit of material, I think! Should we keep the poem to a specific number of lines?\"\n");
-        println!("ENTER: N or n to generate lines equal to the number of total lines read");
-        println!("or...");
-        println!("ENTER: Y or y to specify the number of lines to generate");
-    
+        println!("\n     \"Quite a bit of material, I think!\" \n      \"Should we keep the poem to a set number of lines?\"\n");
+        println!("   |---------------------------------------------------------------------------------|");
+        println!("   |      ENTER: N or n to generate lines equal to the number of total lines read    |"); 
+        println!("   |      ENTER: Y or y to specify the number of lines to generate                   |");
+        println!("   |---------------------------------------------------------------------------------|");
     if util::read_y_n() {
         println!("\n     \"Splendid! How many lines should I write?\"\n");
         let num = util::read_int();
