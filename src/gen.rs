@@ -8,13 +8,14 @@ use util;
 
 pub fn seed_and_generate(seed_store: Vec<String>) {
     let mut chain = Chain::new();
-        //     let mut a_c = Chain::new();
-        // a_c.feed_str("William").feed_str("Shakespeare").feed_str("Johnson")
-        //     .feed_str("Betty").feed_str("Emily").feed_str("Mary").feed_str("Shelley").feed_str("Blake");
-        // let mut name_vec = String::new();
-        // for name in a_c.str_iter_for(3) {
-        //     name_vec.push_str(format!(&a_c.generate_str().join(" ")));
-        // } 
+            let mut a_c = Chain::new();
+        a_c.feed_str("William ").feed_str("Shakespeare ").feed_str("Johnson ")
+            .feed_str("Betty ").feed_str("Emily ").feed_str("Mary ").feed_str("Shelley ").feed_str("Blake ");
+        let mut name_string = String::new();
+        for name in a_c.str_iter_for(3) {
+            let x = format!("{}", a_c.generate_str());
+            name_string.push_str(&x);
+        }
         // println!("|---------------------------Author: {} ------------------", name_vec);    
     for string in seed_store.clone() {
         chain.feed_str(&string);
@@ -26,16 +27,21 @@ pub fn seed_and_generate(seed_store: Vec<String>) {
     
     if util::read_y_n() {
         let num = util::read_int();
-                println!("--------------------------------------------------------");
+                println!("-------------------------------------------------------------------------");
         
         for line in chain.str_iter_for(num as usize) {
             if !line.is_empty() {
                 println!("|    {}", chain.generate_str());
             } else {
-                println!("|--------------------------------------------------------");
+                println!("|------------------------------------------------------------------------");
             }
+
         }
-    }} else {
+    }
+                println!("|========================================================================|
+                |        author: {}
+                |==================================================================|", name_string);
+    } else {
         println!("|--------------------------------------------------------");
         for line in chain.str_iter_for(seed_store.len()) {
             if !line.is_empty() {
@@ -45,5 +51,6 @@ pub fn seed_and_generate(seed_store: Vec<String>) {
                 
             }
         }
+        println!("    ||-----|author: {}|-----||", name_string);
     }   
 }
