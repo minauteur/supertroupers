@@ -2,9 +2,9 @@
 extern crate serde_derive;
 
 extern crate supertroupers;
-extern crate hyphenation;
+// extern crate hyphenation;
 extern crate markov;
-extern crate term;
+// extern crate term;
 extern crate serde;
 extern crate serde_json;
 
