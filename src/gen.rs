@@ -113,12 +113,12 @@ pub fn seed_and_generate(seed_store: Vec<String>) {
         let gen_name: Name = Name::new().from_file().unwrap_or(error);
         let author_fmt = format!("{} {}", &gen_name.first, &gen_name.last).bold();
         println!("{}","  from the mist...".clear());
-        println!("{}","      ~~~~~".blue());
+        println!("{}","      ~~~~~".purple());
         println!("{}","         ~~~~~~~~~".bright_blue());
         println!("{}","           ~~~~~~~~~~~".blue());
         println!("{}","          a shadow nears...".clear());
         println!("{}","              ~~~~~~~~~~~~".blue());
-        println!("{}","                  ~~~~~~~".blue());
+        println!("{}","                  ~~~~~~~".purple());
         println!("{}","                 ~~~~".blue());
         println!("{}","  no, not death--the figure of a BARD appears!".clear());
         println!("{}","             ~~~~~".bright_blue());
@@ -133,23 +133,23 @@ pub fn seed_and_generate(seed_store: Vec<String>) {
         println!("          \"{}, the BARD is here!\"!\n", &author_fmt);
         
         author_storage.push_str(&author_fmt);
-    for string in seed_store.clone() {
-        chain.feed_str(&string);
-    }
+
     println!("{}","---------------------------------------------------------------------".yellow());
     println!("\n     The bard approaches... and queries...\n    \"Now then, what's this?\"\n");
-    if seed_store.len() > 30 {
+        for string in &seed_store {
+        chain.feed_str(string);
+    }
+    if &seed_store.len() > &500 {
         println!("\n     \"Quite a bit of material, I think!\" \n      \"Should we keep the poem to a set number of lines?\"\n");
         println!("{}","  |---------------------------------------------------------------------------|".bright_yellow());
-        println!("{}","  |  ENTER: N or n to generate lines equal to the number of total lines read  |".bright_yellow()); 
-        println!("{}","  |  ENTER: Y or y to specify the number of lines to generate                 |".bright_yellow());
+        println!("{}{}{}{}{}{}{}","  |".yellow(),"  ENTER:".clear()," N".red()," or ".clear(),"n".red()," to generate lines equal to the number of total lines read".clear(),"  |".bright_yellow()); 
+        println!("{}{}{}{}{}{}{}","  |".yellow(),"  ENTER:".clear()," Y".green()," or ".clear(),"y".green()," to specify the number of lines to generate".clear(),"                 |".bright_yellow());
         println!("{}","  |---------------------------------------------------------------------------|".bright_yellow());
     if util::read_y_n() {
         println!("\n     \"Splendid! How many lines should I write?\"\n");
         let num = util::read_int();
         println!("\n\n     \"That should do it!\" the bard exclaims. The lights dim--the show begins!\n\n");
         println!("|============================================================================|");
-
         for line in chain.str_iter_for(num as usize) {
             if !line.is_empty() {
                 let line = format!("{}", chain.generate_str());
@@ -158,24 +158,36 @@ pub fn seed_and_generate(seed_store: Vec<String>) {
             } else {
                 println!("|------------------------------------------------------------------------");
             }
-
         }
-    }
-    println!("|============================================================================|
-              |        author: {} {}
-              |========================================================|", gen_name.first, gen_name.last);
-    } else {
+    } else if &seed_store.len() > &500 {
         println!("|--------------------------------------------------------");
-        println!("\n\n     \"Very well then!\" says the bard, and without wait the show begins!\n\n");
-        for line in chain.str_iter_for(seed_store.len()) {
-            if !line.is_empty() {
-                let line = format!("{}", chain.generate_str());
-                println!("|   {}", line.bright_green());                
-                poem_storage.push(line);
+        
+            println!("\n\n     \"..although there is virtue in moderation,\" says the bard, \"500 lines it is!\"\n\n");
+            println!("\n\n     \"Very well then!\" says the bard. The lights dim--the show begins!\n\n");
+            println!("|============================================================================|");
+            for line in chain.str_iter_for(500) {
+                if !line.is_empty() {
+                    let line = format!("{}", chain.generate_str());
+                    println!("|   {}", line.bright_green());
+                    poem_storage.push(line);
+                } else {
+                    println!("|--------------------------------------------------------");
+                }
+            }
+        } else {
+            println!("\n\n     \"Very well then!\" says the bard. The lights dim--the show begins!\n\n");
+            println!("|============================================================================|");
 
-            } else{
-                println!("|--------------------------------------------------------");
+            for line in chain.str_iter_for(seed_store.len()) {
+                if !line.is_empty() {
+                    let line = format!("{}", chain.generate_str());
+                    println!("|   {}", line.bright_green());                
+                    poem_storage.push(line);
+
+                } else {
+                    println!("|--------------------------------------------------------");
                 
+                }
             }
         }
     println!("|========================================================================|
@@ -213,5 +225,5 @@ pub fn write_poem_to_file(poem: Vec<String>, author: String) {
     if let Err(e) = writeln!(file, "\r\n------------------------------------------------------\r\n") {
         println!("{}", e);
     }
-    println!("{}see poems.txt in your supertroupers folder to view output."," Success!".green());
+    println!("{} See poems.txt in your supertroupers folder to view output."," Success!".green());
 }
