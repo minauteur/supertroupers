@@ -133,26 +133,26 @@ pub fn seed_and_generate(seed_store: Vec<String>) {
     println!("\n     The bard approaches... and queries...\n    \"Now then, what's this?\"\n");
     if seed_store.len() > 30 {
         println!("\n     \"Quite a bit of material, I think!\" \n      \"Should we keep the poem to a set number of lines?\"\n");
-        println!("   |---------------------------------------------------------------------------------|");
-        println!("   |      ENTER: N or n to generate lines equal to the number of total lines read    |"); 
-        println!("   |      ENTER: Y or y to specify the number of lines to generate                   |");
-        println!("   |---------------------------------------------------------------------------------|");
+        println!("  |---------------------------------------------------------------------------|");
+        println!("  |  ENTER: N or n to generate lines equal to the number of total lines read  |"); 
+        println!("  |  ENTER: Y or y to specify the number of lines to generate                 |");
+        println!("  |---------------------------------------------------------------------------|");
     if util::read_y_n() {
         println!("\n     \"Splendid! How many lines should I write?\"\n");
         let num = util::read_int();
         println!("\n\n     \"That should do it!\" the bard exclaims. The lights dim--the show begins!\n\n");
-        println!("|=================================================================================|");
+        println!("|============================================================================|");
 
         for line in chain.str_iter_for(num as usize) {
             if !line.is_empty() {
-                println!("|    {}", chain.generate_str());
+                println!("|   {}", chain.generate_str());
             } else {
                 println!("|------------------------------------------------------------------------");
             }
 
         }
     }
-    println!("|========================================================================|
+    println!("|============================================================================|
               |        author: {} {}
               |========================================================|", gen_name.first, gen_name.last);
     } else {
@@ -160,7 +160,7 @@ pub fn seed_and_generate(seed_store: Vec<String>) {
         println!("\n\n     \"Very well then!\" says the bard, and without wait the show begins!\n\n");
         for line in chain.str_iter_for(seed_store.len()) {
             if !line.is_empty() {
-                println!("|    {}", chain.generate_str());
+                println!("|   {}", chain.generate_str());
             } else{
                 println!("|--------------------------------------------------------");
                 
