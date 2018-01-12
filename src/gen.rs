@@ -1,7 +1,7 @@
 //!Gen Module
 //!This file contains behaviors and functions critical to text generation
 extern crate rand;
-extern crate term;
+// extern crate term;
 use std::path::{PathBuf, Path};
 use std::fs::File;
 use std::io::{Write, BufWriter};
