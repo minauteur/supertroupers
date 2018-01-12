@@ -6,7 +6,7 @@ extern crate rand;
 // extern crate hyphenation;
 
 extern crate reqwest;
-
+extern crate colored;
 
 extern crate markov;
 

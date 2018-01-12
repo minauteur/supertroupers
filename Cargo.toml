@@ -10,7 +10,7 @@ rand = "0.3"
 text_io = "*"
 markov = "*"
 serde = "1.0"
-
+colored = "1.6"
 # term = "*"
 serde_derive = "1.0"
 reqwest = "*"

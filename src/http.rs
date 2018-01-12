@@ -8,6 +8,7 @@ use util;
 
 use std::sync::{Arc, Mutex};
 use std::ops::DerefMut;
+use colored::*;
 
 use std::io::Error;
 //use std::ops::Try;
@@ -52,10 +53,10 @@ impl PoemLines {
 }
 pub fn search_author_title(feeder: LinesFeeder) -> Result<(), reqwest::Error> {
 
-    println!("Search for an Author?");
+    println!("{}{}","Search for an ".clear(),"Author?".green());
     let author = util::read_in_ln();
 
-    println!("and a title?");
+    println!("{}{}","and a ".clear(),"title?".green());
     let title = util::read_in_ln();
 
     println!("checking author value... author == {:?}", author);
@@ -200,9 +201,9 @@ impl LinesFeeder {
             //     queued.deref_mut().push(word.clone().to_owned());
             // }
         }
-        println!("---------------------------------------------------------");
+        println!("{}","---------------------------------------------------------".green());
         println!("    total lines stored:   {}", queued.len());
-        println!("---------------------------------------------------------");
+        println!("{}","---------------------------------------------------------".green());
         return Ok((self.clone()));
     }
 }
