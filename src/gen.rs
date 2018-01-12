@@ -115,42 +115,44 @@ pub fn seed_and_generate(seed_store: Vec<String>) {
         println!("                  ~~~~~~~~~~~~");
         println!("                      ~~~~~~~");
         println!("                     ~~~~");
-        println!("      no, not death--a BARD appears!");
+        println!("      no, not death--the figure of a BARD appears!");
         println!("                 ~~~~~");
         println!("               ~~~~~~~~~");
         println!("                 ~~~~~~~~~~~");
-        println!("            \"oh yeah, uh, what's his name?\" You scratch your beard");
+        println!("            \"I fear death less, perhaps...\" you think,\n            \"than being bored to tears!\"");
         println!("                   ~~~~~~~~~~~~");
         println!("                     ~~~~~~~");
         println!("                     ~~~~");
-        println!("              A voice cries out! A name you hear!");
-        println!("\n  {} {}, the poet has arrived to quell your fear!\n", gen_name.first, gen_name.last);
+        println!("                  hurry though as you might,\n               before you drain your beer");
+        println!("               an apprehensive patron cries--");
+        println!("        \"{} {}, the BARD is here!\"!\n", gen_name.first, gen_name.last);
     for string in seed_store.clone() {
         chain.feed_str(&string);
     }
     println!("---------------------------------------------------------------------");
-    println!("\n     The bard approaches... and queries...\n    \"Now then, what have we here?\"\n");
+    println!("\n     The bard approaches... and queries...\n    \"Now then, what's this?\"\n");
     if seed_store.len() > 30 {
-        println!("\n     \"Quite a bit of material here, I think! Should we keep the poem to a specific number of lines?\"\n");
-        println!("--------N/n generates a number of lines equal to the number of lines read.-----");
-        println!("--------Y/y prompts for a whole number, generating lines equal to that number.----");
-    
+        println!("\n     \"Quite a bit of material, I think!\" \n      \"Should we keep the poem to a set number of lines?\"\n");
+        println!("  |---------------------------------------------------------------------------|");
+        println!("  |  ENTER: N or n to generate lines equal to the number of total lines read  |"); 
+        println!("  |  ENTER: Y or y to specify the number of lines to generate                 |");
+        println!("  |---------------------------------------------------------------------------|");
     if util::read_y_n() {
         println!("\n     \"Splendid! How many lines should I write?\"\n");
         let num = util::read_int();
         println!("\n\n     \"That should do it!\" the bard exclaims. The lights dim--the show begins!\n\n");
-        println!("|=================================================================================|");
+        println!("|============================================================================|");
 
         for line in chain.str_iter_for(num as usize) {
             if !line.is_empty() {
-                println!("|    {}", chain.generate_str());
+                println!("|   {}", chain.generate_str());
             } else {
                 println!("|------------------------------------------------------------------------");
             }
 
         }
     }
-    println!("|========================================================================|
+    println!("|============================================================================|
               |        author: {} {}
               |========================================================|", gen_name.first, gen_name.last);
     } else {
@@ -158,7 +160,7 @@ pub fn seed_and_generate(seed_store: Vec<String>) {
         println!("\n\n     \"Very well then!\" says the bard, and without wait the show begins!\n\n");
         for line in chain.str_iter_for(seed_store.len()) {
             if !line.is_empty() {
-                println!("|    {}", chain.generate_str());
+                println!("|   {}", chain.generate_str());
             } else{
                 println!("|--------------------------------------------------------");
                 

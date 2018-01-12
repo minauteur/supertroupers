@@ -112,6 +112,7 @@ impl Request {
 
 pub fn extract_lines(req: Request, feeder: LinesFeeder) -> Result<Value, reqwest::Error> {
 
+    // let mut response = reqwest::get(&req.url)?;
     let mut response = reqwest::get(&req.url)?;
 
     let json: Value = response.json()?;
