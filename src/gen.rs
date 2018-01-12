@@ -4,6 +4,8 @@ extern crate rand;
 extern crate term;
 use std::path::{PathBuf, Path};
 use std::fs::File;
+use std::io::{Write, BufWriter};
+use std::fs::OpenOptions;
 use markov::Chain;
 static LOC_SEED_DIR: &'static str = "names.json";
 use http::AuthorsList;
@@ -93,6 +95,8 @@ fn read_authors_from_file() -> Result<AuthorsList, Box<Error>> {
 
 pub fn seed_and_generate(seed_store: Vec<String>) {
     let mut chain = Chain::new();
+    let mut poem_storage: Vec<String> = Vec::new();
+    let mut author_storage = String::new();
         //     let mut a_c = Chain::new();
         
         // a_c.feed_str("William ").feed_str("Shakespeare ").feed_str("Johnson ")
@@ -126,6 +130,8 @@ pub fn seed_and_generate(seed_store: Vec<String>) {
         println!("                  hurry though as you might,\n               before you drain your beer");
         println!("               an apprehensive patron cries--");
         println!("        \"{} {}, the BARD is here!\"!\n", gen_name.first, gen_name.last);
+        let author_fmt = format!("{} {}", &gen_name.first, &gen_name.last);
+        author_storage.push_str(&author_fmt);
     for string in seed_store.clone() {
         chain.feed_str(&string);
     }
@@ -145,7 +151,9 @@ pub fn seed_and_generate(seed_store: Vec<String>) {
 
         for line in chain.str_iter_for(num as usize) {
             if !line.is_empty() {
-                println!("|   {}", chain.generate_str());
+                let line = format!("{}", chain.generate_str());
+                println!("|   {}", line);
+                poem_storage.push(line);
             } else {
                 println!("|------------------------------------------------------------------------");
             }
@@ -160,7 +168,10 @@ pub fn seed_and_generate(seed_store: Vec<String>) {
         println!("\n\n     \"Very well then!\" says the bard, and without wait the show begins!\n\n");
         for line in chain.str_iter_for(seed_store.len()) {
             if !line.is_empty() {
-                println!("|   {}", chain.generate_str());
+                let line = format!("{}", chain.generate_str());
+                println!("|   {}", line);                
+                poem_storage.push(line);
+
             } else{
                 println!("|--------------------------------------------------------");
                 
@@ -170,5 +181,36 @@ pub fn seed_and_generate(seed_store: Vec<String>) {
               |        author: {} {}
               |=======================================================|",
               gen_name.first, gen_name.last);
-    }   
+    }
+    println!("    Good show! Would you like to save the poem and author to poems.txt?");
+    if util::read_y_n() {
+        write_poem_to_file(poem_storage, author_storage);
+    } else {
+        println!("    Maybe next time we'll make the cut!");
+    }
+}
+pub fn write_poem_to_file(poem: Vec<String>, author: String) {
+    
+        let mut file =
+        OpenOptions::new()
+        .write(true)
+        .append(true)
+        .open("poems.txt")
+        .unwrap();
+    // let mut writer = BufWriter::new(&mut file);
+    if let Err(e) = writeln!(file, "\r\n") {
+        println!("{}", e);
+    }
+    for line in  poem {
+        if let Err(e) = writeln!(file, "    {}\r\n", line) {
+            println!("{}", e);
+        }
+    }
+    if let Err(e) = writeln!(file, "\r\n    --{}\r\n", author) {
+        println!("{}", e);
+    }
+    if let Err(e) = writeln!(file, "\r\n------------------------------------------------------\r\n") {
+        println!("{}", e);
+    }
+    println!("     Success! see poems.txt in your supertroupers folder to view output.");
 }
