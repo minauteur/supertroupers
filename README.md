@@ -7,7 +7,7 @@ TWO WAYS!
 1) Install the Rust programming language for whatever platform you run (Windows, Linux, MacOS),
 	`git clone https://github.com/minauteur/supertroupers.git` and then `cd supertroupers`
 	before finally `cargo run`-ing from the supertroupers directory.
-2) Download the Windows binary here: https://microwavemansion.com/supertroupers-alpha.zip, unzip the contents to a folder (for now, it's just two files--names.json and supertroupers.exe)
+2) Download the Windows binary here: https://microwavemansion.com/supertroupers-alpha.zip, unzip the contents to a folder (for now, it's just three files--names.json, poems.txt, and supertroupers.exe)
 	and run the .exe!
 
 # OK, but how do I play it?
