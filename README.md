@@ -29,9 +29,9 @@ me@thompennington.com
 thompennington@gmail.com
 
 ## TODO?
-*Refactor for gfx lib implementation
-*Extract names and poems from saved for insertion into corpus
-*get rid of the abhorrent coloring implementation
-*implement user-inserted lines/seeds
+* Refactor for gfx lib implementation
+* Extract names and poems from saved for insertion into corpus
+* get rid of the abhorrent coloring implementation
+* implement user-inserted lines/seeds
 
 
