@@ -1,3 +1,4 @@
+![Logo](https://www.microwavemansion.com/supertroupers/supertroupers.png)
 # supertroupers
 
 strategy RPG (Running Poetry Generator) built in rust.
@@ -15,14 +16,22 @@ TWO WAYS!
 2) Search for a title... or don't 
 3) Write infinity poetries!
 
---a note! be careful making highly generic searches! It takes a minute or two for all the material to come back/to generate poems when that's the case, but it should still work. 
+## --a note!
+be careful making highly generic searches! It takes a minute or two for all the material to come back/to generate poems when that's the case, but it should still work. 
 Just chill a bit while the beatniks do they thang!
 
 Finally, DO let me know if anything breaks or sucks super hard so I can try to fix those things in the fundamental code before we move on to adding graphics and other bells and whistles!
 TWEET ME YOUR POEMS!
 @minauteur
 
-EMAIL OR CHAT ME YOUR PROBLEMS AND ISHAS, MAN
+### EMAIL OR CHAT ME YOUR PROBLEMS AND ISHAS, MAN
 me@thompennington.com
 thompennington@gmail.com
+
+## TODO?
+*Refactor for gfx lib implementation
+*Extract names and poems from saved for insertion into corpus
+*get rid of the abhorrent coloring implementation
+*implement user-inserted lines/seeds
+
 
