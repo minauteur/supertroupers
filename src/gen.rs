@@ -17,7 +17,7 @@ use colored::*;
 pub struct Name {
     first: String,
     // middle: String,
-    last: String
+    last: String,
 }
 impl Name {
     pub fn new() -> Name {
@@ -28,7 +28,7 @@ impl Name {
         }
     }
 
-    pub fn from_file(mut self: Self)-> Result<gen::Name, Box<Error>> {
+    pub fn from_file(mut self: Self) -> Result<gen::Name, Box<Error>> {
         let mut names = read_authors_from_file().expect("something went wrong reading from file!");
         let mut first_name: Chain<String> = Chain::new();
         let mut last_name: Chain<String> = Chain::new();
@@ -56,12 +56,22 @@ impl Name {
         // println!("{}","          V");
         // println!("???And can it claim them for itself???");
 
-        let new_first = first_name.generate_str().split(" ").next().unwrap().to_owned();
-        let new_last = last_name.generate_str().split(" ").next().unwrap().to_owned();
+        let new_first = first_name
+            .generate_str()
+            .split(" ")
+            .next()
+            .unwrap()
+            .to_owned();
+        let new_last = last_name
+            .generate_str()
+            .split(" ")
+            .next()
+            .unwrap()
+            .to_owned();
         self.first.push_str(&new_first);
         self.last.push_str(&new_last);
 
-        let new_name: Name =  Name {
+        let new_name: Name = Name {
             first: self.first.clone(),
             last: self.last.clone(),
         };
@@ -69,13 +79,15 @@ impl Name {
 
         return Ok(new_name);
     }
-    pub fn from_name_string(s: &str)-> Name {
+    pub fn from_name_string(s: &str) -> Name {
         let mut name = Name::new();
         let mut names = s.split(" ");
         name.first.push_str(names.next().unwrap_or("Sir Error"));
-        name.last.push_str(names.next().unwrap_or("The Unwrapped None"));
-        return name
-    }   
+        name.last.push_str(
+            names.next().unwrap_or("The Unwrapped None"),
+        );
+        return name;
+    }
 }
 
 fn read_authors_from_file() -> Result<AuthorsList, Box<Error>> {
@@ -97,74 +109,126 @@ pub fn seed_and_generate(seed_store: Vec<String>) {
     let mut chain = Chain::new();
     let mut poem_storage: Vec<String> = Vec::new();
     let mut author_storage = String::new();
-        //     let mut a_c = Chain::new();
-        
-        // a_c.feed_str("William ").feed_str("Shakespeare ").feed_str("Johnson ")
-        //     .feed_str("Betty ").feed_str("Emily ").feed_str("Mary ").feed_str("Shelley ").feed_str("Blake ");
-        // let mut name_string = String::new();
-        // for name in a_c.str_iter_for(3) {
-        //     let x = format!("{}", a_c.generate_str());
-        //     name_string.push_str(&x);
-        // }
-        let error: Name = Name {
-            first: String::from("Sir Erronaeus,"),
-            last: String::from("The Unwrapp-ed None"),
-        };
-        let gen_name: Name = Name::new().from_file().unwrap_or(error);
-        let author_fmt = format!("{} {}", &gen_name.first, &gen_name.last).bold();
-        println!("{}","  from the mist...".clear());
-        println!("{}","      ~~~~~".purple());
-        println!("{}","         ~~~~~~~~~".bright_blue());
-        println!("{}","           ~~~~~~~~~~~".blue());
-        println!("{}","          a shadow nears...".clear());
-        println!("{}","              ~~~~~~~~~~~~".blue());
-        println!("{}","                  ~~~~~~~".purple());
-        println!("{}","                 ~~~~".blue());
-        println!("{}","  no, not death--the figure of a BARD appears!".clear());
-        println!("{}","             ~~~~~".bright_blue());
-        println!("{}","           ~~~~~~~~~".blue());
-        println!("{}","             ~~~~~~~~~~~".bright_blue());
-        println!("{}","        \"I fear death less, perhaps...\" you think,\n            \"than being bored to tears!\"");
-        println!("{}","               ~~~~~~~~~~~~".purple());
-        println!("{}","                 ~~~~~~~".blue());
-        println!("{}","                 ~~~~".bright_blue());
-        println!("{}","              hurry though as you might,\n               before you drain your beer");
-        println!("{}","           an apprehensive patron cries--");
-        println!("          \"{}, the BARD is here!\"!\n", &author_fmt);
-        
-        author_storage.push_str(&author_fmt);
+    //     let mut a_c = Chain::new();
 
-    println!("{}","---------------------------------------------------------------------".yellow());
+    // a_c.feed_str("William ").feed_str("Shakespeare ").feed_str("Johnson ")
+    //     .feed_str("Betty ").feed_str("Emily ").feed_str("Mary ").feed_str("Shelley ").feed_str("Blake ");
+    // let mut name_string = String::new();
+    // for name in a_c.str_iter_for(3) {
+    //     let x = format!("{}", a_c.generate_str());
+    //     name_string.push_str(&x);
+    // }
+    let error: Name = Name {
+        first: String::from("Sir Erronaeus,"),
+        last: String::from("The Unwrapp-ed None"),
+    };
+    let gen_name: Name = Name::new().from_file().unwrap_or(error);
+    let author_fmt = format!("{} {}", &gen_name.first, &gen_name.last).bold();
+    println!("{}", "  from the mist...".clear());
+    println!("{}", "      ~~~~~".purple());
+    println!("{}", "         ~~~~~~~~~".bright_blue());
+    println!("{}", "           ~~~~~~~~~~~".blue());
+    println!("{}", "          a shadow nears...".clear());
+    println!("{}", "              ~~~~~~~~~~~~".blue());
+    println!("{}", "                  ~~~~~~~".purple());
+    println!("{}", "                 ~~~~".blue());
+    println!(
+        "{}",
+        "  no, not death--the figure of a BARD appears!".clear()
+    );
+    println!("{}", "             ~~~~~".bright_blue());
+    println!("{}", "           ~~~~~~~~~".blue());
+    println!("{}", "             ~~~~~~~~~~~".bright_blue());
+    println!(
+        "{}",
+        "        \"I fear death less, perhaps...\" you think,s\n            \"than being bored to tears!\""
+    );
+    println!("{}", "               ~~~~~~~~~~~~".purple());
+    println!("{}", "                 ~~~~~~~".blue());
+    println!("{}", "                 ~~~~".bright_blue());
+    println!(
+        "{}",
+        "              hurry though as you might,\n               before you drain your beer"
+    );
+    println!("{}", "           an apprehensive patron cries--");
+    println!("          \"{}, the BARD is here!\"!\n", &author_fmt);
+
+    author_storage.push_str(&author_fmt);
+
+    println!(
+        "{}",
+        "---------------------------------------------------------------------".yellow()
+    );
     println!("\n     The bard approaches... and queries...\n    \"Now then, what's this?\"\n");
-        for string in &seed_store {
+    for string in &seed_store {
         chain.feed_str(string);
     }
     if &seed_store.len() > &500 {
-        println!("\n     \"Quite a bit of material, I think!\" \n      \"Should we keep the poem to a set number of lines?\"\n");
-        println!("{}","  |---------------------------------------------------------------------------|".bright_yellow());
-        println!("{}{}{}{}{}{}{}","  |".yellow(),"  ENTER:".clear()," N".red()," or ".clear(),"n".red()," to generate lines equal to the number of total lines read".clear(),"  |".bright_yellow()); 
-        println!("{}{}{}{}{}{}{}","  |".yellow(),"  ENTER:".clear()," Y".green()," or ".clear(),"y".green()," to specify the number of lines to generate".clear(),"                 |".bright_yellow());
-        println!("{}","  |---------------------------------------------------------------------------|".bright_yellow());
-    if util::read_y_n() {
-        println!("\n     \"Splendid! How many lines should I write?\"\n");
-        let num = util::read_int();
-        println!("\n\n     \"That should do it!\" the bard exclaims. The lights dim--the show begins!\n\n");
-        println!("|============================================================================|");
-        for line in chain.str_iter_for(num as usize) {
-            if !line.is_empty() {
-                let line = format!("{}", chain.generate_str());
-                println!("|   {}", line.bright_green());
-                poem_storage.push(line);
-            } else {
-                println!("|------------------------------------------------------------------------");
+        println!(
+            "\n     \"Quite a bit of material, I think!\" \n      \"Should we keep the poem to a set number of lines?\"\n"
+        );
+        println!(
+            "{}",
+            "  |---------------------------------------------------------------------------|"
+                .bright_yellow()
+        );
+        println!(
+            "{}{}{}{}{}{}{}",
+            "  |".yellow(),
+            "  ENTER:".clear(),
+            " N".red(),
+            " or ".clear(),
+            "n".red(),
+            " to generate lines equal to the number of total lines read".clear(),
+            "  |".bright_yellow()
+        );
+        println!(
+            "{}{}{}{}{}{}{}",
+            "  |".yellow(),
+            "  ENTER:".clear(),
+            " Y".green(),
+            " or ".clear(),
+            "y".green(),
+            " to specify the number of lines to generate".clear(),
+            "                 |".bright_yellow()
+        );
+        println!(
+            "{}",
+            "  |---------------------------------------------------------------------------|"
+                .bright_yellow()
+        );
+        if util::read_y_n() {
+            println!("\n     \"Splendid! How many lines should I write?\"\n");
+            let num = util::read_int();
+            println!(
+                "\n\n     \"That should do it!\" the bard exclaims. The lights dim--the show begins!\n\n"
+            );
+            println!(
+                "|============================================================================|"
+            );
+            for line in chain.str_iter_for(num as usize) {
+                if !line.is_empty() {
+                    let line = format!("{}", chain.generate_str());
+                    println!("|   {}", line.bright_green());
+                    poem_storage.push(line);
+                } else {
+                    println!(
+                        "|------------------------------------------------------------------------"
+                    );
+                }
             }
-        }
-    } else if &seed_store.len() > &500 {
-        println!("|--------------------------------------------------------");
-        
-            println!("\n\n     \"..although there is virtue in moderation,\" says the bard, \"500 lines it is!\"\n\n");
-            println!("\n\n     \"Very well then!\" says the bard. The lights dim--the show begins!\n\n");
-            println!("|============================================================================|");
+        } else if &seed_store.len() > &500 {
+            println!("|--------------------------------------------------------");
+
+            println!(
+                "\n\n     \"..although there is virtue in moderation,\" says the bard, \"500 lines it is!\"\n\n"
+            );
+            println!(
+                "\n\n     \"Very well then!\" says the bard. The lights dim--the show begins!\n\n"
+            );
+            println!(
+                "|============================================================================|"
+            );
             for line in chain.str_iter_for(500) {
                 if !line.is_empty() {
                     let line = format!("{}", chain.generate_str());
@@ -175,27 +239,37 @@ pub fn seed_and_generate(seed_store: Vec<String>) {
                 }
             }
         } else {
-            println!("\n\n     \"Very well then!\" says the bard. The lights dim--the show begins!\n\n");
-            println!("|============================================================================|");
+            println!(
+                "\n\n     \"Very well then!\" says the bard. The lights dim--the show begins!\n\n"
+            );
+            println!(
+                "|============================================================================|"
+            );
 
             for line in chain.str_iter_for(seed_store.len()) {
                 if !line.is_empty() {
                     let line = format!("{}", chain.generate_str());
-                    println!("|   {}", line.bright_green());                
+                    println!("|   {}", line.bright_green());
                     poem_storage.push(line);
 
                 } else {
                     println!("|--------------------------------------------------------");
-                
+
                 }
             }
         }
-    println!("|========================================================================|
+        println!(
+            "|========================================================================|
               |        author: {} {}
               |=======================================================|",
-              gen_name.first, gen_name.last);
+            gen_name.first,
+            gen_name.last
+        );
     }
-    println!("{}", "    Good show! Would you like to save the poem and author to poems.txt?".yellow());
+    println!(
+        "{}",
+        "    Good show! Would you like to save the poem and author to poems.txt?".yellow()
+    );
     if util::read_y_n() {
         write_poem_to_file(poem_storage, author_storage);
     } else {
@@ -203,9 +277,8 @@ pub fn seed_and_generate(seed_store: Vec<String>) {
     }
 }
 pub fn write_poem_to_file(poem: Vec<String>, author: String) {
-    
-        let mut file =
-        OpenOptions::new()
+
+    let mut file = OpenOptions::new()
         .write(true)
         .append(true)
         .open("poems.txt")
@@ -214,7 +287,7 @@ pub fn write_poem_to_file(poem: Vec<String>, author: String) {
     if let Err(e) = writeln!(file, "\r\n") {
         println!("{}", e);
     }
-    for line in  poem {
+    for line in poem {
         if let Err(e) = writeln!(file, "    {}\r\n", line) {
             println!("{}", e);
         }
@@ -222,8 +295,15 @@ pub fn write_poem_to_file(poem: Vec<String>, author: String) {
     if let Err(e) = writeln!(file, "\r\n    --{}\r\n", author) {
         println!("{}", e);
     }
-    if let Err(e) = writeln!(file, "\r\n------------------------------------------------------\r\n") {
+    if let Err(e) = writeln!(
+        file,
+        "\r\n------------------------------------------------------\r\n"
+    )
+    {
         println!("{}", e);
     }
-    println!("{} See poems.txt in your supertroupers folder to view output."," Success!".green());
+    println!(
+        "{} See poems.txt in your supertroupers folder to view output.",
+        " Success!".green()
+    );
 }

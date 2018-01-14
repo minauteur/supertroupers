@@ -1,7 +1,7 @@
 pub mod gen;
 pub mod util;
 pub mod http;
-
+pub mod poems;
 extern crate rand;
 // extern crate hyphenation;
 

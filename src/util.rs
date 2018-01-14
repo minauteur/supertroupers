@@ -10,7 +10,13 @@ use std::ops::Deref;
 
 pub fn read_y_n() -> bool {
     loop {
-        println!("         {} {} or {} {}", "??".clear(), "Y".bright_green(), "N".bright_red(), "??".clear());
+        println!(
+            "         {} {} or {} {}",
+            "??".clear(),
+            "Y".bright_green(),
+            "N".bright_red(),
+            "??".clear()
+        );
         let i = read_in_ln();
         match i {
             Some(s) => {
@@ -49,10 +55,10 @@ pub fn read_in_ln() -> Option<String> {
                     println!("Nothing entered.");
                     return None;
                 } else {
-                    return Some(out)
+                    return Some(out);
                 }
             } else {
-                return None; 
+                return None;
             }
         }
         Err(error) => {
