@@ -5,176 +5,176 @@ use reqwest;
 
 use serde_json::{self, Value};
 use util;
-
+use poems::*;
 use std::sync::{Arc, Mutex};
 use std::ops::DerefMut;
+use colored::*;
 
 use std::io::Error;
 //use std::ops::Try;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct AuthorsList {
-   pub authors: Vec<String>,
+    pub authors: Vec<String>,
 }
 #[derive(Debug, Clone)]
 pub struct LinesFeeder {
     pub queue: Arc<Mutex<Vec<String>>>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct PoemLines {
-    lines: Vec<String>,
-}
+// #[derive(Serialize, Deserialize, Debug, Clone)]
+// pub struct PoemLines {
+//     lines: Vec<String>,
+// }
+
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct Request {
+pub struct Search {
     url: String,
+    options: ReqOpts,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct RequestBuilder {
+pub struct ReqOpts {
     author: Option<String>,
     title: Option<String>,
 }
-impl PoemLines {
-    pub fn new()->PoemLines {
-        PoemLines {
-            lines: Vec::new()
+impl ReqOpts {
+    pub fn new() -> ReqOpts {
+        ReqOpts {
+            author: None,
+            title: None,
         }
     }
-    pub fn from_value(mut self, json_val: &Value) -> Result<(PoemLines),(serde_json::Error)> {
-        let content: Vec<String> = serde_json::from_value(json_val.clone())?;
-        self = PoemLines {
-            lines: content,
-        };
-        return Ok((self));
-    }
 }
-pub fn search_author_title(feeder: LinesFeeder) -> Result<(), reqwest::Error> {
-
-    println!("Search for an Author?");
-    let author = util::read_in_ln();
-
-    println!("and a title?");
-    let title = util::read_in_ln();
-
-    println!("checking author value... author == {:?}", author);
-    println!("checking title value... title == {:?}", title);
-
-    let request: Request = Request::new().with_params(author, title);
-    extract_lines(request, feeder)?;
-    // let poem = get_lines(serialized);
-    return Ok(());
-}
+// pub fn build_search_prompt() -> Result<(Value), reqwest::Error> {
 
 
+//     let title = util::read_in_ln();
 
-impl Request {
-    pub fn new() -> Request {
+//     println!("checking author value... author == {:?}", author);
+//     println!("checking title value... title == {:?}", title);
+
+//     let request: Request = Request::new().with_params(author, title);
+
+//     ;
+
+
+//     return Ok((response));
+
+//     // let poem = get_lines(serialized);
+//     // return Ok(());
+// }
+
+
+
+impl Search {
+    pub fn new() -> Search {
         let request = String::from("http://poetrydb.org/");
-        Request { url: request }
+        Search {
+            url: request,
+            options: ReqOpts::new(),
+        }
     }
-
-    pub fn with_params(&mut self, author: Option<String>, title: Option<String>) -> Request {
-
-        let a = match author.clone() {
+    fn author_prompt(&mut self) -> Self {
+        println!("{}{}", "Search for an ".clear(), "Author?".green());
+        self.options.author = util::read_in_ln();
+        return self.to_owned();
+    }
+    fn title_prompt(&mut self) -> Self {
+        println!("{}{}", "and a ".clear(), "title?".green());
+        self.options.title = util::read_in_ln();
+        return self.to_owned();
+    }
+    pub fn auth_title_inc(&mut self) -> Search {
+        self.author_prompt();
+        let a = match self.options.author.clone() {
             Some(auth_name) => auth_name,
             None => String::from(""),
         };
-        let t = match title.clone() {
+        self.title_prompt();
+        let t = match self.options.title.clone() {
             Some(text_name) => text_name,
             None => String::from(""),
         };
-        if author.is_some() && title.is_none() {
+        if self.options.author.is_some() && self.options.title.is_none() {
             println!(
                 "No title given... \n
                 returning authors with names matching substrings from provided input..."
             );
             let single_author = format!("author/{}/title", &a.trim_right());
             &self.url.push_str(&single_author);
-        } else if author.is_none() && title.is_none() {
+        } else if self.options.author.is_none() && self.options.title.is_none() {
             println!("No author or title given... \nreturning list of authors...");
             let list_authors = format!("author");
             &self.url.push_str(&list_authors);
-        } else if author.is_some() && title.is_some() {
+        } else if self.options.author.is_some() && self.options.title.is_some() {
             println!("searching for substring matches by author name and work title given...");
             let author_and_title = format!("author,title/{};{}", &a.trim_right(), &t.trim_right());
             &self.url.push_str(&author_and_title);
-        } else if author.is_none() && title.is_some() {
+        } else if self.options.author.is_none() && self.options.title.is_some() {
             let single_title = format!("title/{}", &t.trim_right());
             &self.url.push_str(&single_title);
         }
         println!("request string: {}", &self.url);
-        Request { url: self.url.clone() }
+        Search {
+            url: self.url.clone(),
+            options: self.options.clone(),
+        }
     }
 }
 
 
-pub fn extract_lines(req: Request, feeder: LinesFeeder) -> Result<Value, reqwest::Error> {
+pub fn handle(search: Search) -> Result<Value, reqwest::Error> {
 
     // let mut response = reqwest::get(&req.url)?;
-    let mut response = reqwest::get(&req.url)?;
+    let mut response = reqwest::get(&search.url)?;
 
     let json: Value = response.json()?;
-
-    lines_search(json.clone(), feeder).expect("Something went wrong searching for lines!");
 
     return Ok((json));
 }
 
-pub fn lines_search(json_val: Value, mut feeder: LinesFeeder) -> Result<Value,serde_json::Error> {
+pub fn match_value(json_val: Value, mut feeder: LinesFeeder) -> Result<Value, serde_json::Error> {
     // let json_val: serde_json::Value = resp.json()?;
     match &json_val {
         &Value::Array(ref arr) => {
-            println!("got Array!");
-            let array_string: String = serde_json::to_string_pretty(&arr)?;
-            println!("---------------------------------------------------------");
-            println!("JSON Array: \n{}", &array_string);
-            println!("---------------------------------------------------------");
+            println!("got an Array of Poems!");
             for obj_val in &arr[..] {
-                match obj_val.get("lines") {
-                    Some(content) => {
-                        println!("found some lines in the Array!");
-                        let poem = PoemLines::new().from_value(&content)?;
-                        println!("---------------------------------------------------------");
-                        println!("got line values! \n{}", 
-                            &poem.lines.join("\n"));
-                        println!("---------------------------------------------------------");
-                        feeder.add_lines(poem.lines)
-                            .expect("something went wrong adding lines from array!");
-                    }
-                    None => { 
-                        println!("couldn't get any lines from this array.");
-                        break;
-                    }
+                if let Ok(p) = Poem::new().from_value(&obj_val) {
+                    println!("Got a Poem!");
+                    feeder.add_lines(p.lines.clone()).expect(
+                        "couldn't get lines from Poem struct!",
+                    );
+                    println!(
+                        "\nPoem: \"{}\",\nAuthor: {},\n  Lines: {}",
+                        p.title,
+                        p.author,
+                        p.line_count
+                    );
                 }
             }
         }
         &Value::Object(ref obj) => {
             println!("got Object!");
-            let object_string: String = serde_json::to_string_pretty(&obj)?;
-            println!("---------------------------------------------------------");
-            println!("JSON Object: \n{}", &object_string);
-            println!("---------------------------------------------------------");
-            match &obj.get("lines") {
-                &Some(content) => {
-                    println!("found some lines in the Object!");
-                    let poem = PoemLines::new().from_value(&content)?;
-                    println!("---------------------------------------------------------");
-                    println!("got line values! \n{}", &poem.lines.join("\n"));    
-                    println!("---------------------------------------------------------");                
-                    feeder.add_lines(poem.lines)
-                        .expect("something went wrong adding lines from object!");
-                }
-                &None => println!("couldn't get any lines from this object!"),
+            if let Ok(p) = Poem::new().from_value(&json_val) {
+                println!("Got a Poem!");
+                feeder.add_lines(p.lines.clone()).expect(
+                    "couldn't get lines from Poem!",
+                );
+                println!(
+                    "\nPoem: \"{}\",\nAuthor: {},\n  Lines: {}",
+                    p.title,
+                    p.author,
+                    p.line_count
+                );
             }
-        }
+        } 
         _ => {
             println!("got... something else!");
             println!("Didn't know enough to serialize this!");
         }
     }
-
     return Ok((json_val));
 }
 
@@ -200,9 +200,15 @@ impl LinesFeeder {
             //     queued.deref_mut().push(word.clone().to_owned());
             // }
         }
-        println!("---------------------------------------------------------");
+        println!(
+            "{}",
+            "---------------------------------------------------------".green()
+        );
         println!("    total lines stored:   {}", queued.len());
-        println!("---------------------------------------------------------");
+        println!(
+            "{}",
+            "---------------------------------------------------------".green()
+        );
         return Ok((self.clone()));
     }
 }
