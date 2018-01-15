@@ -1,12 +1,43 @@
 //!Utilities Module
 //!Various Helper functions and error definitions used throughout the project live here
 use gen;
-use http::LinesFeeder;
+use http::LineSeed;
+use poems::{AuthorsList,WorksList};
+use serde_json;
 use colored::*;
 
+use std::path::PathBuf;
 use std::io;
 use std::ops::Deref;
+use std::error::Error;
+use std::fs::File;
 
+static AUTHOR: &'static str = "names.json";
+static TITLE: &'static str = "title.json";
+
+pub fn read_authors_from_file() -> Result<AuthorsList, Box<Error>> {
+    // Open the file in read-only mode.
+    let path = PathBuf::from(AUTHOR);
+    let file = File::open(&path)?;
+
+    // Read the JSON contents of the file as an instance of `AuthorsList`.
+    let list: AuthorsList = serde_json::from_reader(file)?;
+
+    // Return the `List`.
+    Ok(list)
+}
+
+pub fn read_titles_from_file() -> Result<WorksList, Box<Error>> {
+    // Open the file in read-only mode.
+    let path = PathBuf::from(TITLE);
+    let file = File::open(&path)?;
+
+    // Read the JSON contents of the file as an instance of `AuthorsList`.
+    let list: WorksList = serde_json::from_reader(file)?;
+
+    // Return the `List`.
+    Ok(list)
+}
 
 pub fn read_y_n() -> bool {
     loop {
@@ -125,7 +156,7 @@ pub fn read_int() -> i32 {
     }
 }
 
-pub fn poem_prompt(feeder: LinesFeeder) {
+pub fn poem_prompt(feeder: LineSeed) {
     println!("Do you want to pause and curate a poem?");
     if read_y_n() {
         println!("Sweet! let\'s find an author!\n");

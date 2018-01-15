@@ -18,7 +18,7 @@ use colored::*;
 fn main() {
     let feed_store: Arc<Mutex<Vec<String>>> = Arc::new(Mutex::new(Vec::new()));
 
-    let feeder: http::LinesFeeder = http::LinesFeeder { queue: feed_store };
+    let feeder: http::LineSeed = http::LineSeed { queue: feed_store };
     println!(
         "\n{}",
         "                           WELCOME TO".bright_yellow()

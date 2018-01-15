@@ -1,8 +1,23 @@
 //!Poems houses the structs and implementations for deserializing and
 //! storing Poem data retrieved from poetrydb API requests
-use reqwest;
 use serde_json::{self, Value};
 
+use util;
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct WorksList {
+    pub titles: Vec<String>,
+}
+
+impl WorksList {
+    pub fn new() -> WorksList {
+        let default: WorksList = WorksList {
+            titles: Vec::new(),
+        };
+        let list: WorksList = util::read_titles_from_file().unwrap_or(default);
+        return list
+    }
+}
 
 #[derive(Serialize, Deserialize, Debug, Clone, Eq, PartialEq, Ord, PartialOrd)]
 pub struct Poem {
@@ -61,16 +76,19 @@ impl Poem {
         return Ok((self.to_owned()));
     }
 }
-// impl PoemLines {
-//     pub fn new()->PoemLines {
-//         PoemLines {
-//             lines: Vec::new()
-//         }
-//     }
-//     pub fn from_value(mut self, json_val: &Value) -> Result<(PoemLines),(serde_json::Error)> {
 
-//         self.lines = serde_json::from_value(json_val.clone())?;
+#[derive(Serialize, Deserialize, Debug)]
+pub struct AuthorsList {
+    pub authors: Vec<String>,
+}
+impl AuthorsList {
+    pub fn new() -> AuthorsList {
+        let default: AuthorsList = AuthorsList { 
+            authors: Vec::new(),
+        };
+        let list: AuthorsList = util::read_authors_from_file().unwrap_or(default); 
+        return list
+        
+        }
+}
 
-//         return Ok((self));
-//     }
-// }
