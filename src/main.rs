@@ -1,6 +1,5 @@
 #[macro_use]
 extern crate serde_derive;
-
 extern crate supertroupers;
 // extern crate hyphenation;
 extern crate markov;
@@ -15,20 +14,22 @@ use supertroupers::flavor;
 use std::sync::{Arc, Mutex};
 extern crate colored;
 use colored::*;
+use markov::Chain;
 
 fn main() {
     let feed_store: Arc<Mutex<Vec<String>>> = Arc::new(Mutex::new(Vec::new()));
-
+    // let chain = Chain::new();
     let feeder: http::LineSeed = http::LineSeed { queue: feed_store };
     flavor::welcome();
     loop {
-
+        let mut chain = Chain::new();
         let request = http::Search::new().auth_title_inc();
         let response = handle(request).expect("Something went wrong handling request!");
-        let data = match_value(response, feeder.clone()).expect(
+        let data = match_value(response, chain, feeder.clone()).expect(
             "Something went wrong searching for lines!",
         );
-        util::poem_prompt(feeder.clone());
+        let len = util::get_len(feeder.clone());
+        util::poem_prompt(data, len);
 
     }
 }

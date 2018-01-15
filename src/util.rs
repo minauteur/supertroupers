@@ -5,6 +5,7 @@ use http::LineSeed;
 use poems::{AuthorsList,WorksList};
 use serde_json;
 use colored::*;
+use markov::Chain;
 
 use std::path::PathBuf;
 use std::io;
@@ -156,7 +157,7 @@ pub fn read_int() -> i32 {
     }
 }
 
-pub fn poem_prompt(feeder: LineSeed) {
+pub fn poem_prompt(chain: Chain<String>, lines_read: usize) {
     println!("Do you want to pause and curate a poem?");
     if read_y_n() {
         println!("Sweet! let\'s find an author!\n");
@@ -164,10 +165,10 @@ pub fn poem_prompt(feeder: LineSeed) {
         //we first need to acquire a "lock", which confirms to us no other thread can attempt
         //to access the underlying data. The error returns a "view" of the data anyway as a
         //fail-safe and because we only need to read what's in the store, that's fine.
-        let lock = match feeder.queue.lock() {
-            Ok(vec) => vec,
-            Err(e) => e.into_inner(),
-        };
+        // let lock = match feeder.queue.lock() {
+        //     Ok(vec) => vec,
+        //     Err(e) => e.into_inner(),
+        // };
         //Now that we've acquired our MutexGuard from matcing against .lock(),
         //we have an Arc<Vec<String>
         //it helps to think about the data you need as trapped in a room puzzle.
@@ -177,15 +178,15 @@ pub fn poem_prompt(feeder: LineSeed) {
         //functionality. Deref is a trait implemented for the Arc type, included in rust's "ops"
         //package, that converts an Arc<T> into T while maintaining an active count in memory of
         //accessors of T (via the deref trait), ARC meaning Atomic Reference Counter
-        let vec = lock.deref().clone();
+        // let vec = lock.deref().clone();
         //after dereferencing our Arc, all we have left to do is...
         //give the Vec<String> to our seed/generate function.
         //We need to clone the dereferenced Arc<String<Vec>> to avoid it getting wrapped
         //again in the next function. this prevents it
         //from being a reference, which gen::seed_and_generate() won't accept
         //but first--we need to make sure it isn't empty!
-        if !&vec.is_empty() {
-            gen::seed_and_generate(vec);
+        if !&chain.is_empty() {
+            gen::seed_and_generate(chain, lines_read);
         } else {
             println!("Yeah, you should probably read more...");
         }
@@ -194,7 +195,13 @@ pub fn poem_prompt(feeder: LineSeed) {
     }
 
 }
-
+pub fn get_len(feeder:LineSeed) -> usize {
+    let lock = match feeder.queue.lock() {
+        Ok(vec)=> vec,
+        Err(e)=> e.into_inner(),
+    };
+    return lock.len()
+}
 //ALL THE STUFF BELOW HERE IS DEPRECATED OR ON ITS WAY OUT. DON'T PAY ATTENTION TO IT
 
 // static LOC_SEED_DIR: &'static str = "shakespeare.txt";

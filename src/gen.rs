@@ -12,6 +12,122 @@ use gen;
 
 use colored::*;
 
+pub fn seed_and_generate(chain: Chain<String>, lines_read: usize) {
+    // let mut chain = Chain::new();
+    let mut poem_storage: Vec<String> = Vec::new();
+    let mut author_storage = String::new();
+
+    let name_error: Name = Name {
+        first: String::from("Sir Erronaeus,"),
+        last: String::from("The Unwrapp-ed None"),
+    };
+    let title_error: Work = Work {
+        title: String::from("\"A Tale of Error and Woe\""),
+    };
+    let gen_name: Name = Name::new().from_file().unwrap_or(name_error);
+    let gen_work: Work = Work::new().from_file().unwrap_or(title_error);
+    let author_fmt = format!("{} {}", &gen_name.first, &gen_name.last).bold();
+
+    flavor_generator();
+    println!("          \"{}, the BARD is here!\"!\n", &author_fmt);
+    
+    author_storage.push_str(&author_fmt);
+
+    println!(
+        "{}",
+        "---------------------------------------------------------------------".yellow()
+    );
+    println!("\n     The bard approaches... and queries...\n    \"Now then, what's this?\"\n");
+    // for string in &seed_store {
+    //     chain.feed_str(string);
+    // }
+        flavor_lines_prompt();
+        if util::read_y_n() {
+            println!("\n     \"Splendid! How many lines should I write?\"\n");
+            let num = util::read_int();
+            println!(
+                "\n\n     \"That should do it!\" the bard exclaims. The lights dim--the show begins!\n\n"
+            );
+            println!(
+                "|============================================================================|"
+            );
+            println!("|  A Poem: \"{}\"", gen_work.title.trim());
+            println!(
+                "|----------------------------------------------------------------------------"
+            );
+            for line in chain.str_iter_for(num as usize) {
+                if !line.is_empty() {
+                    let line = format!("{}", chain.generate_str());
+                    println!("|   {}", line.bright_green());
+                    poem_storage.push(line);
+                } else {
+                    println!(
+                        "|                     -------------"
+                    );
+                }
+            }
+        } else if &lines_read > &50 {
+            println!("|--------------------------------------------------------");
+
+            println!(
+                "\n\n     \"..although there is virtue in moderation,\" says the bard, \"50 lines it is!\"\n\n"
+            );
+            println!(
+                "\n\n     \"Very well then!\" says the bard. The lights dim--the show begins!\n\n"
+            );
+            println!(
+                "|============================================================================|"
+            );
+            println!("|  A Poem: \"{}\"", gen_work.title.trim());
+            println!(
+                "|----------------------------------------------------------------------------"
+            );
+            for line in chain.str_iter_for(50) {
+                if !line.is_empty() {
+                    let line = format!("{}", chain.generate_str());
+                    println!("|   {}", line.bright_green());
+                    poem_storage.push(line);
+                } else {
+                    println!("|                     -------------");
+                }
+            }
+        } else {
+            println!(
+                "\n\n     \"Very well then!\" says the bard. The lights dim--the show begins!\n\n"
+            );
+            println!(
+                "|============================================================================|"
+            );
+                        println!("|  A Poem: \"{}\"", gen_work.title.trim());
+            println!(
+                "|----------------------------------------------------------------------------"
+            );
+            for line in chain.str_iter_for(lines_read) {
+                if !line.is_empty() {
+                    let line = format!("{}", chain.generate_str());
+                    println!("|   {}", line.bright_green());
+                    poem_storage.push(line);
+
+                } else {
+                    println!("|                    -------------");
+
+                }
+            }
+        }
+        println!("|----------------------------------------------------------------------------");
+        println!("|        author: {} {}", gen_name.first, gen_name.last);                                
+        println!("|============================================================================|");
+    println!(
+        "{}",
+        "    Good show! Would you like to save the poem and author to poems.txt?".yellow()
+    );
+    if util::read_y_n() {
+        write_poem_to_file(poem_storage, author_storage, gen_work.title);
+    } else {
+        println!("    Maybe next time we'll make the cut!");
+    }
+}
+
 pub struct Work {
     title: String,
 }
@@ -110,121 +226,6 @@ impl Name {
     }
 }
 
-pub fn seed_and_generate(seed_store: Vec<String>) {
-    let mut chain = Chain::new();
-    let mut poem_storage: Vec<String> = Vec::new();
-    let mut author_storage = String::new();
-
-    let name_error: Name = Name {
-        first: String::from("Sir Erronaeus,"),
-        last: String::from("The Unwrapp-ed None"),
-    };
-    let title_error: Work = Work {
-        title: String::from("\"A Tale of Error and Woe\""),
-    };
-    let gen_name: Name = Name::new().from_file().unwrap_or(name_error);
-    let gen_work: Work = Work::new().from_file().unwrap_or(title_error);
-    let author_fmt = format!("{} {}", &gen_name.first, &gen_name.last).bold();
-
-    flavor_generator();
-    println!("          \"{}, the BARD is here!\"!\n", &author_fmt);
-    
-    author_storage.push_str(&author_fmt);
-
-    println!(
-        "{}",
-        "---------------------------------------------------------------------".yellow()
-    );
-    println!("\n     The bard approaches... and queries...\n    \"Now then, what's this?\"\n");
-    for string in &seed_store {
-        chain.feed_str(string);
-    }
-        flavor_lines_prompt();
-        if util::read_y_n() {
-            println!("\n     \"Splendid! How many lines should I write?\"\n");
-            let num = util::read_int();
-            println!(
-                "\n\n     \"That should do it!\" the bard exclaims. The lights dim--the show begins!\n\n"
-            );
-            println!(
-                "|============================================================================|"
-            );
-            println!("|  A Poem: \"{}\"", gen_work.title.trim());
-            println!(
-                "|----------------------------------------------------------------------------|"
-            );
-            for line in chain.str_iter_for(num as usize) {
-                if !line.is_empty() {
-                    let line = format!("{}", chain.generate_str());
-                    println!("|   {}", line.bright_green());
-                    poem_storage.push(line);
-                } else {
-                    println!(
-                        "|------------------------------------------------------------------------"
-                    );
-                }
-            }
-        } else if &seed_store.len() > &50 {
-            println!("|--------------------------------------------------------");
-
-            println!(
-                "\n\n     \"..although there is virtue in moderation,\" says the bard, \"50 lines it is!\"\n\n"
-            );
-            println!(
-                "\n\n     \"Very well then!\" says the bard. The lights dim--the show begins!\n\n"
-            );
-            println!(
-                "|============================================================================|"
-            );
-            println!("|  A Poem: \"{}\"", gen_work.title.trim());
-            println!(
-                "|----------------------------------------------------------------------------|"
-            );
-            for line in chain.str_iter_for(50) {
-                if !line.is_empty() {
-                    let line = format!("{}", chain.generate_str());
-                    println!("|   {}", line.bright_green());
-                    poem_storage.push(line);
-                } else {
-                    println!("|--------------------------------------------------------");
-                }
-            }
-        } else {
-            println!(
-                "\n\n     \"Very well then!\" says the bard. The lights dim--the show begins!\n\n"
-            );
-            println!(
-                "|============================================================================|"
-            );
-                        println!("|  A Poem: \"{}\"", gen_work.title.trim());
-            println!(
-                "|----------------------------------------------------------------------------|"
-            );
-            for line in chain.str_iter_for(seed_store.len()) {
-                if !line.is_empty() {
-                    let line = format!("{}", chain.generate_str());
-                    println!("|   {}", line.bright_green());
-                    poem_storage.push(line);
-
-                } else {
-                    println!("|--------------------------------------------------------");
-
-                }
-            }
-        }
-        println!("|----------------------------------------------------------------------------|");
-        println!("|        author: {} {}", gen_name.first, gen_name.last);                                
-        println!("|============================================================================|");
-    println!(
-        "{}",
-        "    Good show! Would you like to save the poem and author to poems.txt?".yellow()
-    );
-    if util::read_y_n() {
-        write_poem_to_file(poem_storage, author_storage, gen_work.title);
-    } else {
-        println!("    Maybe next time we'll make the cut!");
-    }
-}
 pub fn write_poem_to_file(poem: Vec<String>, author: String, title: String) {
 
     let mut file = OpenOptions::new()
