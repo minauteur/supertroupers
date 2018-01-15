@@ -43,6 +43,37 @@ pub fn read_y_n() -> bool {
     }
 }
 
+pub fn which_prompt(cond_1:&String, cond_2: &String) -> bool {
+    loop {
+        println!(
+            "         {} {} or {} {}",
+            "??".clear(),
+            cond_1.bright_green(),
+            cond_2.bright_red(),
+            "??".clear()
+        );
+        let i = read_in_ln();
+        match i {
+            Some(s) => {
+                    if s.trim() == cond_1.to_string() {
+                        //println!("read \"Y\" or \"y\". Confirmed!");
+                        return true;
+                    } else if s.trim() == cond_2.to_string() {
+                        return false;
+                    } else {
+                    
+                        println!("Try again... please, enter either \"{}\", or \"{}\"", cond_1, cond_2);
+                        continue;
+                    }
+                }
+            None => {
+                println!("lets try that again, shall we?");
+                continue;
+            }
+        }
+    }
+}
+
 pub fn read_in_ln() -> Option<String> {
     let mut out = String::new();
     match io::stdin().read_line(&mut out) {
@@ -93,6 +124,7 @@ pub fn read_int() -> i32 {
         };
     }
 }
+
 pub fn poem_prompt(feeder: LinesFeeder) {
     println!("Do you want to pause and curate a poem?");
     if read_y_n() {

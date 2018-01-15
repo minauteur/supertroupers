@@ -8,7 +8,8 @@ use std::io::{Write, BufWriter};
 use std::fs::OpenOptions;
 use markov::Chain;
 static LOC_SEED_DIR: &'static str = "names.json";
-use http::AuthorsList;
+static TITLE: &'static str = "title.json";
+use http::*;
 use std::error::Error;
 use util;
 use gen;
@@ -90,7 +91,7 @@ impl Name {
     }
 }
 
-fn read_authors_from_file() -> Result<AuthorsList, Box<Error>> {
+pub fn read_authors_from_file() -> Result<AuthorsList, Box<Error>> {
     // Open the file in read-only mode.
     let path = PathBuf::from(LOC_SEED_DIR);
     let file = File::open(&path)?;
@@ -101,8 +102,17 @@ fn read_authors_from_file() -> Result<AuthorsList, Box<Error>> {
     // Return the `List`.
     Ok(list)
 }
+pub fn read_titles_from_file() -> Result<WorksList, Box<Error>> {
+    // Open the file in read-only mode.
+    let path = PathBuf::from(TITLE);
+    let file = File::open(&path)?;
 
+    // Read the JSON contents of the file as an instance of `AuthorsList`.
+    let list: WorksList = serde_json::from_reader(file)?;
 
+    // Return the `List`.
+    Ok(list)
+}
 
 
 pub fn seed_and_generate(seed_store: Vec<String>) {
@@ -217,11 +227,11 @@ pub fn seed_and_generate(seed_store: Vec<String>) {
                     );
                 }
             }
-        } else if &seed_store.len() > &500 {
+        } else if &seed_store.len() > &50 {
             println!("|--------------------------------------------------------");
 
             println!(
-                "\n\n     \"..although there is virtue in moderation,\" says the bard, \"500 lines it is!\"\n\n"
+                "\n\n     \"..although there is virtue in moderation,\" says the bard, \"50 lines it is!\"\n\n"
             );
             println!(
                 "\n\n     \"Very well then!\" says the bard. The lights dim--the show begins!\n\n"
@@ -229,7 +239,7 @@ pub fn seed_and_generate(seed_store: Vec<String>) {
             println!(
                 "|============================================================================|"
             );
-            for line in chain.str_iter_for(500) {
+            for line in chain.str_iter_for(50) {
                 if !line.is_empty() {
                     let line = format!("{}", chain.generate_str());
                     println!("|   {}", line.bright_green());

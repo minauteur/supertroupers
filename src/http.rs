@@ -2,13 +2,15 @@
 //!This file contains the necessary logic for making http requests to both
 //!poetrydb.org and the phoneme API for serialization
 use reqwest;
-
+use http;
 use serde_json::{self, Value};
 use util;
 use poems::*;
 use std::sync::{Arc, Mutex};
 use std::ops::DerefMut;
 use colored::*;
+use gen;
+use std::option;
 
 use std::io::Error;
 //use std::ops::Try;
@@ -17,6 +19,31 @@ use std::io::Error;
 pub struct AuthorsList {
     pub authors: Vec<String>,
 }
+impl AuthorsList {
+    pub fn new() -> AuthorsList {
+        let default: AuthorsList = AuthorsList { 
+            authors: Vec::new(),
+        };
+        let list: AuthorsList = gen::read_authors_from_file().unwrap_or(default); 
+        return list
+        
+        }
+}
+#[derive(Serialize, Deserialize, Debug)]
+pub struct WorksList {
+    pub titles: Vec<String>,
+}
+
+impl WorksList {
+    pub fn new() -> WorksList {
+        let default: WorksList = WorksList {
+            titles: Vec::new(),
+        };
+        let list: WorksList = gen::read_titles_from_file().unwrap_or(default);
+        return list
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct LinesFeeder {
     pub queue: Arc<Mutex<Vec<String>>>,
@@ -70,21 +97,10 @@ impl ReqOpts {
 
 impl Search {
     pub fn new() -> Search {
-        let request = String::from("http://poetrydb.org/");
         Search {
-            url: request,
+            url: String::from("http://poetrydb.org/"),
             options: ReqOpts::new(),
         }
-    }
-    fn author_prompt(&mut self) -> Self {
-        println!("{}{}", "Search for an ".clear(), "Author?".green());
-        self.options.author = util::read_in_ln();
-        return self.to_owned();
-    }
-    fn title_prompt(&mut self) -> Self {
-        println!("{}{}", "and a ".clear(), "title?".green());
-        self.options.title = util::read_in_ln();
-        return self.to_owned();
     }
     pub fn auth_title_inc(&mut self) -> Search {
         self.author_prompt();
@@ -105,9 +121,17 @@ impl Search {
             let single_author = format!("author/{}/title", &a.trim_right());
             &self.url.push_str(&single_author);
         } else if self.options.author.is_none() && self.options.title.is_none() {
-            println!("No author or title given... \nreturning list of authors...");
-            let list_authors = format!("author");
-            &self.url.push_str(&list_authors);
+            println!("No author or title given... \nWould you like to return a list of authors or titles?");
+            if util::which_prompt(&format!("author"), &format!("title")) {
+                self.url = String::from("http://poetrydb.org/author");
+                let list = AuthorsList::new();
+                println!("authors:\n{}\n", list.authors.join("\n"));
+            } else {
+                self.url = String::from("http://poetrydb.org/title");
+                let list = WorksList::new();
+                println!("titles: \n{}\n", list.titles.join("\n"));
+            }
+            
         } else if self.options.author.is_some() && self.options.title.is_some() {
             println!("searching for substring matches by author name and work title given...");
             let author_and_title = format!("author,title/{};{}", &a.trim_right(), &t.trim_right());
@@ -121,6 +145,16 @@ impl Search {
             url: self.url.clone(),
             options: self.options.clone(),
         }
+    }
+    fn author_prompt(&mut self) -> Self {
+        println!("{}{}", "Search for an ".clear(), "Author?".green());
+        self.options.author = util::read_in_ln();
+        return self.to_owned();
+    }
+    fn title_prompt(&mut self) -> Self {
+        println!("{}{}", "and a ".clear(), "title?".green());
+        self.options.title = util::read_in_ln();
+        return self.to_owned();
     }
 }
 
@@ -142,7 +176,7 @@ pub fn match_value(json_val: Value, mut feeder: LinesFeeder) -> Result<Value, se
             println!("got an Array of Poems!");
             for obj_val in &arr[..] {
                 if let Ok(p) = Poem::new().from_value(&obj_val) {
-                    println!("Got a Poem!");
+                    // println!("Got a Poem!");
                     feeder.add_lines(p.lines.clone()).expect(
                         "couldn't get lines from Poem struct!",
                     );
@@ -152,13 +186,13 @@ pub fn match_value(json_val: Value, mut feeder: LinesFeeder) -> Result<Value, se
                         p.author,
                         p.line_count
                     );
-                }
+                } 
             }
         }
-        &Value::Object(ref obj) => {
+        &Value::Object(ref obj_val) => {
             println!("got Object!");
             if let Ok(p) = Poem::new().from_value(&json_val) {
-                println!("Got a Poem!");
+                // println!("Got a Poem!");
                 feeder.add_lines(p.lines.clone()).expect(
                     "couldn't get lines from Poem!",
                 );
