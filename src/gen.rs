@@ -149,9 +149,9 @@ pub fn seed_and_generate(seed_store: Vec<String>) {
             println!(
                 "|============================================================================|"
             );
-            println!("|    A Poem: \"{}\"", gen_work.title.trim());
+            println!("|  A Poem: \"{}\"", gen_work.title.trim());
             println!(
-                "|============================================================================|"
+                "|----------------------------------------------------------------------------|"
             );
             for line in chain.str_iter_for(num as usize) {
                 if !line.is_empty() {
@@ -176,9 +176,9 @@ pub fn seed_and_generate(seed_store: Vec<String>) {
             println!(
                 "|============================================================================|"
             );
-            println!("|    A Poem: \"{}\"", gen_work.title.trim());
+            println!("|  A Poem: \"{}\"", gen_work.title.trim());
             println!(
-                "|============================================================================|"
+                "|----------------------------------------------------------------------------|"
             );
             for line in chain.str_iter_for(50) {
                 if !line.is_empty() {
@@ -196,9 +196,9 @@ pub fn seed_and_generate(seed_store: Vec<String>) {
             println!(
                 "|============================================================================|"
             );
-                        println!("|    A Poem: \"{}\"", gen_work.title.trim());
+                        println!("|  A Poem: \"{}\"", gen_work.title.trim());
             println!(
-                "|============================================================================|"
+                "|----------------------------------------------------------------------------|"
             );
             for line in chain.str_iter_for(seed_store.len()) {
                 if !line.is_empty() {
@@ -212,13 +212,9 @@ pub fn seed_and_generate(seed_store: Vec<String>) {
                 }
             }
         }
-        println!(
-            "|========================================================================|
-              |        author: {} {}
-              |=======================================================|",
-            gen_name.first,
-            gen_name.last
-        );
+        println!("|----------------------------------------------------------------------------|");
+        println!("|        author: {} {}", gen_name.first, gen_name.last);                                
+        println!("|============================================================================|");
     println!(
         "{}",
         "    Good show! Would you like to save the poem and author to poems.txt?".yellow()
@@ -304,7 +300,7 @@ pub fn flavor_lines_prompt() {
         );
         println!(
             "{}{}{}{}{}{}{}",
-            "  |".yellow(),
+            "  |".bright_yellow(),
             "  ENTER:".clear(),
             " N".red(),
             " or ".clear(),
@@ -314,7 +310,7 @@ pub fn flavor_lines_prompt() {
         );
         println!(
             "{}{}{}{}{}{}{}",
-            "  |".yellow(),
+            "  |".bright_yellow(),
             "  ENTER:".clear(),
             " Y".green(),
             " or ".clear(),

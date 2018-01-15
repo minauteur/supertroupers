@@ -110,19 +110,20 @@ pub fn match_value(json_val: Value, mut feeder: LineSeed) -> Result<Value, serde
     // let json_val: serde_json::Value = resp.json()?;
     match &json_val {
         &Value::Array(ref arr) => {
-            println!("got an Array!\n");
+            println!("got Array!\n");
             for obj_val in &arr[..] {
                 if let Ok(p) = Poem::new().from_value(&obj_val) {
                     // println!("Got a Poem!");
-                    println!(
-                        "\nTitle: \"{}\",\nAuthor: {},\nLines: {}",
-                        p.title,
-                        p.author,
-                        p.line_count
-                    );
-                    feeder.add_lines(p.lines.clone()).expect(
-                        "couldn't get lines!",
-                    );
+                    if p.line_count > 0 {
+                        println!(
+                            "\nTitle: \"{}\",\nAuthor: {},\nLines: {}",
+                            p.title,
+                            p.author,
+                            p.line_count
+                        );
+                        feeder.add_lines(p.lines.clone())
+                            .expect("couldn't get lines!");
+                    }
                 } 
             }
         }
@@ -130,15 +131,17 @@ pub fn match_value(json_val: Value, mut feeder: LineSeed) -> Result<Value, serde
             println!("got Object!");
             if let Ok(p) = Poem::new().from_value(&json_val) {
                 // println!("Got a Poem!");
-                println!(
-                    "\nPoem: \"{}\",\nAuthor: {},\nLines: {}",
-                    p.title,
-                    p.author,
-                    p.line_count
-                );
-                feeder.add_lines(p.lines.clone()).expect(
-                    "couldn't get lines!",
-                );
+                if p.line_count > 0 {
+                    println!(
+                        "\nPoem: \"{}\",\nAuthor: {},\nLines: {}",
+                        p.title,
+                        p.author,
+                        p.line_count
+                    );
+                    feeder.add_lines(p.lines.clone())
+                        .expect("couldn't get lines!");
+                }
+
             }
         } 
         _ => {
