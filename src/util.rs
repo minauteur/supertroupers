@@ -9,7 +9,7 @@ use markov::Chain;
 
 use std::path::PathBuf;
 use std::io;
-use std::ops::Deref;
+
 use std::error::Error;
 use std::fs::File;
 
@@ -157,7 +157,7 @@ pub fn read_int() -> i32 {
     }
 }
 
-pub fn poem_prompt(mut chain: &mut Chain<String>, lines_read: usize) -> &Chain<String> {
+pub fn poem_prompt(chain: &mut Chain<String>, lines_read: usize) -> &Chain<String> {
     println!("Do you want to pause and curate a poem?");
     if read_y_n() {
         println!("Sweet! let\'s find an author!\n");

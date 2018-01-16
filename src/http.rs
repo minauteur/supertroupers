@@ -11,7 +11,7 @@ use colored::*;
 
 use std::io::Error;
 use std::sync::{Arc, Mutex};
-use std::ops::{DerefMut, Deref};
+use std::ops::DerefMut;
 
 #[derive(Debug, Clone)]
 pub struct LineSeed {
@@ -107,7 +107,7 @@ pub fn handle(search: Search) -> Result<Value, reqwest::Error> {
     return Ok((json));
 }
 
-pub fn match_value(json_val: Value, mut chain: &mut Chain<String>, mut feeder: LineSeed) -> Result<&mut Chain<String>, serde_json::Error> {
+pub fn match_value(json_val: Value, chain: &mut Chain<String>, mut feeder: LineSeed) -> Result<&mut Chain<String>, serde_json::Error> {
     // let json_val: serde_json::Value = resp.json()?;
     // let feed_clone = feeder.clone();
     // let mut lock = match feed_clone.queue.lock() {
@@ -128,18 +128,23 @@ pub fn match_value(json_val: Value, mut chain: &mut Chain<String>, mut feeder: L
                             p.author,
                             p.line_count
                         );
+                        for line in &p.lines {
+                            chain.feed_str(&line);
+                        }
                         feeder.add_lines(p.lines.clone())
                             .expect("couldn't get lines!");
+
+                        
                     }
                 } 
             }
-            let lock = match feeder.queue.lock() {
-                Ok(vec) => vec,
-                Err(e) => e.into_inner(),
-            };
-            for item in lock.deref() {
-                &chain.feed_str(item);
-            }
+            // let lock = match feeder.queue.lock() {
+            //     Ok(vec) => vec,
+            //     Err(e) => e.into_inner(),
+            // };
+            // for item in lock.deref() {
+            //     &chain.feed_str(item);
+            // }
             return Ok(chain);
         }
         &Value::Object(..) => {
@@ -153,18 +158,21 @@ pub fn match_value(json_val: Value, mut chain: &mut Chain<String>, mut feeder: L
                         p.author,
                         p.line_count
                     );
+                    for line in &p.lines {
+                        chain.feed_str(&line);
+                    }
                     feeder.add_lines(p.lines.clone())
                         .expect("couldn't get lines!");
                 }
 
             }
-            let lock = match feeder.queue.lock() {
-                Ok(vec) => vec,
-                Err(e) => e.into_inner(),
-            };
-            for item in lock.deref() {
-                chain.feed_str(item);
-            }
+            // let lock = match feeder.queue.lock() {
+            //     Ok(vec) => vec,
+            //     Err(e) => e.into_inner(),
+            // };
+            // for item in lock.deref() {
+            //     chain.feed_str(item);
+            // }
             return Ok(chain);
         } 
         _ => {
