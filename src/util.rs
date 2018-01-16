@@ -157,7 +157,7 @@ pub fn read_int() -> i32 {
     }
 }
 
-pub fn poem_prompt(chain: Chain<String>, lines_read: usize) {
+pub fn poem_prompt(mut chain: &mut Chain<String>, lines_read: usize) -> &Chain<String> {
     println!("Do you want to pause and curate a poem?");
     if read_y_n() {
         println!("Sweet! let\'s find an author!\n");
@@ -186,14 +186,15 @@ pub fn poem_prompt(chain: Chain<String>, lines_read: usize) {
         //from being a reference, which gen::seed_and_generate() won't accept
         //but first--we need to make sure it isn't empty!
         if !&chain.is_empty() {
-            gen::seed_and_generate(chain, lines_read);
+        gen::seed_and_generate(&chain, lines_read);
+         return chain;
         } else {
             println!("Yeah, you should probably read more...");
         }
     } else {
         println!("I didn't want to make a stupid poem anyways...");
     }
-
+    return chain;
 }
 pub fn get_len(feeder:LineSeed) -> usize {
     let lock = match feeder.queue.lock() {

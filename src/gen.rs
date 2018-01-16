@@ -12,7 +12,7 @@ use gen;
 
 use colored::*;
 
-pub fn seed_and_generate(chain: Chain<String>, lines_read: usize) {
+pub fn seed_and_generate(mut chain: &Chain<String>, lines_read: usize) -> &Chain<String> {
     // let mut chain = Chain::new();
     let mut poem_storage: Vec<String> = Vec::new();
     let mut author_storage = String::new();
@@ -126,6 +126,7 @@ pub fn seed_and_generate(chain: Chain<String>, lines_read: usize) {
     } else {
         println!("    Maybe next time we'll make the cut!");
     }
+    return &chain;
 }
 
 pub struct Work {

@@ -107,7 +107,7 @@ pub fn handle(search: Search) -> Result<Value, reqwest::Error> {
     return Ok((json));
 }
 
-pub fn match_value(json_val: Value, mut chain: Chain<String>, mut feeder: LineSeed) -> Result<Chain<String>, serde_json::Error> {
+pub fn match_value(json_val: Value, mut chain: &mut Chain<String>, mut feeder: LineSeed) -> Result<&mut Chain<String>, serde_json::Error> {
     // let json_val: serde_json::Value = resp.json()?;
     // let feed_clone = feeder.clone();
     // let mut lock = match feed_clone.queue.lock() {
@@ -138,7 +138,7 @@ pub fn match_value(json_val: Value, mut chain: Chain<String>, mut feeder: LineSe
                 Err(e) => e.into_inner(),
             };
             for item in lock.deref() {
-                chain.feed_str(item);
+                &chain.feed_str(item);
             }
             return Ok(chain);
         }

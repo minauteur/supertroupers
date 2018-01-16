@@ -21,11 +21,12 @@ fn main() {
     // let chain = Chain::new();
     let feeder: http::LineSeed = http::LineSeed { queue: feed_store };
     flavor::welcome();
+    let mut chain = Chain::new();
     loop {
-        let mut chain = Chain::new();
+
         let request = http::Search::new().auth_title_inc();
         let response = handle(request).expect("Something went wrong handling request!");
-        let data = match_value(response, chain, feeder.clone()).expect(
+        let data = match_value(response, &mut chain, feeder.clone()).expect(
             "Something went wrong searching for lines!",
         );
         let len = util::get_len(feeder.clone());
