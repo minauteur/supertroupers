@@ -11,7 +11,7 @@ use colored::*;
 
 use std::io::Error;
 use std::sync::{Arc, Mutex};
-use std::ops::DerefMut;
+use std::ops::{DerefMut, Deref};
 
 #[derive(Debug, Clone)]
 pub struct LineSeed {
@@ -128,14 +128,19 @@ pub fn match_value(json_val: Value, mut chain: Chain<String>, mut feeder: LineSe
                             p.author,
                             p.line_count
                         );
-                        for line in p.lines.clone() {
-                            chain.feed_str(&line);
-                        }
                         feeder.add_lines(p.lines.clone())
                             .expect("couldn't get lines!");
                     }
                 } 
             }
+            let lock = match feeder.queue.lock() {
+                Ok(vec) => vec,
+                Err(e) => e.into_inner(),
+            };
+            for item in lock.deref() {
+                chain.feed_str(item);
+            }
+            return Ok(chain);
         }
         &Value::Object(..) => {
             println!("got Object!");
@@ -148,14 +153,19 @@ pub fn match_value(json_val: Value, mut chain: Chain<String>, mut feeder: LineSe
                         p.author,
                         p.line_count
                     );
-                    for line in p.lines.clone(){
-                        chain.feed_str(&line);
-                    }
                     feeder.add_lines(p.lines.clone())
                         .expect("couldn't get lines!");
                 }
 
             }
+            let lock = match feeder.queue.lock() {
+                Ok(vec) => vec,
+                Err(e) => e.into_inner(),
+            };
+            for item in lock.deref() {
+                chain.feed_str(item);
+            }
+            return Ok(chain);
         } 
         _ => {
             println!("got... something else!");
