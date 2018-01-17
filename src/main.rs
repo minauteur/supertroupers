@@ -1,6 +1,8 @@
 #[macro_use]
 extern crate serde_derive;
 extern crate supertroupers;
+extern crate piston;
+extern crate conrod;
 // extern crate hyphenation;
 extern crate markov;
 // extern crate term;
@@ -15,6 +17,8 @@ use std::sync::{Arc, Mutex};
 extern crate colored;
 use colored::*;
 use markov::Chain;
+
+
 
 fn main() {
     let feed_store: Arc<Mutex<Vec<String>>> = Arc::new(Mutex::new(Vec::new()));
