@@ -1,6 +1,8 @@
 //!Utilities Module
 //!Various Helper functions and error definitions used throughout the project live here
-use gen;
+#[cfg(feature = "term_size")]
+#[cfg(feature = "hyphenation")]
+use supertroupers::gen;
 use http::LineSeed;
 use poems::{AuthorsList,WorksList};
 use serde_json;
@@ -156,6 +158,7 @@ pub fn read_int() -> i32 {
         };
     }
 }
+use super::gen;
 
 pub fn poem_prompt(chain: &mut Chain<String>, lines_read: usize) -> &Chain<String> {
     println!("Do you want to pause and curate a poem?");
@@ -186,8 +189,8 @@ pub fn poem_prompt(chain: &mut Chain<String>, lines_read: usize) -> &Chain<Strin
         //from being a reference, which gen::seed_and_generate() won't accept
         //but first--we need to make sure it isn't empty!
         if !&chain.is_empty() {
-        gen::seed_and_generate(&chain, lines_read);
-         return chain;
+            gen::seed_and_generate(&chain, lines_read);
+            return chain;
         } else {
             println!("Yeah, you should probably read more...");
         }

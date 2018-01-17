@@ -8,12 +8,26 @@ use markov::Chain;
 use poems::{AuthorsList, WorksList};
 use std::error::Error;
 use util;
-use gen;
-
+// use gen;
+// #[cfg(feature = "term_size")]
+// #[cfg(feature = "hyphenation")]
+//  #[feature(hyphenation, term_size)]
+use textwrap::{Wrapper, WordSplitter, HyphenSplitter, termwidth};
+use hyphenation::*;
+use hyphenation;
 use colored::*;
 
+
+// #[cfg(feature = "term_size")]
+// #[cfg(feature = "hyphenation")] 
+// #[feature = "term_size"]
 pub fn seed_and_generate(chain: &Chain<String>, lines_read: usize) -> &Chain<String> {
     // let mut chain = Chain::new();
+    
+    let corpus = hyphenation::load(Language::English_US).unwrap();
+    let width = 75;
+    let wrapper = Wrapper::with_splitter(width, corpus).break_words(true).subsequent_indent("|         ");
+
     let mut poem_storage: Vec<String> = Vec::new();
     let mut author_storage = String::new();
 
@@ -51,15 +65,21 @@ pub fn seed_and_generate(chain: &Chain<String>, lines_read: usize) -> &Chain<Str
             println!(
                 "|============================================================================|"
             );
-            println!("|  A Poem: \"{}\"", gen_work.title.trim());
+            println!("|  A Poem: \"{}\"", wrapper.fill(gen_work.title.trim()));
             println!(
                 "|----------------------------------------------------------------------------"
             );
             for line in chain.str_iter_for(num as usize) {
                 if !line.is_empty() {
-                    let line = format!("{}", chain.generate_str());
-                    println!("|   {}", line.bright_green());
-                    poem_storage.push(line);
+                    let mut line = format!("{}", chain.generate_str());
+                    // if line.len() < 75 {
+                    //     while line.len() < 75 {
+                    //         line.push_str(" ");
+                    //     }
+                    // }
+                        println!("|   {}", wrapper.fill(&line).bright_green());
+                        poem_storage.push(line);
+                    
                 } else {
                     println!(
                         "|                     -------------"
@@ -78,14 +98,14 @@ pub fn seed_and_generate(chain: &Chain<String>, lines_read: usize) -> &Chain<Str
             println!(
                 "|============================================================================|"
             );
-            println!("|  A Poem: \"{}\"", gen_work.title.trim());
+            println!("|  A Poem: \"{}\"", wrapper.fill(gen_work.title.trim()));
             println!(
                 "|----------------------------------------------------------------------------"
             );
             for line in chain.str_iter_for(50) {
                 if !line.is_empty() {
                     let line = format!("{}", chain.generate_str());
-                    println!("|   {}", line.bright_green());
+                    println!("|   {}", wrapper.fill(&line).bright_green());
                     poem_storage.push(line);
                 } else {
                     println!("|                     -------------");
@@ -98,14 +118,14 @@ pub fn seed_and_generate(chain: &Chain<String>, lines_read: usize) -> &Chain<Str
             println!(
                 "|============================================================================|"
             );
-                        println!("|  A Poem: \"{}\"", gen_work.title.trim());
+                        println!("|  A Poem: \"{}\"", wrapper.fill(gen_work.title.trim()));
             println!(
                 "|----------------------------------------------------------------------------"
             );
             for line in chain.str_iter_for(lines_read) {
                 if !line.is_empty() {
                     let line = format!("{}", chain.generate_str());
-                    println!("|   {}", line.bright_green());
+                    println!("|   {}", wrapper.fill(&line).bright_green());
                     poem_storage.push(line);
 
                 } else {
@@ -117,6 +137,7 @@ pub fn seed_and_generate(chain: &Chain<String>, lines_read: usize) -> &Chain<Str
         println!("|----------------------------------------------------------------------------");
         println!("|        author: {} {}", gen_name.first, gen_name.last);                                
         println!("|============================================================================|");
+        wrap_example();
     println!(
         "{}",
         "    Good show! Would you like to save the poem and author to poems.txt?".yellow()
@@ -138,7 +159,7 @@ impl Work {
             title: String::new()
         }
     }
-    pub fn from_file(mut self: Self) -> Result<gen::Work, Box<Error>> {
+    pub fn from_file(mut self: Self) -> Result<Work, Box<Error>> {
         let list = WorksList::new();
         let mut gen = Chain::new();
         let mut titles_iter = list.titles.into_iter();
@@ -176,7 +197,7 @@ impl Name {
             last: String::new(),
         }
     }
-    pub fn from_file(mut self: Self) -> Result<gen::Name, Box<Error>> {
+    pub fn from_file(mut self: Self) -> Result<Name, Box<Error>> {
         let names: AuthorsList = util::read_authors_from_file().expect("error reading from file!");
         let mut first_name: Chain<String> = Chain::new();
         let mut last_name: Chain<String> = Chain::new();
@@ -325,4 +346,23 @@ pub fn flavor_lines_prompt() {
             "  |---------------------------------------------------------------------------|"
                 .bright_yellow()
         );
+}
+pub fn wrap_example() {
+        let example = "Memory safety without garbage collection. \
+                   Concurrency without data races. \
+                   Zero-cost abstractions.";
+    let mut prev_lines = vec![];
+    let mut wrapper = Wrapper::new(75);
+    for width in 15..60 {
+        wrapper.width = width;
+        let lines = wrapper.wrap(example);
+        if lines != prev_lines {
+            let title = format!(" Width: {} ", width);
+            println!(".{:-^1$}.", title, width + 2);
+            for line in &lines {
+                println!("| {:1$} |", line, width);
+            }
+            prev_lines = lines;
+        }
+    }
 }

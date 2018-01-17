@@ -6,7 +6,7 @@ authors = ["minauteur <Thompennington@gmail.com>"]
 [dependencies]
 rand = "0.3"
 # slog = "*"
-# hyphenation = "0.6"
+hyphenation = "0.6"
 text_io = "*"
 markov = "*"
 serde = "1.0"
@@ -18,6 +18,10 @@ reqwest = "*"
 # indicatif = "0.8.0"
 # dialoguer = "*"
 # console = "*"
+textwrap = { version = "0.9", features = ["hyphenation", "term_size"] }
+conrod = "*"
+piston = "*"
+# ggez = "0.4"
 [dependencies.serde_json]
 version = "1.0"
 features = ["preserve_order"]

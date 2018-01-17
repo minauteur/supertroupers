@@ -1,7 +1,9 @@
 #[macro_use]
 extern crate serde_derive;
 extern crate supertroupers;
-// extern crate hyphenation;
+extern crate piston;
+extern crate conrod;
+extern crate hyphenation;
 extern crate markov;
 // extern crate term;
 extern crate serde;
@@ -11,10 +13,18 @@ use supertroupers::util;
 use supertroupers::http::*;
 use supertroupers::http;
 use supertroupers::flavor;
+use supertroupers::gen;
 use std::sync::{Arc, Mutex};
 extern crate colored;
 use colored::*;
 use markov::Chain;
+
+#[feature = "term_size"]
+#[feature = "hyphenation"]
+extern crate textwrap; 
+// #![feature(term_size, hyphenation)]
+
+
 
 fn main() {
     let feed_store: Arc<Mutex<Vec<String>>> = Arc::new(Mutex::new(Vec::new()));
