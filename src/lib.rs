@@ -5,7 +5,11 @@ pub mod poems;
 pub mod flavor;
 
 extern crate rand;
-// extern crate hyphenation;
+extern crate hyphenation;
+
+// #[feature = "hyphenation"]
+// #[feature = "term_size"] 
+extern crate textwrap;
 
 extern crate reqwest;
 extern crate colored;
