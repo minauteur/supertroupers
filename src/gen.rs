@@ -4,7 +4,7 @@ use std::io::Write;
 use std::fs::OpenOptions;
 
 use markov::Chain;
-
+use poems::Poem;
 use poems::{AuthorsList, WorksList};
 use std::error::Error;
 use util;
@@ -12,7 +12,7 @@ use util;
 // #[cfg(feature = "term_size")]
 // #[cfg(feature = "hyphenation")]
 //  #[feature(hyphenation, term_size)]
-use textwrap::{Wrapper, WordSplitter, HyphenSplitter, termwidth};
+use textwrap::{Wrapper, WordSplitter, HyphenSplitter, termwidth, wrap, };
 use hyphenation::*;
 use hyphenation;
 use colored::*;
@@ -31,7 +31,9 @@ pub fn seed_and_generate(chain: &Chain<String>, lines_read: usize) -> &Chain<Str
         // .subsequent_indent(indent);
     let mut poem_storage: Vec<String> = Vec::new();
     let mut author_storage = String::new();
-
+    let mut poem = Poem::new();
+    let mut line_num = 0;
+    let mut title_storage = String::new();
     let name_error: Name = Name {
         first: String::from("Sir Erronaeus,"),
         last: String::from("The Unwrapp-ed None"),
@@ -41,12 +43,12 @@ pub fn seed_and_generate(chain: &Chain<String>, lines_read: usize) -> &Chain<Str
     };
     let gen_name: Name = Name::new().from_file().unwrap_or(name_error);
     let gen_work: Work = Work::new().from_file().unwrap_or(title_error);
-    let author_fmt = format!("{} {}", &gen_name.first, &gen_name.last).bold();
-
+    let author_fmt = format!("{} {}", &gen_name.first, &gen_name.last);
+    poem.author = author_fmt;
     flavor_generator();
-    println!("          \"{}, the BARD is here!\"!\n", &author_fmt);
+    println!("          \"{}, the BARD is here!\"!\n", &poem.author);
     
-    author_storage.push_str(&author_fmt);
+    // author_storage.push_str(&author_fmt);
 
     println!(
         "{}",
@@ -60,26 +62,51 @@ pub fn seed_and_generate(chain: &Chain<String>, lines_read: usize) -> &Chain<Str
         if util::read_y_n() {
             println!("\n     \"Splendid! How many lines should I write?\"\n");
             let num = util::read_int();
+            poem.line_count = num as i64;
             println!(
                 "\n\n     \"That should do it!\" the bard exclaims. The lights dim--the show begins!\n\n"
             );
             println!(
                 "  |{:=<1$}|", "=", width + 6,
             );
-            let title = format!("  a poem: \"{}\"", wrapper.fill(gen_work.title.trim()).green());
+            if gen_work.title.len()<=width-10 { 
+                let title = format!("  a poem: \"{}\"", wrapper.fill(gen_work.title.trim()).green());
+                println!("  |    {:<1$}  |", title, width+9);
+            }
+            else if gen_work.title.len() > width-10 {
+                let new_title: String = gen_work.title.trim().chars().take(width-20).collect();
+                let title = format!("  a poem: \"{}\"", wrapper.fill(new_title.trim()).green());
             println!("  |    {:<1$}  |", title, width+9);
+            } else {
 
+                
+            }
             println!("  |{:-<1$}|", "-", width + 6);
             for line in chain.str_iter_for(num as usize) {
-                if !line.is_empty() {
-                    let gen =format!("{}", wrapper.fill(&chain.generate_str()));
+                if !line.trim().is_empty() {
+                    let gen =format!("{}", &chain.generate_str().trim());
+                    if gen.len() < width {
                     // let ex = format!("{}", &gen, width);
                     // if line.len() < 75 {
                     //     while line.len() < 75 {
                     //         line.push_str(" ");
                     //     }
                     // }
-                        println!("  |    {:<1$}|", gen, width+2);
+                        println!("  |    {:<1$}  |", wrapper.fill(&gen), width);
+                    } else {
+                        let mut new_line: String = line.clone().trim().chars().take(width-10).collect();
+                        let fmt = format!("{}", &new_line);
+                        println!("  |    {:<1$}  |", wrapper.fill(&fmt), width);
+                        // new_line.push('\r');
+                        // new_line.push('\n');
+                        // let append: String = line.trim().chars().skip(width-10).collect();
+                        // let a_fmt = format!("  |     -{:<1$}|", wrapper.fill(&append), width);
+                        // println!("{}", a_fmt);
+                        
+                        // new_line.push_str(&append);
+                        // println!("  |    {:<1$}  |", wrapper.fill(&new_line), width);
+
+                    }
                         poem_storage.push(line);
                     
                 } else {
@@ -88,6 +115,7 @@ pub fn seed_and_generate(chain: &Chain<String>, lines_read: usize) -> &Chain<Str
             }
             // wrap_example(width, poem_storage.clone());
         } else if &lines_read > &50 {
+            poem.line_count = 50;
             println!("|{:-<1$}|", "-", width + 6);
 
             println!(
