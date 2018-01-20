@@ -13,7 +13,7 @@ use util;
 // #[cfg(feature = "term_size")]
 // #[cfg(feature = "hyphenation")]
 //  #[feature(hyphenation, term_size)]
-use textwrap::{Wrapper, WordSplitter, HyphenSplitter, termwidth, wrap, WrapIter, IntoWrapIter};
+use textwrap::{Wrapper, WordSplitter, HyphenSplitter, termwidth, wrap, WrapIter, IntoWrapIter, fill};
 use hyphenation::*;
 use hyphenation;
 use colored::*;
@@ -22,24 +22,29 @@ pub fn print_poem(poem: Poem) {
     let corpus = hyphenation::load(Language::English_US).unwrap();
     let width = termwidth()-12;
     let author = format!("  author: {}", poem.author.purple());
-    let title = format!("  a poem: \"{}\"", poem.title.green());
+    let title = format!("\"{}\"", poem.title.green());
     let poem = poem.lines.join("\n");
     let wrapper = Wrapper::with_splitter(width, corpus).break_words(true).subsequent_indent("        ");
     println!("  |{:=<1$}|", "=", width + 6);
-    println!("  |{:<1$}      |", wrapper.fill(&title), width+9);
-    println!("  |{:-<1$}|", "-", width + 6);
+    for t_line in wrap_iter(&title, width) {
+        let t_fmt = format!("  a poem {:<1$}", wrapper.fill(&t_line), width-9);
+        for t_l in t_fmt.lines() {
+            println!("  |   {:<1$}   |", &t_l, width+9);
+        }
+    }
+        println!("  |{:-<1$}|", "-", width + 6);
     
     for line in wrap_iter(&poem, width) {
-        let gen = format!("{:<1$}", wrapper.fill(&line), width-9);
-        for line in gen.lines() {
+        let formatted = format!("{:<1$}", &line, width-9);
+        // let formatted = format!("{:<1$}", fill(&line, width-9), width-9);
+        
+        for line in formatted.lines() {
             println!("  |   {:<1$}   |", &line.bright_green(), width);
         }
-    
     }
     println!("  |{:-<1$}|", "-", width + 6);
     println!("  |{:<1$}      |", wrapper.fill(&author), width+9);
     println!("  |{:=<1$}|", "=", width + 6);
-    
     
 }
 
@@ -52,8 +57,8 @@ pub fn seed_and_generate(chain: &Chain<String>, lines_read: usize) -> &Chain<Str
     let corpus = hyphenation::load(Language::English_US).unwrap();
     let width = termwidth()-12;
     let indent = format!("{}","              ".clear());
-    let wrapper = Wrapper::with_splitter(width, corpus).break_words(true).subsequent_indent(&indent);
-        // .subsequent_indent(indent);
+    // let wrapper = Wrapper::with_splitter(width, corpus).break_words(true).subsequent_indent(&indent);
+    // .subsequent_indent(indent);
     let mut poem_storage: Vec<String> = Vec::new();
     // let mut author_storage = String::new();
     let mut poem = Poem::new();
@@ -91,19 +96,6 @@ pub fn seed_and_generate(chain: &Chain<String>, lines_read: usize) -> &Chain<Str
             println!(
                 "\n\n     \"That should do it!\" the bard exclaims. The lights dim--the show begins!\n\n"
             );
-            println!("  |{:=<1$}|", "=", width + 6);
-            if gen_work.title.len()<=width-10 { 
-                let title = format!("  a poem: \"{}\"", wrapper.fill(gen_work.title.trim()).green());
-                println!("  |    {:<1$}  |", title, width+9);
-            }
-            else if gen_work.title.len() > width-10 {
-                let new_title: String = gen_work.title.trim().chars().take(width-20).collect();
-                let title = format!("  a poem: \"{}\"", wrapper.fill(new_title.trim()).green());
-            println!("  |    {:<1$}  |", title, width+9);
-            } else {
-
-                
-            }
             println!("  |{:-<1$}|", "-", width + 6);
             for line in chain.str_iter_for(num as usize) {
                         poem_storage.push(line);
@@ -130,12 +122,12 @@ pub fn seed_and_generate(chain: &Chain<String>, lines_read: usize) -> &Chain<Str
             println!(
                 "|{:=<1$}|", "-", width + 6
             );
-            let title = format!("  |  a poem: \"{}\"|", wrapper.fill(gen_work.title.trim()).green(),);            
-            // println!("|  A Poem: \"{}\"", wrapper.fill(gen_work.title.trim()));
-            println!("  |  {:1$}  |", title, width+6);
-            println!(
-                "|{:-<1$}|", "-", width + 6
-            );
+            // let title = format!("  |  a poem: \"{}\"|", wrapper.fill(gen_work.title.trim()).green(),);            
+            // // println!("|  A Poem: \"{}\"", wrapper.fill(gen_work.title.trim()));
+            // println!("  |  {:1$}  |", title, width+6);
+            // println!(
+            //     "|{:-<1$}|", "-", width + 6
+            // );
             for line in chain.str_iter_for(50) {
                     poem_storage.push(line);
             }
@@ -150,10 +142,10 @@ pub fn seed_and_generate(chain: &Chain<String>, lines_read: usize) -> &Chain<Str
             println!(
                 "\n\n     \"Very well then!\" says the bard. The lights dim--the show begins!\n\n"
             );
-            println!("|{:=<1$}|", "-", width + 6,);
+            // println!("|{:=<1$}|", "-", width + 6,);
 
-                        println!("|  a poem: \"{}\"", wrapper.fill(gen_work.title.trim()));
-            println!("|{:-<1$}|", "-", width + 6,);
+                        // println!("|  a poem: \"{}\"", wrapper.fill(gen_work.title.trim()));
+            // println!("|{:-<1$}|", "-", width + 6,);
 
             for line in chain.str_iter_for(lines_read) {
 

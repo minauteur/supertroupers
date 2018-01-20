@@ -13,6 +13,24 @@ use std::io::Error;
 use std::sync::{Arc, Mutex};
 use std::ops::DerefMut;
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SearchProblem {
+  pub status: usize,
+   pub reason: String,
+}
+
+impl SearchProblem {
+    pub fn from_value(json: Value) -> bool {
+        if let Ok(serialized) = serde_json::from_value(json) {
+            let serialized: SearchProblem = serialized;
+            println!("Search Problem! \nstatus: {:?}\n reason: {:?}", serialized.status, serialized.reason);
+            return true;
+        } else {
+            return false;
+        }
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct LineSeed {
     pub queue: Arc<Mutex<Vec<String>>>,
@@ -99,6 +117,9 @@ impl Search {
     }
 }
 
+// pub fn check_non_poem(json: &Value)->Result<String, serde_json::Error> {
+
+// }
 
 pub fn handle(search: Search) -> Result<Value, reqwest::Error> {
     let mut response = reqwest::get(&search.url)?;
@@ -119,6 +140,9 @@ pub fn match_value(json_val: Value, chain: &mut Chain<String>, mut feeder: LineS
         &Value::Array(ref arr) => {
             println!("got Array!\n");
             for obj_val in &arr[..] {
+                if SearchProblem::from_value(json_val.clone()) {
+                    return Ok(chain);
+                } else {
                 if let Ok(p) = Poem::new().from_value(&obj_val) {
                     // println!("Got a Poem!");
                     if p.line_count > 0 {
@@ -133,7 +157,7 @@ pub fn match_value(json_val: Value, chain: &mut Chain<String>, mut feeder: LineS
                         }
                         feeder.add_lines(p.lines.clone())
                             .expect("couldn't get lines!");
-
+                    }
                         
                     }
                 } 
@@ -149,6 +173,9 @@ pub fn match_value(json_val: Value, chain: &mut Chain<String>, mut feeder: LineS
         }
         &Value::Object(..) => {
             println!("got Object!");
+            if SearchProblem::from_value(json_val.clone()) {
+                return Ok(chain);
+            } else {
             if let Ok(p) = Poem::new().from_value(&json_val) {
                 // println!("Got a Poem!");
                 if p.line_count > 0 {
@@ -174,6 +201,7 @@ pub fn match_value(json_val: Value, chain: &mut Chain<String>, mut feeder: LineS
             //     chain.feed_str(item);
             // }
             return Ok(chain);
+        }
         } 
         _ => {
             println!("got... something else!");
