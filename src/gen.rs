@@ -164,7 +164,7 @@ pub fn seed_and_generate(chain: &Chain<String>, lines_read: usize) -> &Chain<Str
 
                 // }
             }
-        }
+        
         let p: Poem = Poem {
             author: author_fmt.clone(),
             title: gen_work.title.clone(),
@@ -180,6 +180,7 @@ pub fn seed_and_generate(chain: &Chain<String>, lines_read: usize) -> &Chain<Str
         // println!("  |    {:1$}  |", a_s, width+9);                                
         // println!("  |{:=<1$}|", "=", width + 6,);
         // wrap_example(width, poem_storage);
+        }
     println!(
         "{}",
         "    Good show! Would you like to save the poem and author to poems.txt?".yellow()
