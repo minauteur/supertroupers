@@ -22,15 +22,16 @@ pub fn print_poem(poem: Poem) {
     let corpus = hyphenation::load(Language::English_US).unwrap();
     let width = termwidth()-12;
     let author = format!("  author: {}", poem.author.purple());
-    let title = format!("\"{}\"", poem.title.green());
+    let title = format!(" a poem: \"{}\"", poem.title);
     let poem = poem.lines.join("\n");
     let wrapper = Wrapper::with_splitter(width, corpus).break_words(true).subsequent_indent("        ");
     println!("  |{:=<1$}|", "=", width + 6);
     for t_line in wrap_iter(&title, width) {
-        let t_fmt = format!("  a poem {:<1$}", wrapper.fill(&t_line), width-9);
-        for t_l in t_fmt.lines() {
-            println!("  |   {:<1$}   |", &t_l, width+9);
-        }
+        let t_fmt = format!("{:<1$}", wrapper.fill(&t_line), width-9);
+        println!("  |  {:<1$}    |", &t_fmt, width);
+        // for t_l in t_fmt.lines() {
+        //     println!("  |   {:<1$}   |", &t_l, width+9);
+        // }
     }
         println!("  |{:-<1$}|", "-", width + 6);
     

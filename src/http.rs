@@ -136,13 +136,16 @@ pub fn match_value(json_val: Value, chain: &mut Chain<String>, mut feeder: LineS
     //         Err(e) => e.into_inner(),
     // };
     // let v = lock.deref_mut();
+    if SearchProblem::from_value(json_val.clone()) {
+        return Ok(chain);
+    } else { 
     match &json_val {
         &Value::Array(ref arr) => {
             println!("got Array!\n");
             for obj_val in &arr[..] {
-                if SearchProblem::from_value(json_val.clone()) {
-                    return Ok(chain);
-                } else {
+                // if SearchProblem::from_value(json_val.clone()) {
+                //     return Ok(chain);
+                // } else {
                 if let Ok(p) = Poem::new().from_value(&obj_val) {
                     // println!("Got a Poem!");
                     if p.line_count > 0 {
@@ -160,7 +163,7 @@ pub fn match_value(json_val: Value, chain: &mut Chain<String>, mut feeder: LineS
                     }
                         
                     }
-                } 
+                // } 
             }
             // let lock = match feeder.queue.lock() {
             //     Ok(vec) => vec,
@@ -173,9 +176,9 @@ pub fn match_value(json_val: Value, chain: &mut Chain<String>, mut feeder: LineS
         }
         &Value::Object(..) => {
             println!("got Object!");
-            if SearchProblem::from_value(json_val.clone()) {
-                return Ok(chain);
-            } else {
+            // if SearchProblem::from_value(json_val.clone()) {
+            //     return Ok(chain);
+            // } else {
             if let Ok(p) = Poem::new().from_value(&json_val) {
                 // println!("Got a Poem!");
                 if p.line_count > 0 {
@@ -201,7 +204,7 @@ pub fn match_value(json_val: Value, chain: &mut Chain<String>, mut feeder: LineS
             //     chain.feed_str(item);
             // }
             return Ok(chain);
-        }
+        // }
         } 
         _ => {
             println!("got... something else!");
@@ -217,6 +220,7 @@ pub fn match_value(json_val: Value, chain: &mut Chain<String>, mut feeder: LineS
     //     chain.feed_str(&line);
     // }
     return Ok((chain));
+    }
 }
 
 impl LineSeed {
