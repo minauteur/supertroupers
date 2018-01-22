@@ -1,5 +1,6 @@
 //!Flavor contains all the silly println! calls we've made until such time as we can pause to implement a graphics/UI lib solution for Windows deployments
 use colored::*;
+use textwrap::termwidth;
 
 pub fn welcome() {
     println!(
@@ -95,5 +96,6 @@ pub fn bard_intro() {
 }
 
 pub fn hr() {
-
+    let width = termwidth()-12;
+    println!("  |{:-<1$}|", "-", width + 6);
 }
