@@ -20,8 +20,8 @@ pub struct SearchProblem {
 }
 
 impl SearchProblem {
-    pub fn from_value(json: Value) -> bool {
-        if let Ok(serialized) = serde_json::from_value(json) {
+    pub fn from_value(json: &Value) -> bool {
+        if let Ok(serialized) = serde_json::from_value(json.clone()) {
             let serialized: SearchProblem = serialized;
             println!("Search Problem! \nstatus: {:?}\n reason: {:?}", serialized.status, serialized.reason);
             return true;
@@ -136,9 +136,9 @@ pub fn match_value(json_val: Value, chain: &mut Chain<String>, mut feeder: LineS
     //         Err(e) => e.into_inner(),
     // };
     // let v = lock.deref_mut();
-    if SearchProblem::from_value(json_val.clone()) {
-        return Ok(chain);
-    } else { 
+    // if SearchProblem::from_value(&json_val) {
+        // return Ok(chain);
+    // } else { 
     match &json_val {
         &Value::Array(ref arr) => {
             println!("got Array!\n");
@@ -158,7 +158,7 @@ pub fn match_value(json_val: Value, chain: &mut Chain<String>, mut feeder: LineS
                         for line in &p.lines {
                             chain.feed_str(&line);
                         }
-                        feeder.add_lines(p.lines.clone())
+                        feeder.add_lines(p.lines)
                             .expect("couldn't get lines!");
                     }
                         
@@ -191,36 +191,22 @@ pub fn match_value(json_val: Value, chain: &mut Chain<String>, mut feeder: LineS
                     for line in &p.lines {
                         chain.feed_str(&line);
                     }
-                    feeder.add_lines(p.lines.clone())
+                    feeder.add_lines(p.lines)
                         .expect("couldn't get lines!");
                 }
 
             }
-            // let lock = match feeder.queue.lock() {
-            //     Ok(vec) => vec,
-            //     Err(e) => e.into_inner(),
-            // };
-            // for item in lock.deref() {
-            //     chain.feed_str(item);
-            // }
             return Ok(chain);
-        // }
         } 
         _ => {
             println!("got... something else!");
             println!("Didn't know enough to serialize this!");
+            println!("Here's what JSON we got: \n{}", serde_json::to_string_pretty(&json_val)?);
+            
         }
     }
-    // let mut lock = match feeder.queue.lock() {
-    //         Ok(vec) => vec,
-    //         Err(e) => e.into_inner(),
-    // };
-    // let vec = lock.deref_mut();
-    // for line in vec {
-    //     chain.feed_str(&line);
-    // }
     return Ok((chain));
-    }
+    // }
 }
 
 impl LineSeed {

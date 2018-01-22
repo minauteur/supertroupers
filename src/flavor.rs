@@ -28,6 +28,72 @@ pub fn welcome() {
     );
     println!("                       |----------------------|");
 }
+pub fn lines_prompt() {
+            println!(
+            "\n     \"Quite a bit of material, I think!\" \n      \"Should we keep the poem to a set number of lines?\"\n"
+        );
+        println!(
+            "{}",
+            "  |---------------------------------------------------------------------------|"
+                .bright_yellow()
+        );
+        println!(
+            "{}{}{}{}{}{}{}",
+            "  |".bright_yellow(),
+            "  ENTER:".clear(),
+            " N".red(),
+            " or ".clear(),
+            "n".red(),
+            " to generate lines equal to the number of total lines read".clear(),
+            "  |".bright_yellow()
+        );
+        println!(
+            "{}{}{}{}{}{}{}",
+            "  |".bright_yellow(),
+            "  ENTER:".clear(),
+            " Y".green(),
+            " or ".clear(),
+            "y".green(),
+            " to specify the number of lines to generate".clear(),
+            "                 |".bright_yellow()
+        );
+        println!(
+            "{}",
+            "  |---------------------------------------------------------------------------|"
+                .bright_yellow()
+        );
+}
+pub fn bard_intro() {
+    println!("{}", "  from the mist...".clear());
+    println!("{}", "      ~~~~~".purple());
+    println!("{}", "         ~~~~~~~~~".bright_blue());
+    println!("{}", "           ~~~~~~~~~~~".blue());
+    println!("{}", "          a shadow nears...".clear());
+    println!("{}", "              ~~~~~~~~~~~~".blue());
+    println!("{}", "                  ~~~~~~~".purple());
+    println!("{}", "                 ~~~~".blue());
+    println!(
+        "{}",
+        "  no, not death--the figure of a BARD appears!".clear()
+    );
+    println!("{}", "             ~~~~~".bright_blue());
+    println!("{}", "           ~~~~~~~~~".blue());
+    println!("{}", "             ~~~~~~~~~~~".bright_blue());
+    println!(
+        "{}",
+        "        \"I fear death less, perhaps...\" you think,s\n            \"than being bored to tears!\""
+    );
+    println!("{}", "               ~~~~~~~~~~~~".purple());
+    println!("{}", "                 ~~~~~~~".blue());
+    println!("{}", "                 ~~~~".bright_blue());
+    println!(
+        "{}",
+        "              hurry though as you might,\n               before you drain your beer"
+    );
+    println!("{}", "           an apprehensive patron cries--");
+
+}
+
 pub fn hr() {
 
 }

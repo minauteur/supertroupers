@@ -8,15 +8,52 @@ use poems::{AuthorsList,WorksList};
 use serde_json;
 use colored::*;
 use markov::Chain;
-
+use std::fs::OpenOptions;
 use std::path::PathBuf;
 use std::io;
+use std::io::Write;
 
 use std::error::Error;
 use std::fs::File;
 
 static AUTHOR: &'static str = "names.json";
 static TITLE: &'static str = "title.json";
+
+pub fn write_poem_to_file(poem: Vec<String>, author: String, title: String) {
+
+    let mut file = OpenOptions::new()
+        .write(true)
+        .append(true)
+        .open("poems.txt")
+        .unwrap();
+    // let mut writer = BufWriter::new(&mut file);
+    if let Err(e) = writeln!(file, "\r\n") {
+        println!("{}", e);
+    }
+    if let Err(e) = writeln!(file, "  \"{}\"\r\n\r\n", title) {
+        println!("{}", e);
+    }
+    for line in poem {
+        if let Err(e) = writeln!(file, "    {}\r\n", line) {
+            println!("{}", e);
+        }
+    }
+    if let Err(e) = writeln!(file, "\r\n    --{}\r\n", author) {
+        println!("{}", e);
+    }
+    if let Err(e) = writeln!(
+        file,
+        "\r\n------------------------------------------------------\r\n"
+    )
+    {
+        println!("{}", e);
+    }
+    println!(
+        "{} See poems.txt in your supertroupers folder to view output.",
+        " Success!".green()
+    );
+}
+
 
 pub fn read_authors_from_file() -> Result<AuthorsList, Box<Error>> {
     // Open the file in read-only mode.
@@ -172,7 +209,7 @@ pub fn poem_prompt(chain: &mut Chain<String>, lines_read: usize) -> &Chain<Strin
         //     Ok(vec) => vec,
         //     Err(e) => e.into_inner(),
         // };
-        //Now that we've acquired our MutexGuard from matcing against .lock(),
+        //Now that we've acquired our MutexGuard from matching against .lock(),
         //we have an Arc<Vec<String>
         //it helps to think about the data you need as trapped in a room puzzle.
         //It needs to move from the inside-out! Mutex-->MutexGuard-->Arc-->Deref-->Usable Data
@@ -206,75 +243,3 @@ pub fn get_len(feeder:LineSeed) -> usize {
     };
     return lock.len()
 }
-//ALL THE STUFF BELOW HERE IS DEPRECATED OR ON ITS WAY OUT. DON'T PAY ATTENTION TO IT
-
-// static LOC_SEED_DIR: &'static str = "shakespeare.txt";
-
-// #[derive(Serialize, Deserialize)]
-// pub struct PoetryAPIResp {
-//     title: String,
-//     author: String,
-//     lines: Poem,
-// }
-// #[derive(Serialize, Deserialize)]
-// pub struct Poem {
-//     linecount: i32,
-//     lines: Vec<String>,
-// }
-
-// pub fn format_txt() {
-//     let p = PathBuf::from(&LOC_SEED_DIR);
-//     let f = File::open(&p).unwrap();
-//     let file = BufReader::new(&f);
-//     let mut writer = BufWriter::new(io::stdout());
-//     for (num, line) in file.lines().enumerate() {
-//         let l = line.unwrap();
-//         let mut b = [0; 4];
-//         let mut d = [0, 4];
-//         let mut chars: String = l.chars().collect();
-//         for c in chars.clone().chars().into_iter() {
-//             let p: char = '.';
-//             let r: char = '\n';
-//             match &c {
-//                 p => {
-//                     if c == *p {
-//                         let index = chars.find('.').unwrap_or_default();
-//                         chars.insert(index, '\n' as char);
-//                     } else {
-//                         continue;
-//                     }
-//                 }
-//                 r => {
-//                     let index = chars.find('\n').unwrap_or_default();
-//                     chars.remove(index);
-//                 }
-//                 _ => (),
-//             }
-//         }
-//         writeln!(writer, "{}", chars).unwrap();
-//         // if num % 4 == 1 {
-//         //     writeln!(writer, "{}", l).unwrap();
-//         // }
-//     }
-// }
-
-
-// pub fn read_file() {
-//     let path = PathBuf::from(&LOC_SEED_DIR);
-//     let txt_src = File::open(&path).unwrap();
-//     let txt_dest =
-//         File::create("output.txt").expect("Couldn't create destination file for output!");
-//     let reader = BufReader::new(&txt_src);
-//     let mut writer = BufWriter::new(&txt_dest);
-//     for (num, line) in reader.lines().enumerate() {
-//         let l = line.unwrap();
-//         let mut line_rd: String = l.chars().collect();
-//         line_rd.trim_left();
-//         let new_len = line_rd.trim_right().len();
-//         line_rd.truncate(new_len);
-//         let un_squished = &line_rd[..];
-//         let content = un_squished.split_whitespace().collect::<Vec<_>>();
-//         write!(writer, "{:?}", content);
-//     }
-
-// }
