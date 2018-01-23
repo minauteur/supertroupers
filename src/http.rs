@@ -84,11 +84,13 @@ impl Search {
             if util::which_prompt(&format!("author"), &format!("title")) {
                 self.url = String::from("http://poetrydb.org/author");
                 let list = AuthorsList::new();
-                println!("authors:\n{}\n", list.authors.join("\n"));
+                println!("\n  {}\n", list.authors.join("\n  ").bright_purple());
             } else {
                 self.url = String::from("http://poetrydb.org/title");
                 let list = WorksList::new();
-                println!("titles: \n{}\n", list.titles.join("\n"));
+                let mut list_str = list.titles.join("\"\n  \"");
+                list_str.push_str("\"");
+                println!("\n  {}\n", list_str.bright_green());
             }
             
         } else if self.options.author.is_some() && self.options.title.is_some() {
@@ -122,30 +124,24 @@ impl Search {
 // }
 
 pub fn handle(search: Search) -> Result<Value, reqwest::Error> {
+    println!("request sent!, \nA NOTE: {}", 
+        "generic searches (eg \"a\" for author and \"s\" for title) may take longer to process!"
+        .bright_yellow()
+    );
     let mut response = reqwest::get(&search.url)?;
+    println!("response received!");
     let json: Value = response.json()?;
-
+    println!("got json from response! Matching value for usable data...");
     return Ok((json));
 }
 
 pub fn match_value(json_val: Value, chain: &mut Chain<String>, mut feeder: LineSeed) -> Result<&mut Chain<String>, serde_json::Error> {
-    // let json_val: serde_json::Value = resp.json()?;
-    // let feed_clone = feeder.clone();
-    // let mut lock = match feed_clone.queue.lock() {
-    //         Ok(vec) => vec,
-    //         Err(e) => e.into_inner(),
-    // };
-    // let v = lock.deref_mut();
-    // if SearchProblem::from_value(&json_val) {
-        // return Ok(chain);
-    // } else { 
+
     match &json_val {
         &Value::Array(ref arr) => {
             println!("got Array!\n");
             for obj_val in &arr[..] {
-                // if SearchProblem::from_value(json_val.clone()) {
-                //     return Ok(chain);
-                // } else {
+
                 if let Ok(p) = Poem::new().from_value(&obj_val) {
                     // println!("Got a Poem!");
                     if p.line_count > 0 {
@@ -165,20 +161,12 @@ pub fn match_value(json_val: Value, chain: &mut Chain<String>, mut feeder: LineS
                     }
                 // } 
             }
-            // let lock = match feeder.queue.lock() {
-            //     Ok(vec) => vec,
-            //     Err(e) => e.into_inner(),
-            // };
-            // for item in lock.deref() {
-            //     &chain.feed_str(item);
-            // }
+
             return Ok(chain);
         }
         &Value::Object(..) => {
             println!("got Object!");
-            // if SearchProblem::from_value(json_val.clone()) {
-            //     return Ok(chain);
-            // } else {
+
             if let Ok(p) = Poem::new().from_value(&json_val) {
                 // println!("Got a Poem!");
                 if p.line_count > 0 {
@@ -226,10 +214,7 @@ impl LineSeed {
                 each_line.trim();
                 queued.deref_mut().push(each_line.to_owned());
             }
-            // if we need individual words
-            // for word in line.split_whitespace() {
-            //     queued.deref_mut().push(word.clone().to_owned());
-            // }
+
         }
         println!(
             "{}",

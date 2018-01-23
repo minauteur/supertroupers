@@ -1,13 +1,12 @@
 //!Poems houses the structs and implementations for deserializing and
 //! storing Poem data retrieved from poetrydb API requests
 use serde_json::{self, Value};
-use textwrap::{Wrapper, WordSplitter, HyphenSplitter, termwidth, wrap, WrapIter, IntoWrapIter, fill};
+use textwrap::{Wrapper, termwidth, };
 use textwrap::wrap_iter;
 use hyphenation::*;
 use hyphenation;
 use util;
 use colored::*;
-use std::fmt;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct WorksList {
@@ -85,9 +84,12 @@ impl Poem {
             println!("  |  a poem:{:<1$}    |", &t_fmt.green(), width-7);
         }
         println!("  |{:-<1$}|", "-", width + 6);
-    
+        
+        // for line in poem.lines().into_iter() {
         for line in wrap_iter(&poem, width) {
             let formatted = format!("{:<1$}", &line, width-9);
+            // let formatted = format!("{}", &line);
+            
             // let formatted = format!("{:<1$}", fill(&line, width-9), width-9);
             for line in formatted.lines() {
                 println!("  |   {:<1$}   |", &line.bright_green(), width);

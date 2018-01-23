@@ -1,7 +1,6 @@
 //!Gen Module
 //!This file contains behaviors and functions critical to text generation
-use textwrap::wrap_iter;
-use std::io::Write;
+
 
 use flavor;
 use markov::Chain;
@@ -9,43 +8,10 @@ use poems::Poem;
 use poems::{AuthorsList, WorksList};
 use std::error::Error;
 use util;
-// use gen;
-// #[cfg(feature = "term_size")]
-// #[cfg(feature = "hyphenation")]
-//  #[feature(hyphenation, term_size)]
-use textwrap::{Wrapper, WordSplitter, HyphenSplitter, termwidth, wrap, WrapIter, IntoWrapIter, fill};
-use hyphenation::*;
-use hyphenation;
+
+use textwrap::{termwidth};
+
 use colored::*;
-
-// pub fn print_poem(poem: Poem) {
-//     let corpus = hyphenation::load(Language::English_US).unwrap();
-//     let width = termwidth()-12;
-//     let author = format!("  author: {}", poem.author.purple());
-//     let title = format!(" a poem: \"{}\"", poem.title);
-//     let poem = poem.lines.join("\n");
-//     let wrapper = Wrapper::with_splitter(width, corpus).break_words(true).subsequent_indent("        ");
-//     println!("  |{:=<1$}|", "=", width + 6);
-//     for t_line in wrap_iter(&title, width) {
-//         let t_fmt = format!("{:<1$}", wrapper.fill(&t_line), width-9);
-//         println!("  |  {:<1$}    |", &t_fmt, width);
-//     }
-//         println!("  |{:-<1$}|", "-", width + 6);
-    
-//     for line in wrap_iter(&poem, width) {
-//         let formatted = format!("{:<1$}", &line, width-9);
-//         // let formatted = format!("{:<1$}", fill(&line, width-9), width-9);
-        
-//         for line in formatted.lines() {
-//             println!("  |   {:<1$}   |", &line.bright_green(), width);
-//         }
-//     }
-//     println!("  |{:-<1$}|", "-", width + 6);
-//     println!("  |{:<1$}      |", wrapper.fill(&author), width+9);
-//     println!("  |{:=<1$}|", "=", width + 6);
-    
-// }
-
 
 pub fn seed_and_generate(chain: &Chain<String>, lines_read: usize) -> &Chain<String> {
  
@@ -55,7 +21,8 @@ pub fn seed_and_generate(chain: &Chain<String>, lines_read: usize) -> &Chain<Str
     let mut poem = Poem::new();
 
     let name_error: Name = Name {
-        first: String::from("Sir Erronaeus,"),
+        first: String::from("Sir Error,"),
+        middle: String::from("Erronaeus"),
         last: String::from("The Unwrapp-ed None"),
     };
     let title_error: Work = Work {
@@ -63,7 +30,7 @@ pub fn seed_and_generate(chain: &Chain<String>, lines_read: usize) -> &Chain<Str
     };
     let gen_name: Name = Name::new().from_file().unwrap_or(name_error);
     let gen_work: Work = Work::new().from_file().unwrap_or(title_error);
-    let author_fmt = format!("{} {}", &gen_name.first, &gen_name.last);
+    let author_fmt = format!("{} {} {}", &gen_name.first, &gen_name.middle, &gen_name.last);
     poem.title = gen_work.title;
     poem.author = author_fmt.clone();
     flavor::bard_intro();
@@ -156,14 +123,14 @@ impl Work {
 
 pub struct Name {
     first: String,
-    // middle: String,
+    middle: String,
     last: String,
 }
 impl Name {
     pub fn new() -> Name {
         Name {
             first: String::new(),
-            // middle: String::new(),
+            middle: String::new(),
             last: String::new(),
         }
     }
@@ -171,21 +138,31 @@ impl Name {
         let names: AuthorsList = util::read_authors_from_file().expect("error reading from file!");
         let mut first_name: Chain<String> = Chain::new();
         let mut last_name: Chain<String> = Chain::new();
-
+        let mut m_name: Chain<String> = Chain::new();
         for full_name in names.authors.into_iter() {
             let mut single_name = full_name.as_str().split(" ");
             if let Some(f_n) = single_name.next() {
                 // let f_n = single_name.next().unwrap();
                 // println!("got first name! \n{}", f_n);
                 first_name.feed_str(f_n);
-                if let Some(l_n) = single_name.next() {
+                if let Some(m_n) = single_name.next() {
                     // let l_n = single_name.next().unwrap();
-                    last_name.feed_str(l_n);
+                    m_name.feed_str(m_n);
                     // println!("got last name! \n{}", l_n);
+                    if let Some(l_n) = single_name.next() {
+                        last_name.feed_str(l_n);
+
+                    }
                 }
             }
         }
         let new_first = first_name
+            .generate_str()
+            .split(" ")
+            .next()
+            .unwrap()
+            .to_owned();
+        let new_middle = m_name
             .generate_str()
             .split(" ")
             .next()
@@ -198,10 +175,12 @@ impl Name {
             .unwrap()
             .to_owned();
         self.first.push_str(&new_first);
+        self.middle.push_str(&new_middle);
         self.last.push_str(&new_last);
 
         let new_name: Name = Name {
             first: self.first.clone(),
+            middle: self.middle.clone(),
             last: self.last.clone(),
         };
 

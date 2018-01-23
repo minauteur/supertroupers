@@ -9,6 +9,9 @@ extern crate hyphenation;
 
 // #[feature = "hyphenation"]
 // #[feature = "term_size"] 
+
+// #[feature = "term_size"]
+// #[feature = "hyphenation"]
 extern crate textwrap;
 
 extern crate reqwest;
