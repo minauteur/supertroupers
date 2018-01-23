@@ -7,7 +7,7 @@ use markov::Chain;
 
 use util;
 use poems::*;
-use colored::*;
+// use colored::*;
 
 use std::io::Error;
 use std::sync::{Arc, Mutex};
@@ -90,13 +90,13 @@ impl Search {
             if util::which_prompt(&format!("author"), &format!("title")) {
                 self.url = String::from("http://poetrydb.org/author");
                 let list = AuthorsList::new();
-                println!("\n  {}\n", list.authors.join("\n  ").bright_purple());
+                println!("\n  {}\n", list.authors.join("\n  "));
             } else {
                 self.url = String::from("http://poetrydb.org/title");
                 let list = WorksList::new();
                 let mut list_str = list.titles.join("\"\n  \"");
                 list_str.push_str("\"");
-                println!("\n  {}\n", list_str.bright_green());
+                println!("\n  {}\n", list_str);
             }
 
         } else if self.options.author.is_some() && self.options.title.is_some() {
@@ -114,12 +114,12 @@ impl Search {
         }
     }
     fn author_prompt(&mut self) -> Self {
-        println!("{}{}", "Search for an ".clear(), "Author?".green());
+        println!("{}{}", "Search for an ", "Author?");
         self.options.author = util::read_in_ln();
         return self.to_owned();
     }
     fn title_prompt(&mut self) -> Self {
-        println!("{}{}", "and a ".clear(), "title?".green());
+        println!("{}{}", "and a ", "title?");
         self.options.title = util::read_in_ln();
         return self.to_owned();
     }
@@ -133,7 +133,6 @@ pub fn handle(search: Search) -> Result<Value, reqwest::Error> {
     println!(
         "request sent!, \nA NOTE: {}",
         "generic searches (eg \"a\" for author and \"s\" for title) may take longer to process!"
-            .bright_yellow()
     );
     let mut response = reqwest::get(&search.url)?;
     println!("response received!");
@@ -230,12 +229,12 @@ impl LineSeed {
         }
         println!(
             "{}",
-            "---------------------------------------------------------".green()
+            "---------------------------------------------------------"
         );
         println!("    total lines stored:   {}", queued.len());
         println!(
             "{}",
-            "---------------------------------------------------------".green()
+            "---------------------------------------------------------"
         );
         return Ok((self.clone()));
     }

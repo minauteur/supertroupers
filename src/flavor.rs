@@ -1,31 +1,31 @@
 //!Flavor contains all the silly println! calls we've made until such time as we can pause to implement a graphics/UI lib solution for Windows deployments
-use colored::*;
+// use colored::*;
 use textwrap::termwidth;
 
 pub fn welcome() {
     println!(
         "\n{}",
-        "                           WELCOME TO".bright_yellow()
+        "                           WELCOME TO"
     );
     println!("                       |----------------------|");
     println!(
         "                       |        {}{}{}{}{}         |",
-        "S".white(),
-        "U".yellow(),
-        "P".bright_yellow(),
-        "E".red(),
-        "R".bright_red()
+        "S",
+        "U",
+        "P",
+        "E",
+        "R"
     );
     println!(
         "                       |      {}{}{}{}{}{}{}{}        |",
-        "T".cyan(),
-        "R".bright_purple(),
-        "O".bright_green(),
-        "U".green(),
-        "P".purple(),
-        "E".bright_purple(),
-        "R".cyan(),
-        "S".bright_green()
+        "T",
+        "R",
+        "O",
+        "U",
+        "P",
+        "E",
+        "R",
+        "S"
     );
     println!("                       |----------------------|");
 }
@@ -36,57 +36,57 @@ pub fn lines_prompt() {
     println!(
         "{}",
         "  |---------------------------------------------------------------------------|"
-            .bright_yellow()
+            
     );
     println!(
         "{}{}{}{}{}{}{}",
-        "  |".bright_yellow(),
-        "  ENTER:".clear(),
-        " N".red(),
-        " or ".clear(),
-        "n".red(),
-        " to generate lines equal to the number of total lines read".clear(),
-        "  |".bright_yellow()
+        "  |",
+        "  ENTER:",
+        " N",
+        " or ",
+        "n",
+        " to generate lines equal to the number of total lines read",
+        "  |"
     );
     println!(
         "{}{}{}{}{}{}{}",
-        "  |".bright_yellow(),
-        "  ENTER:".clear(),
-        " Y".green(),
-        " or ".clear(),
-        "y".green(),
-        " to specify the number of lines to generate".clear(),
-        "                 |".bright_yellow()
+        "  |",
+        "  ENTER:",
+        " Y",
+        " or ",
+        "y",
+        " to specify the number of lines to generate",
+        "                 |"
     );
     println!(
         "{}",
         "  |---------------------------------------------------------------------------|"
-            .bright_yellow()
+            
     );
 }
 pub fn bard_intro() {
-    println!("{}", "  from the mist...".clear());
-    println!("{}", "      ~~~~~".purple());
-    println!("{}", "         ~~~~~~~~~".bright_blue());
-    println!("{}", "           ~~~~~~~~~~~".blue());
-    println!("{}", "          a shadow nears...".clear());
-    println!("{}", "              ~~~~~~~~~~~~".blue());
-    println!("{}", "                  ~~~~~~~".purple());
-    println!("{}", "                 ~~~~".blue());
+    println!("{}", "  from the mist...");
+    println!("{}", "      ~~~~~");
+    println!("{}", "         ~~~~~~~~~");
+    println!("{}", "           ~~~~~~~~~~~");
+    println!("{}", "          a shadow nears...");
+    println!("{}", "              ~~~~~~~~~~~~");
+    println!("{}", "                  ~~~~~~~");
+    println!("{}", "                 ~~~~");
     println!(
         "{}",
-        "  no, not death--the figure of a BARD appears!".clear()
+        "  no, not death--the figure of a BARD appears!"
     );
-    println!("{}", "             ~~~~~".bright_blue());
-    println!("{}", "           ~~~~~~~~~".blue());
-    println!("{}", "             ~~~~~~~~~~~".bright_blue());
+    println!("{}", "             ~~~~~");
+    println!("{}", "           ~~~~~~~~~");
+    println!("{}", "             ~~~~~~~~~~~");
     println!(
         "{}",
         "        \"I fear death less, perhaps...\" you think,s\n            \"than being bored to tears!\""
     );
-    println!("{}", "               ~~~~~~~~~~~~".purple());
-    println!("{}", "                 ~~~~~~~".blue());
-    println!("{}", "                 ~~~~".bright_blue());
+    println!("{}", "               ~~~~~~~~~~~~");
+    println!("{}", "                 ~~~~~~~");
+    println!("{}", "                 ~~~~");
     println!(
         "{}",
         "              hurry though as you might,\n               before you drain your beer"

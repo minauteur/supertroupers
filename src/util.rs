@@ -6,7 +6,7 @@ use supertroupers::gen;
 use http::LineSeed;
 use poems::{AuthorsList, WorksList};
 use serde_json;
-use colored::*;
+// use colored::*;
 use markov::Chain;
 use std::fs::OpenOptions;
 use std::path::PathBuf;
@@ -50,7 +50,7 @@ pub fn write_poem_to_file(poem: Vec<String>, author: String, title: String) {
     }
     println!(
         "{} See poems.txt in your supertroupers folder to view output.",
-        " Success!".green()
+        " Success!"
     );
 }
 
@@ -83,10 +83,10 @@ pub fn read_y_n() -> bool {
     loop {
         println!(
             "         {} {} or {} {}",
-            "??".clear(),
-            "Y".bright_green(),
-            "N".bright_red(),
-            "??".clear()
+            "??",
+            "Y",
+            "N",
+            "??"
         );
         let i = read_in_ln();
         match i {
@@ -118,10 +118,10 @@ pub fn which_prompt(cond_1: &String, cond_2: &String) -> bool {
     loop {
         println!(
             "         {} {} or {} {}",
-            "??".clear(),
-            cond_1.bright_green(),
-            cond_2.bright_red(),
-            "??".clear()
+            "??",
+            cond_1,
+            cond_2,
+            "??"
         );
         let i = read_in_ln();
         match i {

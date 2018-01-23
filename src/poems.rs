@@ -6,7 +6,7 @@ use textwrap::wrap_iter;
 use hyphenation::*;
 use hyphenation;
 use util;
-use colored::*;
+// use colored::*;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct WorksList {
@@ -71,7 +71,7 @@ impl Poem {
     pub fn print(&self) -> Self {
         let corpus = hyphenation::load(Language::English_US).unwrap();
         let width = termwidth() - 12;
-        let author = format!("  author: {}", self.author.purple());
+        let author = format!("  author: {}", self.author);
         let title = format!("{}", self.title);
         let poem = self.lines.join("\n");
         let wrapper = Wrapper::with_splitter(width, corpus)
@@ -80,7 +80,7 @@ impl Poem {
 
         println!("  |{:=<1$}|", "=", width + 6);
         for t_line in wrap_iter(&title, width) {
-            let t_fmt = format!("a poem: \"{}\"", fill(&t_line, width).green());
+            let t_fmt = format!("a poem: \"{}\"", fill(&t_line, width));
             for t_l in t_fmt.lines() {
                 println!("  |  {:<1$}    |", &t_l, width + 9);
             }
@@ -95,7 +95,7 @@ impl Poem {
 
             // let formatted = format!("{:<1$}", fill(&line, width-9), width-9);
             for line in formatted.lines() {
-                println!("  |   {:<1$}   |", &line.bright_green(), width);
+                println!("  |   {:<1$}   |", &line, width);
             }
         }
         println!("  |{:-<1$}|", "-", width + 6);

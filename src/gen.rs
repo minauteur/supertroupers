@@ -11,7 +11,7 @@ use util;
 
 use textwrap::termwidth;
 
-use colored::*;
+// use colored::*;
 
 pub fn seed_and_generate(chain: &Chain<String>, lines_read: usize) -> &Chain<String> {
 
@@ -40,7 +40,7 @@ pub fn seed_and_generate(chain: &Chain<String>, lines_read: usize) -> &Chain<Str
     println!("          \"{}, the BARD is here!\"!\n", &poem.author);
     println!(
         "{}",
-        "---------------------------------------------------------------------".yellow()
+        "---------------------------------------------------------------------"
     );
     println!("\n     The bard approaches... and queries...\n    \"Now then, what's this?\"\n");
     flavor::lines_prompt();
@@ -81,7 +81,7 @@ pub fn seed_and_generate(chain: &Chain<String>, lines_read: usize) -> &Chain<Str
             "\n\n     \"Very well then!\" says the bard. The lights dim--the show begins!\n\n"
         );
         poem.line_count = lines_read as i64;
-        for line in chain.str_iter_for(lines_read) {
+        for line in chain.str_iter_for(poem.line_count as usize) {
             poem_storage.push(line);
         }
         poem.lines = poem_storage.clone();
@@ -90,7 +90,7 @@ pub fn seed_and_generate(chain: &Chain<String>, lines_read: usize) -> &Chain<Str
     }
     println!(
         "{}",
-        "    Good show! Would you like to save the poem and author to poems.txt?".yellow()
+        "    Good show! Would you like to save the poem and author to poems.txt?"
     );
     if util::read_y_n() {
         util::write_poem_to_file(poem.lines, poem.author, poem.title);
