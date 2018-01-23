@@ -4,10 +4,10 @@ version = "0.1.0"
 authors = ["minauteur <Thompennington@gmail.com>"]
 
 [dependencies]
-// rand = "0.3"
+# rand = "0.3"
 # slog = "*"
-// hyphenation = "0.6"
-// text_io = "*"
+hyphenation = "0.6"
+# text_io = "*"
 markov = "0.0.33"
 serde = "1.0"
 colored = "1.6"
@@ -19,8 +19,8 @@ reqwest = "0.8.4"
 # dialoguer = "*"
 # console = "*"
 textwrap = { version = "0.9", features = ["hyphenation", "term_size"] }
-// conrod = "*"
-// piston = "*"
+# conrod = "*"
+# piston = "*"
 # ggez = "0.4"
 [dependencies.serde_json]
 version = "1.0"

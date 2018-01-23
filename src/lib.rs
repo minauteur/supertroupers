@@ -4,7 +4,7 @@ pub mod http;
 pub mod poems;
 pub mod flavor;
 
-extern crate rand;
+// extern crate rand;
 extern crate hyphenation;
 
 // #[feature = "hyphenation"]
@@ -25,8 +25,8 @@ extern crate serde_derive;
 extern crate serde;
 extern crate serde_json;
 // extern crate ggez;
-extern crate piston;
-extern crate conrod;
+// extern crate piston;
+// extern crate conrod;
 // extern crate indicatif;
 // extern crate dialoguer;
 // extern crate console;
