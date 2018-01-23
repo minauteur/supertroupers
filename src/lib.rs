@@ -8,7 +8,7 @@ pub mod flavor;
 extern crate hyphenation;
 
 // #[feature = "hyphenation"]
-// #[feature = "term_size"] 
+// #[feature = "term_size"]
 
 // #[feature = "term_size"]
 // #[feature = "hyphenation"]

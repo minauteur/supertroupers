@@ -9,13 +9,13 @@ use poems::{AuthorsList, WorksList};
 use std::error::Error;
 use util;
 
-use textwrap::{termwidth};
+use textwrap::termwidth;
 
 use colored::*;
 
 pub fn seed_and_generate(chain: &Chain<String>, lines_read: usize) -> &Chain<String> {
- 
-    let width = termwidth()-12;
+
+    let width = termwidth() - 12;
 
     let mut poem_storage: Vec<String> = Vec::new();
     let mut poem = Poem::new();
@@ -25,12 +25,15 @@ pub fn seed_and_generate(chain: &Chain<String>, lines_read: usize) -> &Chain<Str
         middle: String::from("Erronaeus"),
         last: String::from("The Unwrapp-ed None"),
     };
-    let title_error: Work = Work {
-        title: String::from("\"A Tale of Error and Woe\""),
-    };
+    let title_error: Work = Work { title: String::from("\"A Tale of Error and Woe\"") };
     let gen_name: Name = Name::new().from_file().unwrap_or(name_error);
     let gen_work: Work = Work::new().from_file().unwrap_or(title_error);
-    let author_fmt = format!("{} {} {}", &gen_name.first, &gen_name.middle, &gen_name.last);
+    let author_fmt = format!(
+        "{} {} {}",
+        &gen_name.first,
+        &gen_name.middle,
+        &gen_name.last
+    );
     poem.title = gen_work.title;
     poem.author = author_fmt.clone();
     flavor::bard_intro();
@@ -42,51 +45,49 @@ pub fn seed_and_generate(chain: &Chain<String>, lines_read: usize) -> &Chain<Str
     println!("\n     The bard approaches... and queries...\n    \"Now then, what's this?\"\n");
     flavor::lines_prompt();
     if util::read_y_n() {
-            println!("\n     \"Splendid! How many lines should I write?\"\n");
-            let num = util::read_int();
-            poem.line_count = num as i64;
-            println!(
-                "\n\n     \"That should do it!\" the bard exclaims. 
+        println!("\n     \"Splendid! How many lines should I write?\"\n");
+        let num = util::read_int();
+        poem.line_count = num as i64;
+        println!(
+            "\n\n     \"That should do it!\" the bard exclaims. 
                 The lights dim--the show begins!\n\n"
-            );
-            println!("  |{:-<1$}|", "-", width + 6);
-            for line in chain.str_iter_for(num as usize) {
-                        poem_storage.push(line);
-            }
-            poem.lines = poem_storage.clone();
-
-            poem.print();
-        } else if &lines_read > &50 {
-            poem.line_count = 50;
-            println!("|{:-<1$}|", "-", width + 6);
-
-            println!(
-                "\n\n     \"..although there is virtue in moderation,\" says the bard, 
-                \"50 lines it is!\"\n\n"
-            );
-            println!(
-                "\n\n     \"Very well then!\" says the bard. The lights dim--the show begins!\n\n"
-            );
-            println!(
-                "|{:=<1$}|", "-", width + 6
-            );
-            for line in chain.str_iter_for(poem.line_count as usize) {
-                    poem_storage.push(line);
-            }
-            poem.lines = poem_storage.clone();
-            poem.print();
-        } else {
-            println!(
-                "\n\n     \"Very well then!\" says the bard. The lights dim--the show begins!\n\n"
-            );
-            poem.line_count = lines_read as i64;
-            for line in chain.str_iter_for(lines_read) {
-                    poem_storage.push(line);
-            }
-            poem.lines = poem_storage.clone();        
-
-            poem.print();
+        );
+        println!("  |{:-<1$}|", "-", width + 6);
+        for line in chain.str_iter_for(num as usize) {
+            poem_storage.push(line);
         }
+        poem.lines = poem_storage.clone();
+
+        poem.print();
+    } else if &lines_read > &50 {
+        poem.line_count = 50;
+        println!("|{:-<1$}|", "-", width + 6);
+
+        println!(
+            "\n\n     \"..although there is virtue in moderation,\" says the bard, 
+                \"50 lines it is!\"\n\n"
+        );
+        println!(
+            "\n\n     \"Very well then!\" says the bard. The lights dim--the show begins!\n\n"
+        );
+        println!("|{:=<1$}|", "-", width + 6);
+        for line in chain.str_iter_for(poem.line_count as usize) {
+            poem_storage.push(line);
+        }
+        poem.lines = poem_storage.clone();
+        poem.print();
+    } else {
+        println!(
+            "\n\n     \"Very well then!\" says the bard. The lights dim--the show begins!\n\n"
+        );
+        poem.line_count = lines_read as i64;
+        for line in chain.str_iter_for(lines_read) {
+            poem_storage.push(line);
+        }
+        poem.lines = poem_storage.clone();
+
+        poem.print();
+    }
     println!(
         "{}",
         "    Good show! Would you like to save the poem and author to poems.txt?".yellow()
@@ -104,20 +105,18 @@ pub struct Work {
 }
 impl Work {
     pub fn new() -> Work {
-        Work {
-            title: String::new()
-        }
+        Work { title: String::new() }
     }
     pub fn from_file(mut self: Self) -> Result<Work, Box<Error>> {
         let list = WorksList::new();
         let mut gen = Chain::new();
         let mut titles_iter = list.titles.into_iter();
         while let Some(title) = titles_iter.next() {
-                gen.feed_str(&title);
-            }
+            gen.feed_str(&title);
+        }
         let new_title = gen.generate_str();
         self.title.push_str(&new_title);
-        return Ok(self)
+        return Ok(self);
     }
 }
 
@@ -162,12 +161,7 @@ impl Name {
             .next()
             .unwrap()
             .to_owned();
-        let new_middle = m_name
-            .generate_str()
-            .split(" ")
-            .next()
-            .unwrap()
-            .to_owned();
+        let new_middle = m_name.generate_str().split(" ").next().unwrap().to_owned();
         let new_last = last_name
             .generate_str()
             .split(" ")
@@ -196,5 +190,3 @@ impl Name {
         return name;
     }
 }
-
-

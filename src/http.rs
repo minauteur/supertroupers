@@ -15,15 +15,19 @@ use std::ops::DerefMut;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SearchProblem {
-  pub status: usize,
-   pub reason: String,
+    pub status: usize,
+    pub reason: String,
 }
 
 impl SearchProblem {
     pub fn from_value(json: &Value) -> bool {
         if let Ok(serialized) = serde_json::from_value(json.clone()) {
             let serialized: SearchProblem = serialized;
-            println!("Search Problem! \nstatus: {:?}\n reason: {:?}", serialized.status, serialized.reason);
+            println!(
+                "Search Problem! \nstatus: {:?}\n reason: {:?}",
+                serialized.status,
+                serialized.reason
+            );
             return true;
         } else {
             return false;
@@ -80,7 +84,9 @@ impl Search {
             let single_author = format!("author/{}/title", &a.trim_right());
             &self.url.push_str(&single_author);
         } else if self.options.author.is_none() && self.options.title.is_none() {
-            println!("No author or title given... \nWould you like to return a list of authors or titles?\n");
+            println!(
+                "No author or title given... \nWould you like to return a list of authors or titles?\n"
+            );
             if util::which_prompt(&format!("author"), &format!("title")) {
                 self.url = String::from("http://poetrydb.org/author");
                 let list = AuthorsList::new();
@@ -92,7 +98,7 @@ impl Search {
                 list_str.push_str("\"");
                 println!("\n  {}\n", list_str.bright_green());
             }
-            
+
         } else if self.options.author.is_some() && self.options.title.is_some() {
             println!("searching for substring matches by author name and work title given...");
             let author_and_title = format!("author,title/{};{}", &a.trim_right(), &t.trim_right());
@@ -124,9 +130,10 @@ impl Search {
 // }
 
 pub fn handle(search: Search) -> Result<Value, reqwest::Error> {
-    println!("request sent!, \nA NOTE: {}", 
+    println!(
+        "request sent!, \nA NOTE: {}",
         "generic searches (eg \"a\" for author and \"s\" for title) may take longer to process!"
-        .bright_yellow()
+            .bright_yellow()
     );
     let mut response = reqwest::get(&search.url)?;
     println!("response received!");
@@ -135,7 +142,11 @@ pub fn handle(search: Search) -> Result<Value, reqwest::Error> {
     return Ok((json));
 }
 
-pub fn match_value(json_val: Value, chain: &mut Chain<String>, mut feeder: LineSeed) -> Result<&mut Chain<String>, serde_json::Error> {
+pub fn match_value(
+    json_val: Value,
+    chain: &mut Chain<String>,
+    mut feeder: LineSeed,
+) -> Result<&mut Chain<String>, serde_json::Error> {
 
     match &json_val {
         &Value::Array(ref arr) => {
@@ -154,12 +165,11 @@ pub fn match_value(json_val: Value, chain: &mut Chain<String>, mut feeder: LineS
                         for line in &p.lines {
                             chain.feed_str(&line);
                         }
-                        feeder.add_lines(p.lines)
-                            .expect("couldn't get lines!");
+                        feeder.add_lines(p.lines).expect("couldn't get lines!");
                     }
-                        
-                    }
-                // } 
+
+                }
+                // }
             }
 
             return Ok(chain);
@@ -179,8 +189,7 @@ pub fn match_value(json_val: Value, chain: &mut Chain<String>, mut feeder: LineS
                     for line in &p.lines {
                         chain.feed_str(&line);
                     }
-                    feeder.add_lines(p.lines)
-                        .expect("couldn't get lines!");
+                    feeder.add_lines(p.lines).expect("couldn't get lines!");
                 }
 
             }
@@ -189,8 +198,11 @@ pub fn match_value(json_val: Value, chain: &mut Chain<String>, mut feeder: LineS
         _ => {
             println!("got... something else!");
             println!("Didn't know enough to serialize this!");
-            println!("Here's what JSON we got: \n{}", serde_json::to_string_pretty(&json_val)?);
-            
+            println!(
+                "Here's what JSON we got: \n{}",
+                serde_json::to_string_pretty(&json_val)?
+            );
+
         }
     }
     return Ok((chain));

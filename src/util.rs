@@ -4,7 +4,7 @@
 #[cfg(feature = "hyphenation")]
 use supertroupers::gen;
 use http::LineSeed;
-use poems::{AuthorsList,WorksList};
+use poems::{AuthorsList, WorksList};
 use serde_json;
 use colored::*;
 use markov::Chain;
@@ -114,7 +114,7 @@ pub fn read_y_n() -> bool {
     }
 }
 
-pub fn which_prompt(cond_1:&String, cond_2: &String) -> bool {
+pub fn which_prompt(cond_1: &String, cond_2: &String) -> bool {
     loop {
         println!(
             "         {} {} or {} {}",
@@ -126,17 +126,21 @@ pub fn which_prompt(cond_1:&String, cond_2: &String) -> bool {
         let i = read_in_ln();
         match i {
             Some(s) => {
-                    if s.trim() == cond_1.to_string() {
-                        //println!("read \"Y\" or \"y\". Confirmed!");
-                        return true;
-                    } else if s.trim() == cond_2.to_string() {
-                        return false;
-                    } else {
-                    
-                        println!("Try again... please, enter either \"{}\", or \"{}\"", cond_1, cond_2);
-                        continue;
-                    }
+                if s.trim() == cond_1.to_string() {
+                    //println!("read \"Y\" or \"y\". Confirmed!");
+                    return true;
+                } else if s.trim() == cond_2.to_string() {
+                    return false;
+                } else {
+
+                    println!(
+                        "Try again... please, enter either \"{}\", or \"{}\"",
+                        cond_1,
+                        cond_2
+                    );
+                    continue;
                 }
+            }
             None => {
                 println!("lets try that again, shall we?");
                 continue;
@@ -236,10 +240,10 @@ pub fn poem_prompt(chain: &mut Chain<String>, lines_read: usize) -> &Chain<Strin
     }
     return chain;
 }
-pub fn get_len(feeder:LineSeed) -> usize {
+pub fn get_len(feeder: LineSeed) -> usize {
     let lock = match feeder.queue.lock() {
-        Ok(vec)=> vec,
-        Err(e)=> e.into_inner(),
+        Ok(vec) => vec,
+        Err(e) => e.into_inner(),
     };
-    return lock.len()
+    return lock.len();
 }

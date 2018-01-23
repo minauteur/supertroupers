@@ -30,39 +30,39 @@ pub fn welcome() {
     println!("                       |----------------------|");
 }
 pub fn lines_prompt() {
-            println!(
-            "\n     \"Quite a bit of material, I think!\" \n      \"Should we keep the poem to a set number of lines?\"\n"
-        );
-        println!(
-            "{}",
-            "  |---------------------------------------------------------------------------|"
-                .bright_yellow()
-        );
-        println!(
-            "{}{}{}{}{}{}{}",
-            "  |".bright_yellow(),
-            "  ENTER:".clear(),
-            " N".red(),
-            " or ".clear(),
-            "n".red(),
-            " to generate lines equal to the number of total lines read".clear(),
-            "  |".bright_yellow()
-        );
-        println!(
-            "{}{}{}{}{}{}{}",
-            "  |".bright_yellow(),
-            "  ENTER:".clear(),
-            " Y".green(),
-            " or ".clear(),
-            "y".green(),
-            " to specify the number of lines to generate".clear(),
-            "                 |".bright_yellow()
-        );
-        println!(
-            "{}",
-            "  |---------------------------------------------------------------------------|"
-                .bright_yellow()
-        );
+    println!(
+        "\n     \"Quite a bit of material, I think!\" \n      \"Should we keep the poem to a set number of lines?\"\n"
+    );
+    println!(
+        "{}",
+        "  |---------------------------------------------------------------------------|"
+            .bright_yellow()
+    );
+    println!(
+        "{}{}{}{}{}{}{}",
+        "  |".bright_yellow(),
+        "  ENTER:".clear(),
+        " N".red(),
+        " or ".clear(),
+        "n".red(),
+        " to generate lines equal to the number of total lines read".clear(),
+        "  |".bright_yellow()
+    );
+    println!(
+        "{}{}{}{}{}{}{}",
+        "  |".bright_yellow(),
+        "  ENTER:".clear(),
+        " Y".green(),
+        " or ".clear(),
+        "y".green(),
+        " to specify the number of lines to generate".clear(),
+        "                 |".bright_yellow()
+    );
+    println!(
+        "{}",
+        "  |---------------------------------------------------------------------------|"
+            .bright_yellow()
+    );
 }
 pub fn bard_intro() {
     println!("{}", "  from the mist...".clear());
@@ -96,6 +96,6 @@ pub fn bard_intro() {
 }
 
 pub fn hr() {
-    let width = termwidth()-12;
+    let width = termwidth() - 12;
     println!("  |{:-<1$}|", "-", width + 6);
 }
