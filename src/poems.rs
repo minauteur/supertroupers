@@ -95,7 +95,10 @@ impl Poem {
 
             // let formatted = format!("{:<1$}", fill(&line, width-9), width-9);
             for line in formatted.lines() {
-                println!("  |   {:<1$}   |", &line.bright_green(), width);
+                println!("  |   {:<1$}   |", 
+                &line.bright_green(), 
+                width
+                );
             }
         }
         println!("  |{:-<1$}|", "-", width + 6);

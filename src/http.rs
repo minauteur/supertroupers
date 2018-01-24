@@ -157,10 +157,11 @@ pub fn match_value(
                     // println!("Got a Poem!");
                     if p.line_count > 0 {
                         println!(
-                            "\nTitle: \"{}\",\nAuthor: {},\nLines: {}",
+                            "\nTitle: \"{}\",\nAuthor: {},\nLine Count: {}\nLines: \n  {}",
                             p.title,
                             p.author,
-                            p.line_count
+                            p.line_count,
+                            p.lines.join("\n  ")
                         );
                         for line in &p.lines {
                             chain.feed_str(&line);
@@ -168,6 +169,8 @@ pub fn match_value(
                         feeder.add_lines(p.lines).expect("couldn't get lines!");
                     }
 
+                } else {
+                    println!("Not a poem. here's what we got instead: \n{}", serde_json::to_string_pretty(&obj_val)?.blue());
                 }
                 // }
             }
@@ -181,10 +184,11 @@ pub fn match_value(
                 // println!("Got a Poem!");
                 if p.line_count > 0 {
                     println!(
-                        "\nPoem: \"{}\",\nAuthor: {},\nLines: {}",
+                        "\nTitle: \"{}\",\nAuthor: {},\nLine Count: {}\nLines: \n  {}",
                         p.title,
                         p.author,
-                        p.line_count
+                        p.line_count,
+                        p.lines.join("\n  ")
                     );
                     for line in &p.lines {
                         chain.feed_str(&line);
@@ -192,7 +196,9 @@ pub fn match_value(
                     feeder.add_lines(p.lines).expect("couldn't get lines!");
                 }
 
-            }
+            } else {
+                    println!("Not a poem. here's what we got instead: \n{}", serde_json::to_string_pretty(&json_val)?.bright_blue());
+                }
             return Ok(chain);
         } 
         _ => {
@@ -200,7 +206,7 @@ pub fn match_value(
             println!("Didn't know enough to serialize this!");
             println!(
                 "Here's what JSON we got: \n{}",
-                serde_json::to_string_pretty(&json_val)?
+                serde_json::to_string_pretty(&json_val)?.bright_yellow()
             );
 
         }
