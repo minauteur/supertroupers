@@ -47,7 +47,7 @@ pub fn seed_and_generate(chain: &Chain<String>, lines_read: usize) -> &Chain<Str
     if util::read_y_n() {
         println!("\n     \"Splendid! How many lines should I write?\"\n");
         let num = util::read_int();
-        poem.line_count = num as i64;
+        poem.linecount = num as i64;
         println!(
             "\n\n     \"That should do it!\" the bard exclaims. 
                 The lights dim--the show begins!\n\n"
@@ -60,7 +60,7 @@ pub fn seed_and_generate(chain: &Chain<String>, lines_read: usize) -> &Chain<Str
 
         poem.print();
     } else if &lines_read > &50 {
-        poem.line_count = 50;
+        poem.linecount = 50;
         println!("|{:-<1$}|", "-", width + 6);
 
         println!(
@@ -71,7 +71,7 @@ pub fn seed_and_generate(chain: &Chain<String>, lines_read: usize) -> &Chain<Str
             "\n\n     \"Very well then!\" says the bard. The lights dim--the show begins!\n\n"
         );
         println!("|{:=<1$}|", "-", width + 6);
-        for line in chain.str_iter_for(poem.line_count as usize) {
+        for line in chain.str_iter_for(poem.linecount as usize) {
             poem_storage.push(line);
         }
         poem.lines = poem_storage.clone();
@@ -80,7 +80,7 @@ pub fn seed_and_generate(chain: &Chain<String>, lines_read: usize) -> &Chain<Str
         println!(
             "\n\n     \"Very well then!\" says the bard. The lights dim--the show begins!\n\n"
         );
-        poem.line_count = lines_read as i64;
+        poem.linecount = lines_read as i64;
         for line in chain.str_iter_for(lines_read) {
             poem_storage.push(line);
         }

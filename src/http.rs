@@ -147,20 +147,27 @@ pub fn match_value(
     chain: &mut Chain<String>,
     mut feeder: LineSeed,
 ) -> Result<&mut Chain<String>, serde_json::Error> {
-
+    println!("Analyzing response...");
+    let response_string = serde_json::to_string_pretty(&json_val)?;
+    let response_lines: &Vec<&str> = &response_string.lines().collect();
+    if response_lines.len() < 1000 {
+        println!("{}\n^^JSON from HTTP response body^^\n", response_string.green());
+    } else {
+        println!("too many lines! we'll go straight to serializing.");
+    }
     match &json_val {
         &Value::Array(ref arr) => {
-            println!("got Array!\n");
+            // println!("got Array!\n");
             for obj_val in &arr[..] {
 
                 if let Ok(p) = Poem::new().from_value(&obj_val) {
                     // println!("Got a Poem!");
-                    if p.line_count > 0 {
+                    if &p.linecount > &0 {
                         println!(
                             "\nTitle: \"{}\",\nAuthor: {},\nLine Count: {}\nLines: \n  {}",
                             p.title,
                             p.author,
-                            p.line_count,
+                            p.linecount,
                             p.lines.join("\n  ")
                         );
                         for line in &p.lines {
@@ -170,7 +177,57 @@ pub fn match_value(
                     }
 
                 } else {
-                    println!("Not a poem. here's what we got instead: \n{}", serde_json::to_string_pretty(&obj_val)?.blue());
+                    // println!("Not a poem. here's what we got instead: \n{}\n STILL NO POEM", serde_json::to_string_pretty(&obj_val)?.blue());
+                    match obj_val {
+                        &Value::Array(ref arr_2) => {
+                            // println!("got NESTED Array!");
+                            for inner_obj in &arr_2[..] {
+                                if let Ok(p) = Poem::new().from_value(&inner_obj) {
+                                    if &p.linecount > &0 {
+                                        println!(
+                                            "\nTitle: \"{}\",\nAuthor: {},\nLine Count: {}\nLines: \n  {}",
+                                            p.title,
+                                            p.author,
+                                            p.linecount,
+                                            &p.lines.join("\n  ")
+                                        );
+                                        for line in &p.lines {
+                                            chain.feed_str(&line);
+                                        }
+                                        feeder.add_lines(p.lines).expect("couldn't get lines!");
+                                    }
+                                } else {
+                                    // println!("Here's the JSON we got: \n{}\nIt's STILL not a poem!", serde_json::to_string_pretty(&inner_obj)?.purple());
+                                }
+                            }
+                        }
+                        &Value::Object(..) => {
+                            // println!("got NESTED Object!");
+
+                            if let Ok(p) = Poem::new().from_value(&obj_val) {
+                                // println!("Got a Poem!");
+                                if &p.linecount > &0 {
+                                println!(
+                                    "\nTitle: \"{}\",\nAuthor: {},\nLine Count: {}\nLines: \n  {}",
+                                    p.title,
+                                    p.author,
+                                    p.linecount,
+                                    &p.lines.join("\n  ")
+                                );
+                                for line in &p.lines {
+                                    chain.feed_str(&line);
+                                }
+                                feeder.add_lines(p.lines).expect("couldn't get lines!");
+                                }
+
+                            } else {
+                                // println!("JSON: \n{}\nInner Object STILL isn\'t a poem!", serde_json::to_string_pretty(&obj_val)?.bright_blue());
+                            }
+                        } 
+                        _=> {
+                            println!("I won't go any deeper!");
+                        }
+                    }
                 }
                 // }
             }
@@ -182,12 +239,12 @@ pub fn match_value(
 
             if let Ok(p) = Poem::new().from_value(&json_val) {
                 // println!("Got a Poem!");
-                if p.line_count > 0 {
+                if &p.linecount > &0 {
                     println!(
                         "\nTitle: \"{}\",\nAuthor: {},\nLine Count: {}\nLines: \n  {}",
                         p.title,
                         p.author,
-                        p.line_count,
+                        p.linecount,
                         p.lines.join("\n  ")
                     );
                     for line in &p.lines {
@@ -197,9 +254,9 @@ pub fn match_value(
                 }
 
             } else {
-                    println!("Not a poem. here's what we got instead: \n{}", serde_json::to_string_pretty(&json_val)?.bright_blue());
+                    // println!("Not a poem. here's what we got instead: \n{}", serde_json::to_string_pretty(&json_val)?.bright_blue());
                 }
-            return Ok(chain);
+            // return Ok(chain);
         } 
         _ => {
             println!("got... something else!");

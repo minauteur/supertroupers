@@ -35,32 +35,32 @@ pub fn lines_prompt() {
     );
     println!(
         "{}",
-        "  |---------------------------------------------------------------------------|"
+        "|------------------------------ENTER------------------------------|"
             .bright_yellow()
     );
     println!(
         "{}{}{}{}{}{}{}",
-        "  |".bright_yellow(),
-        "  ENTER:".clear(),
-        " N".red(),
-        " or ".clear(),
-        "n".red(),
-        " to generate lines equal to the number of total lines read".clear(),
-        "  |".bright_yellow()
+        "|".bright_yellow(),
+            " ".clear(),
+                  " N".red(),
+                    "/".clear(),
+                     "n".red(),
+                      " to generate lines equal to the number of total lines read".clear(),
+                                                                                "  |".bright_yellow()
     );
     println!(
         "{}{}{}{}{}{}{}",
-        "  |".bright_yellow(),
-        "  ENTER:".clear(),
+        "|".bright_yellow(),
+        " ".clear(),
         " Y".green(),
-        " or ".clear(),
+        "/".clear(),
         "y".green(),
         " to specify the number of lines to generate".clear(),
         "                 |".bright_yellow()
     );
     println!(
         "{}",
-        "  |---------------------------------------------------------------------------|"
+        "|-----------------------------------------------------------------|"
             .bright_yellow()
     );
 }

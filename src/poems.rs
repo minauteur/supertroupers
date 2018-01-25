@@ -26,7 +26,7 @@ pub struct Poem {
     pub title: String,
     pub author: String,
     pub lines: Vec<String>,
-    pub line_count: i64,
+    pub linecount: i64,
 }
 
 impl Poem {
@@ -35,31 +35,31 @@ impl Poem {
             title: String::new(),
             author: String::new(),
             lines: Vec::new(),
-            line_count: 0,
+            linecount: 0,
         }
     }
     pub fn from_value(mut self, json: &Value) -> Result<Poem, serde_json::Error> {
         if let Some(ref lines) = json.get("lines") {
-            &self.get_lines(lines)?;
+            &self.get_lines(&lines)?;
         // println!("got lines!");
         } else {
             // println!("no lines found!");
         }
         if let Some(ref author) = json.get("author") {
-            &self.get_author(author)?;
+            &self.get_author(&author)?;
         // println!("got author!");
 
         } else {
             // println!("no author name found!");
         }
         if let Some(ref title) = json.get("title") {
-            &self.get_title(title)?;
+            &self.get_title(&title)?;
         // println!("got title!");
         } else {
             // println!("no title found!");
         }
         if let Some(ref l_c) = json.get("linecount") {
-            &self.get_count(l_c)?;
+            &self.get_count(&l_c)?;
         // println!("got line count!");
 
         } else {
@@ -68,21 +68,22 @@ impl Poem {
         return Ok((self));
 
     }
+    
     pub fn print(&self) -> Self {
         let corpus = hyphenation::load(Language::English_US).unwrap();
         let width = termwidth() - 12;
         let author = format!("  author: {}", self.author.purple());
-        let title = format!("{}", self.title);
+        let title = format!(" a poem: \"{}\"", self.title);
         let poem = self.lines.join("\n");
         let wrapper = Wrapper::with_splitter(width, corpus)
             .break_words(true)
             .subsequent_indent("        ");
 
         println!("  |{:=<1$}|", "=", width + 6);
-        for t_line in wrap_iter(&title, width) {
-            let t_fmt = format!("a poem: \"{}\"", fill(&t_line, width).green());
+        for t_line in wrapper.wrap_iter(&title) {
+            let t_fmt = format!("{}", fill(&t_line, width));
             for t_l in t_fmt.lines() {
-                println!("  |  {:<1$}    |", &t_l, width + 9);
+                println!("  |  {:<1$}    |", &t_l, width);
             }
         }
         println!("  |{:-<1$}|", "-", width + 6);
@@ -119,7 +120,7 @@ impl Poem {
         return Ok((self.to_owned()));
     }
     fn get_count(&mut self, json: &Value) -> Result<Self, serde_json::Error> {
-        self.line_count = serde_json::from_value(json.clone())?;
+        self.linecount = serde_json::from_value(json.clone())?;
         return Ok((self.to_owned()));
     }
 }
