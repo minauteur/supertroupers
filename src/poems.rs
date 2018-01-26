@@ -1,8 +1,8 @@
 //!Poems houses the structs and implementations for deserializing and
 //! storing Poem data retrieved from poetrydb API requests
 use serde_json::{self, Value};
-use textwrap::{Wrapper, termwidth, fill, wrap};
-use textwrap::wrap_iter;
+use textwrap::{Wrapper, termwidth, fill};
+// use textwrap::wrap_iter;
 use hyphenation::*;
 use hyphenation;
 use util;
@@ -68,7 +68,6 @@ impl Poem {
         return Ok((self));
 
     }
-    
     pub fn print(&self) -> Self {
         let corpus = hyphenation::load(Language::English_US).unwrap();
         let width = termwidth() - 12;
