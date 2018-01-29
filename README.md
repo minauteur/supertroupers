@@ -29,9 +29,10 @@ me@thompennington.com
 thompennington@gmail.com
 
 ## TODO?
-* Refactor for gfx lib implementation
-* Extract names and poems from saved for insertion into corpus
-* get rid of the abhorrent coloring implementation
-* implement user-inserted lines/seeds
+* Build for Linux, Mac and both colored/non-colored builds for Windows.
+* --Refactor for gfx lib implementation-- NEEDS COMPLETE TEARDOWN INSTEAD
+* Extract names and poems from saved for insertion into corpus DONE.
+* get rid of the abhorrent coloring implementation, KINDA DONE.
+* implement user-inserted lines/seeds -- MAYBE
 
 
