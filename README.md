@@ -1,7 +1,7 @@
 ![Logo](https://www.microwavemansion.com/supertroupers/supertroupers.png)
 # supertroupers
 
-strategy RPG (Running Poetry Generator) built in rust.
+strategy RPG (Random Poetry Generator) built in rust.
 
 # OK, how do I install it?
 TWO WAYS!
