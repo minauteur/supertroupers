@@ -139,7 +139,7 @@ pub fn handle(search: Search) -> Result<Value, reqwest::Error> {
     println!("response received!");
     let json: Value = response.json()?;
     println!("got json from response! Matching value for usable data...");
-    return Ok((json));
+    return Ok(json);
 }
 
 pub fn match_value(
@@ -268,7 +268,7 @@ pub fn match_value(
 
         }
     }
-    return Ok((chain));
+    return Ok(chain);
     // }
 }
 
@@ -300,6 +300,6 @@ impl LineSeed {
             "{}",
             "---------------------------------------------------------".green()
         );
-        return Ok((self.clone()));
+        return Ok(self.clone());
     }
 }

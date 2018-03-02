@@ -9,7 +9,7 @@ use poems::Poem;
 use poems::{AuthorsList, WorksList};
 use std::error::Error;
 use util;
-use serde_json;
+// use serde_json;
 
 use textwrap::termwidth;
 
@@ -22,15 +22,16 @@ pub fn seed_and_generate(chain: &Chain<String>, lines_read: usize) -> &Chain<Str
     let mut poem_storage: Vec<String> = Vec::new();
     let mut poem = Poem::new();
 
-    let name_error: Name = Name::default();
+    // let name_error: Name = Name::default();
+    // let title_error: Work = Work::default();
     //     println!("  |{:^<1$}|", "^", width + 6);
 
     // println!("DEFAULT NAME: {} {} {}", name_error.first, name_error.middle, name_error.last);
     //     println!("  |{:v<1$}|", "v", width + 6);
 
-    let title_error: Work = Work { title: String::from("\"A Tale of Error and Woe\"") };
-    let gen_name: Name = Name::new().from_file().unwrap_or_default();
-    let gen_work: Work = Work::new().from_file().unwrap_or(title_error);
+    // let title_error: Work = Work { title: String::from("\"A Tale of Error and Woe\"") };
+    let gen_name: Name = Name::new().from_list().unwrap_or_default();
+    let gen_work: Work = Work::new().from_list().unwrap_or_default();
     let author_fmt = format!(
         "{} {} {}",
         &gen_name.first,
@@ -110,7 +111,7 @@ impl Work {
     pub fn new() -> Work {
         Work { title: String::new() }
     }
-    pub fn from_file(mut self: Self) -> Result<Work, Box<Error>> {
+    pub fn from_list(mut self: Self) -> Result<Work, Box<Error>> {
         let list = WorksList::new();
         let mut gen = Chain::new();
         let mut titles_iter = list.titles.into_iter();
@@ -122,7 +123,14 @@ impl Work {
         return Ok(self);
     }
 }
-
+impl Default for Work {
+    fn default()-> Work {
+        let default: Work = Work {
+            title: "A Tale of Woe and Panic".to_string()
+        };
+        return default
+    }
+}
 pub struct Name {
     first: String,
     middle: String,
@@ -147,8 +155,8 @@ impl Name {
             last: String::new(),
         }
     }
-    pub fn from_file(mut self: Self) -> Result<Name, Box<Error>> {
-        let names: AuthorsList = util::a_list_from_const();
+    pub fn from_list(mut self: Self) -> Result<Name, Box<Error>> {
+        let names: AuthorsList = util::get_authors();
         let mut first_name: Chain<String> = Chain::new();
         let mut last_name: Chain<String> = Chain::new();
         let mut m_name: Chain<String> = Chain::new();

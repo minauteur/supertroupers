@@ -9,21 +9,22 @@ use serde_json;
 use colored::*;
 use markov::Chain;
 use std::fs::OpenOptions;
-use std::path::PathBuf;
+// use std::path::PathBuf;
 use std::io;
 use std::io::Write;
 
-use std::error::Error;
-use std::fs::File;
+// use std::error::Error;
+// use std::fs::File;
 
-static AUTHOR: &'static str = "names.json";
-static TITLE: &'static str = "title.json";
+// static AUTHOR: &'static str = "names.json";
+// static TITLE: &'static str = "title.json";
 
 pub fn write_poem_to_file(poem: Vec<String>, author: String, title: String) {
 
     let mut file = OpenOptions::new()
         .write(true)
         .append(true)
+        .create(true)
         .open("poems.txt")
         .unwrap();
     // let mut writer = BufWriter::new(&mut file);
@@ -55,26 +56,26 @@ pub fn write_poem_to_file(poem: Vec<String>, author: String, title: String) {
 }
 
 
-pub fn read_authors_from_file() -> AuthorsList {
+pub fn get_authors() -> AuthorsList {
     // Open the file in read-only mode.
     // let path = PathBuf::from(AUTHOR);
     // let file = File::open(&path)?;
 
     // Read the JSON contents of the file as an instance of `AuthorsList`.
-    let list: AuthorsList = a_list_from_const();
+    let list: AuthorsList = a_list_from_const().expect("couldn't read authors list from internal memory!");
 
     // Return the `List`.
     return list;
 }
 
-pub fn read_titles_from_file() -> WorksList {
+pub fn get_titles() -> WorksList {
     // Open the file in read-only mode.
     // let path = PathBuf::from(TITLE);
     // let file = File::open(&path)?;
 
     // Read the JSON contents of the file as an instance of `AuthorsList`.
     // let list: WorksList = serde_json::from_reader(file)?;
-    let list: WorksList = w_list_from_const();
+    let list: WorksList = w_list_from_const().expect("couldn't read works list from internal memory!");
 
     // Return the `List`.
     return list;
@@ -248,13 +249,13 @@ pub fn get_len(feeder: LineSeed) -> usize {
     };
     return lock.len();
 }
-pub fn a_list_from_const() -> AuthorsList {
-    let authors: AuthorsList = serde_json::from_str(&A_JSON).unwrap();
-    return authors;   
+pub fn a_list_from_const() -> Result<AuthorsList,serde_json::Error> {
+    let authors: AuthorsList = serde_json::from_str(&A_JSON)?;
+    return Ok(authors);   
 }
-pub fn w_list_from_const() -> WorksList {
-    let works: WorksList = serde_json::from_str(&W_JSON).unwrap();
-    return works;
+pub fn w_list_from_const() -> Result<WorksList,serde_json::Error> {
+    let works: WorksList = serde_json::from_str(&W_JSON)?;
+    return Ok(works);
 }
 static A_JSON: &'static str = r#"{
   "authors": [

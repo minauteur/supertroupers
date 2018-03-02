@@ -15,8 +15,8 @@ pub struct WorksList {
 
 impl WorksList {
     pub fn new() -> WorksList {
-        let default: WorksList = WorksList { titles: Vec::new() };
-        let list: WorksList = util::w_list_from_const();
+        // let default: WorksList = WorksList { titles: Vec::new() };
+        let list: WorksList = util::get_titles();
         return list;
     }
 }
@@ -65,7 +65,7 @@ impl Poem {
         } else {
             // println!("no linecount found!");
         }
-        return Ok((self));
+        return Ok(self);
 
     }
     pub fn print(&self) -> Self {
@@ -108,19 +108,19 @@ impl Poem {
     }
     fn get_lines(&mut self, json: &Value) -> Result<Self, serde_json::Error> {
         self.lines = serde_json::from_value(json.clone())?;
-        return Ok((self.to_owned()));
+        return Ok(self.to_owned());
     }
     fn get_author(&mut self, json: &Value) -> Result<Self, serde_json::Error> {
         self.author = serde_json::from_value(json.clone())?;
-        return Ok((self.to_owned()));
+        return Ok(self.to_owned());
     }
     fn get_title(&mut self, json: &Value) -> Result<Self, serde_json::Error> {
         self.title = serde_json::from_value(json.clone())?;
-        return Ok((self.to_owned()));
+        return Ok(self.to_owned());
     }
     fn get_count(&mut self, json: &Value) -> Result<Self, serde_json::Error> {
         self.linecount = serde_json::from_value(json.clone())?;
-        return Ok((self.to_owned()));
+        return Ok(self.to_owned());
     }
 }
 
@@ -131,7 +131,7 @@ pub struct AuthorsList {
 impl AuthorsList {
     pub fn new() -> AuthorsList {
         // let default: AuthorsList = AuthorsList { authors: Vec::new() };
-        let list: AuthorsList = util::a_list_from_const();
+        let list: AuthorsList = util::get_authors();
         return list;
 
     }
