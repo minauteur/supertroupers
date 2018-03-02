@@ -1,6 +1,7 @@
 //!Gen Module
 //!This file contains behaviors and functions critical to text generation
-
+// #[macro_use]
+// extern crate serde_json;
 
 use flavor;
 use markov::Chain;
@@ -8,6 +9,7 @@ use poems::Poem;
 use poems::{AuthorsList, WorksList};
 use std::error::Error;
 use util;
+use serde_json;
 
 use textwrap::termwidth;
 
@@ -20,13 +22,14 @@ pub fn seed_and_generate(chain: &Chain<String>, lines_read: usize) -> &Chain<Str
     let mut poem_storage: Vec<String> = Vec::new();
     let mut poem = Poem::new();
 
-    let name_error: Name = Name {
-        first: String::from("Sir Error,"),
-        middle: String::from("Erronaeus"),
-        last: String::from("The Unwrapp-ed None"),
-    };
+    let name_error: Name = Name::default();
+    //     println!("  |{:^<1$}|", "^", width + 6);
+
+    // println!("DEFAULT NAME: {} {} {}", name_error.first, name_error.middle, name_error.last);
+    //     println!("  |{:v<1$}|", "v", width + 6);
+
     let title_error: Work = Work { title: String::from("\"A Tale of Error and Woe\"") };
-    let gen_name: Name = Name::new().from_file().unwrap_or(name_error);
+    let gen_name: Name = Name::new().from_file().unwrap_or_default();
     let gen_work: Work = Work::new().from_file().unwrap_or(title_error);
     let author_fmt = format!(
         "{} {} {}",
@@ -52,7 +55,7 @@ pub fn seed_and_generate(chain: &Chain<String>, lines_read: usize) -> &Chain<Str
             "\n\n     \"That should do it!\" the bard exclaims. 
                 The lights dim--the show begins!\n\n"
         );
-        println!("  |{:-<1$}|", "-", width + 6);
+        // println!("  |{:-<1$}|", "-", width + 6);
         for line in chain.str_iter_for(num as usize) {
             poem_storage.push(line);
         }
@@ -70,7 +73,7 @@ pub fn seed_and_generate(chain: &Chain<String>, lines_read: usize) -> &Chain<Str
         println!(
             "\n\n     \"Very well then!\" says the bard. The lights dim--the show begins!\n\n"
         );
-        println!("|{:=<1$}|", "-", width + 6);
+        // println!("|{:=<1$}|", "-", width + 6);
         for line in chain.str_iter_for(poem.linecount as usize) {
             poem_storage.push(line);
         }
@@ -125,6 +128,17 @@ pub struct Name {
     middle: String,
     last: String,
 }
+use std::default::Default;
+impl Default for Name {
+    fn default()-> Name {
+        let default: Name = Name {
+            first: "Sir".to_string(),
+            middle: "Error".to_string(),
+            last: "The Unwrapped None".to_string()
+        };
+        return default
+    }
+}
 impl Name {
     pub fn new() -> Name {
         Name {
@@ -134,7 +148,7 @@ impl Name {
         }
     }
     pub fn from_file(mut self: Self) -> Result<Name, Box<Error>> {
-        let names: AuthorsList = util::read_authors_from_file().expect("error reading from file!");
+        let names: AuthorsList = util::a_list_from_const();
         let mut first_name: Chain<String> = Chain::new();
         let mut last_name: Chain<String> = Chain::new();
         let mut m_name: Chain<String> = Chain::new();
@@ -180,6 +194,7 @@ impl Name {
 
         return Ok(new_name);
     }
+
     pub fn from_name_string(s: &str) -> Name {
         let mut name = Name::new();
         let mut names = s.split(" ");

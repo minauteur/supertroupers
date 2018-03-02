@@ -16,7 +16,7 @@ pub struct WorksList {
 impl WorksList {
     pub fn new() -> WorksList {
         let default: WorksList = WorksList { titles: Vec::new() };
-        let list: WorksList = util::read_titles_from_file().unwrap_or(default);
+        let list: WorksList = util::w_list_from_const();
         return list;
     }
 }
@@ -130,8 +130,8 @@ pub struct AuthorsList {
 }
 impl AuthorsList {
     pub fn new() -> AuthorsList {
-        let default: AuthorsList = AuthorsList { authors: Vec::new() };
-        let list: AuthorsList = util::read_authors_from_file().unwrap_or(default);
+        // let default: AuthorsList = AuthorsList { authors: Vec::new() };
+        let list: AuthorsList = util::a_list_from_const();
         return list;
 
     }

@@ -1,10 +1,11 @@
 extern crate supertroupers;
 // extern crate piston;
 // extern crate conrod;
+#[macro_use]
+extern crate serde_json;
 extern crate hyphenation;
 extern crate markov;
 extern crate serde;
-extern crate serde_json;
 use supertroupers::util;
 use supertroupers::http::*;
 use supertroupers::http;
