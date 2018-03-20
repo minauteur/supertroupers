@@ -1,15 +1,20 @@
-![Logo](https://www.microwavemansion.com/supertroupers/supertroupers.png)
+![Logo](https://www.microwavemansion.com/supertroupers.png)
 # supertroupers
 
 strategy RPG (Random Poetry Generator) built in rust.
 
 # OK, how do I install it?
 TWO WAYS!
-1) Install the Rust programming language for whatever platform you run (Windows, Linux, MacOS),
+### Option 1) Running from Source:
+* Install the Rust programming language for whatever platform you run (Windows, Linux, MacOS),
 	`git clone https://github.com/minauteur/supertroupers.git` and then `cd supertroupers`
 	before finally `cargo run`-ing from the supertroupers directory.
-2) Download the Windows binary here: https://microwavemansion.com/supertroupers-alpha.zip, unzip the contents to a folder (for now, it's just three files--names.json, poems.txt, and supertroupers.exe)
+### Option 2) Download and Run the Latest Binary:
+#### Windows:
+* Download the Windows binary here: https://microwavemansion.com/supertroupers-alpha.zip, unzip the contents to a folder (for now, it's 	just three files--names.json, poems.txt, and supertroupers.exe)
 	and run the .exe!
+#### Mac (NOW IN GLORIOUS COLOR!): 
+* Download the Mac binary here: https://drive.google.com/file/d/1504Mc7jcqoTI8i4dPZWmdQSEoxUGzdfM/view?usp=sharing, unzip the contents 		to a folder, and double-click suptertroupers!
 
 # OK, but how do I play it?
 1) Search for an author... or don't
