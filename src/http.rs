@@ -148,21 +148,21 @@ pub fn match_value(
     mut feeder: LineSeed,
 ) -> Result<&mut Chain<String>, serde_json::Error> {
     println!("Analyzing response...");
-    let response_string = serde_json::to_string_pretty(&json_val)?;
-    let response_lines: &Vec<&str> = &response_string.lines().collect();
-    if response_lines.len() < 1000 {
-        println!("{}\n^^JSON from HTTP response body^^\n", response_string.green());
-    } else {
-        println!("too many lines! we'll go straight to serializing.");
-    }
+    // let response_string = serde_json::to_string_pretty(&json_val)?;
+    // let response_lines: &Vec<&str> = &response_string.lines().collect();
+    // if response_lines.len() < 1000 {
+    //     println!("{}\n^^JSON from HTTP response body^^\n", response_string.green());
+    // } else {
+    //     println!("too many lines! we'll go straight to serializing.");
+    // }
     match &json_val {
         &Value::Array(ref arr) => {
             // println!("got Array!\n");
             for obj_val in &arr[..] {
 
-                if let Ok(p) = Poem::new().from_value(&obj_val) {
-                    // println!("Got a Poem!");
-                    if &p.linecount > &0 {
+                if let Ok(mut p) = Poem::new().from_value(&obj_val) {
+                    println!("Got a Poem!");
+                    if p.linecount > 0 {
                         println!(
                             "\nTitle: \"{}\",\nAuthor: {},\nLine Count: {}\nLines: \n  {}",
                             p.title,
@@ -173,7 +173,7 @@ pub fn match_value(
                         for line in &p.lines {
                             chain.feed_str(&line);
                         }
-                        feeder.add_lines(p.lines).expect("couldn't get lines!");
+                        feeder.add_lines(&p.lines).expect("couldn't get lines!");
                     }
 
                 } else {
@@ -182,7 +182,7 @@ pub fn match_value(
                         &Value::Array(ref arr_2) => {
                             // println!("got NESTED Array!");
                             for inner_obj in &arr_2[..] {
-                                if let Ok(p) = Poem::new().from_value(&inner_obj) {
+                                if let Ok(mut p) = Poem::new().from_value(&inner_obj) {
                                     if &p.linecount > &0 {
                                         println!(
                                             "\nTitle: \"{}\",\nAuthor: {},\nLine Count: {}\nLines: \n  {}",
@@ -194,18 +194,18 @@ pub fn match_value(
                                         for line in &p.lines {
                                             chain.feed_str(&line);
                                         }
-                                        feeder.add_lines(p.lines).expect("couldn't get lines!");
+                                        feeder.add_lines(&p.lines).expect("couldn't get lines!");
                                     }
                                 } else {
                                     // println!("Here's the JSON we got: \n{}\nIt's STILL not a poem!", serde_json::to_string_pretty(&inner_obj)?.purple());
                                 }
                             }
                         }
-                        &Value::Object(..) => {
-                            // println!("got NESTED Object!");
-
-                            if let Ok(p) = Poem::new().from_value(&obj_val) {
-                                // println!("Got a Poem!");
+                        &Value::Object(ref inner) => {
+                            println!("got NESTED Object!");
+                            let mut p = Poem::new();
+                            if let Ok(ref mut p) = p.from_value(&json_val) {
+                                println!("Got a Poem!");
                                 if &p.linecount > &0 {
                                 println!(
                                     "\nTitle: \"{}\",\nAuthor: {},\nLine Count: {}\nLines: \n  {}",
@@ -217,11 +217,11 @@ pub fn match_value(
                                 for line in &p.lines {
                                     chain.feed_str(&line);
                                 }
-                                feeder.add_lines(p.lines).expect("couldn't get lines!");
+                                feeder.add_lines(&p.lines).expect("couldn't get lines!");
                                 }
 
                             } else {
-                                // println!("JSON: \n{}\nInner Object STILL isn\'t a poem!", serde_json::to_string_pretty(&obj_val)?.bright_blue());
+                                println!("JSON: \n{}\nInner Object STILL isn\'t a poem!", serde_json::to_string_pretty(&obj_val)?.bright_blue());
                             }
                         } 
                         _=> {
@@ -250,7 +250,7 @@ pub fn match_value(
                     for line in &p.lines {
                         chain.feed_str(&line);
                     }
-                    feeder.add_lines(p.lines).expect("couldn't get lines!");
+                    feeder.add_lines(&p.lines).expect("couldn't get lines!");
                 }
 
             } else {
@@ -278,8 +278,8 @@ impl LineSeed {
         return LineSeed { queue: arc_mut_vec };
     }
 
-    pub fn add_lines(&mut self, content: Vec<String>) -> Result<LineSeed, Error> {
-
+    pub fn add_lines(&mut self, content: &Vec<String>) -> Result<Self, Error> {
+        println!("adding lines: \n {}", &content.join("\n"));
         let mut queued = match self.queue.lock() {
             Ok(vec) => vec,
             Err(e) => e.into_inner(),

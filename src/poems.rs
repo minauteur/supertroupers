@@ -5,7 +5,7 @@ use textwrap::{Wrapper, termwidth, fill};
 // use textwrap::wrap_iter;
 use hyphenation::*;
 use hyphenation;
-use util;
+use util::{get_authors, get_titles};
 use colored::*;
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -16,7 +16,7 @@ pub struct WorksList {
 impl WorksList {
     pub fn new() -> WorksList {
         // let default: WorksList = WorksList { titles: Vec::new() };
-        let list: WorksList = util::get_titles();
+        let list: WorksList = get_titles();
         return list;
     }
 }
@@ -39,31 +39,33 @@ impl Poem {
         }
     }
     pub fn from_value(mut self, json: &Value) -> Result<Poem, serde_json::Error> {
-        if let Some(ref lines) = json.get("lines") {
+        if let Some(lines) = json.get("lines") {
             &self.get_lines(&lines)?;
-        // println!("got lines!");
+        println!("got lines!\n{}", &self.lines.join("\n").blue());
+        
         } else {
-            // println!("no lines found!");
+            println!("no lines found!");
         }
-        if let Some(ref author) = json.get("author") {
+        if let Some(author) = json.get("author") {
             &self.get_author(&author)?;
-        // println!("got author!");
+            println!("got author!");
 
         } else {
             // println!("no author name found!");
         }
-        if let Some(ref title) = json.get("title") {
+        if let Some(title) = json.get("title") {
             &self.get_title(&title)?;
-        // println!("got title!");
+            println!("got title!");
         } else {
             // println!("no title found!");
         }
-        if let Some(ref l_c) = json.get("linecount") {
+        if let Some(l_c) = json.get("linecount") {
+            println!("{:?}", l_c.as_i64());
             &self.get_count(&l_c)?;
-        // println!("got line count!");
+            println!("{}","got line count!".green());
 
         } else {
-            // println!("no linecount found!");
+            println!("no linecount found!");
         }
         return Ok(self);
 
@@ -108,6 +110,7 @@ impl Poem {
     }
     fn get_lines(&mut self, json: &Value) -> Result<Self, serde_json::Error> {
         self.lines = serde_json::from_value(json.clone())?;
+        println!("lines from json object = \n{}", &self.lines.join("\n"));
         return Ok(self.to_owned());
     }
     fn get_author(&mut self, json: &Value) -> Result<Self, serde_json::Error> {
@@ -119,7 +122,8 @@ impl Poem {
         return Ok(self.to_owned());
     }
     fn get_count(&mut self, json: &Value) -> Result<Self, serde_json::Error> {
-        self.linecount = serde_json::from_value(json.clone())?;
+        println!("getting linecount");
+        self.linecount = self.lines.len() as i64;
         return Ok(self.to_owned());
     }
 }
@@ -131,7 +135,7 @@ pub struct AuthorsList {
 impl AuthorsList {
     pub fn new() -> AuthorsList {
         // let default: AuthorsList = AuthorsList { authors: Vec::new() };
-        let list: AuthorsList = util::get_authors();
+        let list: AuthorsList = get_authors();
         return list;
 
     }

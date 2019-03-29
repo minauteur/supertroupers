@@ -18,9 +18,9 @@ use markov::Chain;
 
 
 fn main() {
-    let feed_store: Arc<Mutex<Vec<String>>> = Arc::new(Mutex::new(Vec::new()));
+    let mut feed_store: Arc<Mutex<Vec<String>>> = Arc::new(Mutex::new(Vec::new()));
     // let chain = Chain::new();
-    let feeder: http::LineSeed = http::LineSeed { queue: feed_store };
+    let mut feeder: http::LineSeed = http::LineSeed { queue: feed_store };
     flavor::welcome();
     let mut chain = Chain::new();
     loop {
