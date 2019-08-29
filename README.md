@@ -1,7 +1,8 @@
 ![Logo](https://www.microwavemansion.com/supertroupers.png)
 # supertroupers
 
-strategy RPG (Random Poetry Generator) built in rust.
+RPG (Random Poetry Generator) built in rust.
+Excuse the absurd overuse of `println!()`--when this project was originally built, it was for the purpose of teaching while coding. Originally, there were plans to move the underlying API behind Amethyst or another GUI framework, however several of the students had 0 prior programming experience and so the macro was called again and again while fundamentals were explained :)
 
 # OK, how do I install it?
 TWO WAYS!
