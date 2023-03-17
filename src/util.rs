@@ -3,8 +3,8 @@
 #[cfg(feature = "term_size")]
 #[cfg(feature = "hyphenation")]
 use supertroupers::gen;
-use http::LineSeed;
-use poems::{AuthorsList, WorksList};
+use crate::http::LineSeed;
+use crate::poems::{AuthorsList, WorksList};
 use serde_json;
 use colored::*;
 use markov::Chain;
@@ -55,7 +55,7 @@ pub fn write_poem_to_file(poem: Vec<String>, author: String, title: String) {
 }
 
 
-pub fn read_authors_from_file() -> Result<AuthorsList, Box<Error>> {
+pub fn read_authors_from_file() -> Result<AuthorsList, Box<dyn Error>> {
     // Open the file in read-only mode.
     let path = PathBuf::from(AUTHOR);
     let file = File::open(&path)?;
@@ -67,7 +67,7 @@ pub fn read_authors_from_file() -> Result<AuthorsList, Box<Error>> {
     Ok(list)
 }
 
-pub fn read_titles_from_file() -> Result<WorksList, Box<Error>> {
+pub fn read_titles_from_file() -> Result<WorksList, Box<dyn Error>> {
     // Open the file in read-only mode.
     let path = PathBuf::from(TITLE);
     let file = File::open(&path)?;
@@ -229,8 +229,8 @@ pub fn poem_prompt(chain: &mut Chain<String>, lines_read: usize) -> &Chain<Strin
         //again in the next function. this prevents it
         //from being a reference, which gen::seed_and_generate() won't accept
         //but first--we need to make sure it isn't empty!
-        if !&chain.is_empty() {
-            gen::seed_and_generate(&chain, lines_read);
+        if !chain.is_empty() {
+            gen::seed_and_generate(chain, lines_read);
             return chain;
         } else {
             println!("Yeah, you should probably read more...");

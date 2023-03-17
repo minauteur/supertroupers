@@ -1,4 +1,5 @@
 extern crate supertroupers;
+extern crate tokio;
 // extern crate piston;
 // extern crate conrod;
 extern crate hyphenation;
@@ -15,8 +16,8 @@ use markov::Chain;
 
 
 
-
-fn main() {
+#[tokio::main]
+async fn main() {
     let feed_store: Arc<Mutex<Vec<String>>> = Arc::new(Mutex::new(Vec::new()));
     // let chain = Chain::new();
     let feeder: http::LineSeed = http::LineSeed { queue: feed_store };
@@ -25,11 +26,12 @@ fn main() {
     loop {
 
         let request = http::Search::new().auth_title_inc();
-        let response = handle(request).expect("Something went wrong handling request!");
+        let response = handle(request).await.expect("");
         let data = match_value(response, &mut chain, feeder.clone()).expect(
             "Something went wrong searching for lines!",
         );
         let len = util::get_len(feeder.clone());
+        // println!("length: {}\ndata: {:#?}", len, data);
         util::poem_prompt(data, len);
 
     }

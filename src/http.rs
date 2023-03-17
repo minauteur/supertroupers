@@ -5,8 +5,8 @@ use reqwest;
 use serde_json::{self, Value};
 use markov::Chain;
 
-use util;
-use poems::*;
+use crate::util;
+use crate::poems::*;
 use colored::*;
 
 use std::io::Error;
@@ -81,8 +81,8 @@ impl Search {
                 "No title given... \n
                 returning authors with names matching substrings from provided input..."
             );
-            let single_author = format!("author/{}/title", &a.trim_right());
-            &self.url.push_str(&single_author);
+            let single_author = format!("author/{}/title", &a.trim_end());
+            self.url.push_str(&single_author);
         } else if self.options.author.is_none() && self.options.title.is_none() {
             println!(
                 "No author or title given... \nWould you like to return a list of authors or titles?\n"
@@ -101,11 +101,11 @@ impl Search {
 
         } else if self.options.author.is_some() && self.options.title.is_some() {
             println!("searching for substring matches by author name and work title given...");
-            let author_and_title = format!("author,title/{};{}", &a.trim_right(), &t.trim_right());
-            &self.url.push_str(&author_and_title);
+            let author_and_title = format!("author,title/{};{}", &a.trim_end(), &t.trim_end());
+            self.url.push_str(&author_and_title);
         } else if self.options.author.is_none() && self.options.title.is_some() {
-            let single_title = format!("title/{}", &t.trim_right());
-            &self.url.push_str(&single_title);
+            let single_title = format!("title/{}", &t.trim_end());
+            self.url.push_str(&single_title);
         }
         println!("request string: {}\n", &self.url);
         Search {
@@ -129,17 +129,17 @@ impl Search {
 
 // }
 
-pub fn handle(search: Search) -> Result<Value, reqwest::Error> {
+pub async fn handle(search: Search) -> Result<Value, reqwest::Error> {
     println!(
         "request sent!, \nA NOTE: {}",
         "generic searches (eg \"a\" for author and \"s\" for title) may take longer to process!"
             .bright_yellow()
     );
-    let mut response = reqwest::get(&search.url)?;
+    let response = reqwest::get(&search.url).await?;
     println!("response received!");
-    let json: Value = response.json()?;
+    let json: Value = response.json().await?;
     println!("got json from response! Matching value for usable data...");
-    return Ok((json));
+    return Ok(json);
 }
 
 pub fn match_value(
@@ -148,21 +148,19 @@ pub fn match_value(
     mut feeder: LineSeed,
 ) -> Result<&mut Chain<String>, serde_json::Error> {
     println!("Analyzing response...");
-    let response_string = serde_json::to_string_pretty(&json_val)?;
-    let response_lines: &Vec<&str> = &response_string.lines().collect();
-    if response_lines.len() < 1000 {
-        println!("{}\n^^JSON from HTTP response body^^\n", response_string.green());
-    } else {
-        println!("too many lines! we'll go straight to serializing.");
-    }
+    // let response_string = serde_json::to_string_pretty(&json_val)?;
+    // let response_lines: &Vec<&str> = &response_string.lines().collect();
+
+        // println!("{}\n^^JSON from HTTP response body^^\n", response_string.green());
+
     match &json_val {
         &Value::Array(ref arr) => {
             // println!("got Array!\n");
             for obj_val in &arr[..] {
-
+                // println!("object value: {:#?}", &obj_val);
                 if let Ok(p) = Poem::new().from_value(&obj_val) {
                     // println!("Got a Poem!");
-                    if &p.linecount > &0 {
+                    if &p.linenumber > &0 {
                         println!(
                             "\nTitle: \"{}\",\nAuthor: {},\nLine Count: {}\nLines: \n  {}",
                             p.title,
@@ -174,16 +172,18 @@ pub fn match_value(
                             chain.feed_str(&line);
                         }
                         feeder.add_lines(p.lines).expect("couldn't get lines!");
+                    } else {
+                        // println!("linecount was 0!")
                     }
 
                 } else {
                     // println!("Not a poem. here's what we got instead: \n{}\n STILL NO POEM", serde_json::to_string_pretty(&obj_val)?.blue());
                     match obj_val {
                         &Value::Array(ref arr_2) => {
-                            // println!("got NESTED Array!");
+                            println!("got NESTED Array!");
                             for inner_obj in &arr_2[..] {
                                 if let Ok(p) = Poem::new().from_value(&inner_obj) {
-                                    if &p.linecount > &0 {
+                                    if &p.linenumber > &0 {
                                         println!(
                                             "\nTitle: \"{}\",\nAuthor: {},\nLine Count: {}\nLines: \n  {}",
                                             p.title,
@@ -206,7 +206,7 @@ pub fn match_value(
 
                             if let Ok(p) = Poem::new().from_value(&obj_val) {
                                 // println!("Got a Poem!");
-                                if &p.linecount > &0 {
+                                if &p.linenumber > &0 {
                                 println!(
                                     "\nTitle: \"{}\",\nAuthor: {},\nLine Count: {}\nLines: \n  {}",
                                     p.title,
@@ -223,7 +223,7 @@ pub fn match_value(
                             } else {
                                 // println!("JSON: \n{}\nInner Object STILL isn\'t a poem!", serde_json::to_string_pretty(&obj_val)?.bright_blue());
                             }
-                        } 
+                        }
                         _=> {
                             println!("I won't go any deeper!");
                         }
@@ -238,8 +238,8 @@ pub fn match_value(
             println!("got Object!");
 
             if let Ok(p) = Poem::new().from_value(&json_val) {
-                // println!("Got a Poem!");
-                if &p.linecount > &0 {
+                println!("Got a Poem!");
+                if &p.linenumber > &0 {
                     println!(
                         "\nTitle: \"{}\",\nAuthor: {},\nLine Count: {}\nLines: \n  {}",
                         p.title,
@@ -257,7 +257,7 @@ pub fn match_value(
                     // println!("Not a poem. here's what we got instead: \n{}", serde_json::to_string_pretty(&json_val)?.bright_blue());
                 }
             // return Ok(chain);
-        } 
+        }
         _ => {
             println!("got... something else!");
             println!("Didn't know enough to serialize this!");
@@ -268,7 +268,7 @@ pub fn match_value(
 
         }
     }
-    return Ok((chain));
+    return Ok(chain);
     // }
 }
 
@@ -286,7 +286,7 @@ impl LineSeed {
         };
         for each_line in content {
             if !each_line.is_empty() {
-                each_line.trim();
+                let _ = each_line.trim();
                 queued.deref_mut().push(each_line.to_owned());
             }
 
@@ -300,6 +300,6 @@ impl LineSeed {
             "{}",
             "---------------------------------------------------------".green()
         );
-        return Ok((self.clone()));
+        return Ok(self.clone());
     }
 }

@@ -5,7 +5,7 @@ use textwrap::{Wrapper, termwidth, fill};
 // use textwrap::wrap_iter;
 use hyphenation::*;
 use hyphenation;
-use util;
+use crate::util;
 use colored::*;
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -26,7 +26,8 @@ pub struct Poem {
     pub title: String,
     pub author: String,
     pub lines: Vec<String>,
-    pub linecount: i64,
+    pub linecount: String,
+    pub linenumber: i64,
 }
 
 impl Poem {
@@ -35,37 +36,43 @@ impl Poem {
             title: String::new(),
             author: String::new(),
             lines: Vec::new(),
-            linecount: 0,
+            linecount: "0".to_string(),
+            linenumber: 0
         }
     }
     pub fn from_value(mut self, json: &Value) -> Result<Poem, serde_json::Error> {
-        if let Some(ref lines) = json.get("lines") {
-            &self.get_lines(&lines)?;
-        // println!("got lines!");
+        if let Some(lines) = json.get("lines") {
+            self.get_lines(&lines)?;
+        println!("got lines {}", &lines);
         } else {
-            // println!("no lines found!");
+            println!("no lines found!");
         }
-        if let Some(ref author) = json.get("author") {
-            &self.get_author(&author)?;
-        // println!("got author!");
+        if let Some(author) = json.get("author") {
+            self.get_author(&author)?;
+        println!("got author: {}", &self.author);
 
         } else {
             // println!("no author name found!");
         }
         if let Some(ref title) = json.get("title") {
-            &self.get_title(&title)?;
-        // println!("got title!");
+            self.get_title(&title)?;
+            println!("got title {}", &title);
         } else {
             // println!("no title found!");
         }
-        if let Some(ref l_c) = json.get("linecount") {
-            &self.get_count(&l_c)?;
-        // println!("got line count!");
-
+        if let Some(l_c) = json.get("linecount") {
+            self.get_count(&l_c)?;
+            println!("got line count {}", &l_c);
+            let vs = l_c.as_str().expect("value exists");
+            println!("string: {:?}", &vs);
+            let int_val = vs.parse::<u32>().unwrap() as i64;
+            println!("int val: {:?}", int_val);
+            self.linenumber = int_val;
         } else {
             // println!("no linecount found!");
         }
-        return Ok((self));
+        println!("poem: {:#?}", &self);
+        return Ok(self);
 
     }
     pub fn print(&self) -> Self {
@@ -90,13 +97,13 @@ impl Poem {
         // for line in poem.lines().into_iter() {
         for line in wrapper.wrap_iter(&poem) {
             let formatted = format!("{}", fill(&line, width));
-            // let formatted = 
+            // let formatted =
             // println!("  |   {:<1$}   |", fill(&formatted, width), width);
 
             // let formatted = format!("{:<1$}", fill(&line, width-9), width-9);
             for line in formatted.lines() {
-                println!("  |   {:<1$}   |", 
-                &line.bright_green(), 
+                println!("  |   {:<1$}   |",
+                &line.bright_green(),
                 width
                 );
             }
@@ -108,19 +115,19 @@ impl Poem {
     }
     fn get_lines(&mut self, json: &Value) -> Result<Self, serde_json::Error> {
         self.lines = serde_json::from_value(json.clone())?;
-        return Ok((self.to_owned()));
+        return Ok(self.to_owned());
     }
     fn get_author(&mut self, json: &Value) -> Result<Self, serde_json::Error> {
         self.author = serde_json::from_value(json.clone())?;
-        return Ok((self.to_owned()));
+        return Ok(self.to_owned());
     }
     fn get_title(&mut self, json: &Value) -> Result<Self, serde_json::Error> {
         self.title = serde_json::from_value(json.clone())?;
-        return Ok((self.to_owned()));
+        return Ok(self.to_owned());
     }
     fn get_count(&mut self, json: &Value) -> Result<Self, serde_json::Error> {
         self.linecount = serde_json::from_value(json.clone())?;
-        return Ok((self.to_owned()));
+        return Ok(self.to_owned());
     }
 }
 
