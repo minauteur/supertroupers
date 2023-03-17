@@ -1,21 +1,17 @@
 //!Gen Module
 //!This file contains behaviors and functions critical to text generation
 
-
 use crate::flavor;
-use markov::Chain;
 use crate::poems::Poem;
 use crate::poems::{AuthorsList, WorksList};
-use std::error::Error;
 use crate::util;
-
-use textwrap::termwidth;
+use markov::Chain;
+use std::error::Error;
 
 use colored::*;
 
 pub fn seed_and_generate(chain: &Chain<String>, lines_read: usize) -> &Chain<String> {
-
-    let width = termwidth() - 12;
+    let width = 68;
 
     let mut poem_storage: Vec<String> = Vec::new();
     let mut poem = Poem::new();
@@ -25,14 +21,14 @@ pub fn seed_and_generate(chain: &Chain<String>, lines_read: usize) -> &Chain<Str
         middle: String::from("Erronaeus"),
         last: String::from("The Unwrapp-ed None"),
     };
-    let title_error: Work = Work { title: String::from("\"A Tale of Error and Woe\"") };
+    let title_error: Work = Work {
+        title: String::from("\"A Tale of Error and Woe\""),
+    };
     let gen_name: Name = Name::new().from_file().unwrap_or(name_error);
     let gen_work: Work = Work::new().from_file().unwrap_or(title_error);
     let author_fmt = format!(
         "{} {} {}",
-        &gen_name.first,
-        &gen_name.middle,
-        &gen_name.last
+        &gen_name.first, &gen_name.middle, &gen_name.last
     );
     poem.title = gen_work.title;
     poem.author = author_fmt.clone();
@@ -105,7 +101,9 @@ pub struct Work {
 }
 impl Work {
     pub fn new() -> Work {
-        Work { title: String::new() }
+        Work {
+            title: String::new(),
+        }
     }
     pub fn from_file(mut self: Self) -> Result<Work, Box<dyn Error>> {
         let list = WorksList::new();
@@ -150,7 +148,6 @@ impl Name {
                     // println!("got last name! \n{}", l_n);
                     if let Some(l_n) = single_name.next() {
                         last_name.feed_str(l_n);
-
                     }
                 }
             }
@@ -184,9 +181,8 @@ impl Name {
         let mut name = Name::new();
         let mut names = s.split(" ");
         name.first.push_str(names.next().unwrap_or("Sir Error"));
-        name.last.push_str(
-            names.next().unwrap_or("The Unwrapped None"),
-        );
+        name.last
+            .push_str(names.next().unwrap_or("The Unwrapped None"));
         return name;
     }
 }

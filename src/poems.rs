@@ -1,7 +1,7 @@
 //!Poems houses the structs and implementations for deserializing and
 //! storing Poem data retrieved from poetrydb API requests
 use serde_json::{self, Value};
-use textwrap::{ termwidth, fill};
+use textwrap::{fill, termwidth, Options};
 // use textwrap::wrap_iter;
 use crate::util;
 use colored::*;
@@ -35,20 +35,19 @@ impl Poem {
             author: String::new(),
             lines: Vec::new(),
             linecount: "0".to_string(),
-            linenumber: 0
+            linenumber: 0,
         }
     }
     pub fn from_value(mut self, json: &Value) -> Result<Poem, serde_json::Error> {
         if let Some(lines) = json.get("lines") {
             self.get_lines(&lines)?;
-        println!("got lines {}", &lines);
+            println!("got lines {}", &lines);
         } else {
             println!("no lines found!");
         }
         if let Some(author) = json.get("author") {
             self.get_author(&author)?;
-        println!("got author: {}", &self.author);
-
+            println!("got author: {}", &self.author);
         } else {
             // println!("no author name found!");
         }
@@ -71,37 +70,39 @@ impl Poem {
         }
         println!("poem: {:#?}", &self);
         return Ok(self);
-
     }
     pub fn print(&self) -> Self {
-
-        let width = termwidth() - 12;
-        let author = format!("  author: {}", self.author.purple());
+        if termwidth() < 80 {
+            println!("you should resize your terminal to be wider than 80 columns");
+            return self.to_owned();
+        }
+        let width = Options::new(68)
+            .initial_indent("  ")
+            .subsequent_indent("      ");
+        let author = format!(" author: {}", self.author.purple());
         let title = format!(" a poem: \"{}\"", self.title);
         let poem = self.lines.join("\n");
 
-        println!("  |{:=<1$}|", "=", width + 6);
-            let t_fmt = format!("{}", fill(&title, width));
-            for t_l in t_fmt.lines() {
-                println!("  |  {:<1$}    |", &t_l, width);
-            }
-        println!("  |{:-<1$}|", "-", width + 6);
+        println!("  |{:=<1$}|", "=", 68 + 6);
+        let t_fmt = format!("{}", fill(&title, &width));
+        for t_l in t_fmt.lines() {
+            println!("  |  {:<1$}    |", &t_l, 68);
+        }
+        println!("  |{:-<1$}|", "-", 68 + 6);
 
         for line in poem.lines() {
-            let formatted = format!("{}", fill(&line, width));
+            let formatted = format!("{}", fill(&line, &width));
             // let formatted =
             // println!("  |   {:<1$}   |", fill(&formatted, width), width);
 
             // let formatted = format!("{:<1$}", fill(&line, width-9), width-9);
             for line in formatted.lines() {
-                println!("  |   {:<1$}   |",
-                &line.bright_green(),
-                width
-                );
-            }}
-        println!("  |{:-<1$}|", "-", width + 6);
-        println!("  |{:<1$}      |", fill(&author, width), width + 9);
-        println!("  |{:=<1$}|", "=", width + 6);
+                println!("  |   {:<1$}   |", &line.bright_green(), 68);
+            }
+        }
+        println!("  |{:-<1$}|", "-", 68 + 6);
+        println!("  |{:<1$}      |", fill(&author, width), 68 + 9);
+        println!("  |{:=<1$}|", "=", 68 + 6);
         return self.to_owned();
     }
     fn get_lines(&mut self, json: &Value) -> Result<Self, serde_json::Error> {
@@ -128,9 +129,10 @@ pub struct AuthorsList {
 }
 impl AuthorsList {
     pub fn new() -> AuthorsList {
-        let default: AuthorsList = AuthorsList { authors: Vec::new() };
+        let default: AuthorsList = AuthorsList {
+            authors: Vec::new(),
+        };
         let list: AuthorsList = util::read_authors_from_file().unwrap_or(default);
         return list;
-
     }
 }
