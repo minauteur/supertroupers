@@ -12,10 +12,9 @@ TWO WAYS!
 	before finally `cargo run`-ing from the supertroupers directory.
 ### Option 2) Download and Run the Latest Binary:
 #### Windows:
-* Download the Windows binary here: https://microwavemansion.com/supertroupers-alpha.zip, unzip the contents to a folder (for now, it's 	just three files--names.json, poems.txt, and supertroupers.exe)
-	and run the .exe!
-#### Mac (NOW IN GLORIOUS COLOR!): 
-* Download the Mac binary here: https://drive.google.com/file/d/1504Mc7jcqoTI8i4dPZWmdQSEoxUGzdfM/view?usp=sharing, unzip the contents 		to a folder, and double-click suptertroupers!
+* Download the Windows binary [here](https://github.com/minauteur/supertroupers/releases/download/0.0.1/supertroupers_v0.0.1_WINDOWS.zip), unzip the contents to a folder, and run `supertroupers.exe` from an `ANSI`-friendly terminal
+#### Mac: 
+* Download the Mac binary [here](https://github.com/minauteur/supertroupers/releases/download/0.0.1/supertroupers_v0.0.1_MACOS.zip), unzip the contents 		to a folder, and double-click suptertroupers!
 
 # OK, but how do I play it?
 1) Search for an author... or don't
