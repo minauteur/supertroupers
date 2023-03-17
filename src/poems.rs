@@ -1,10 +1,8 @@
 //!Poems houses the structs and implementations for deserializing and
 //! storing Poem data retrieved from poetrydb API requests
 use serde_json::{self, Value};
-use textwrap::{Wrapper, termwidth, fill};
+use textwrap::{ termwidth, fill};
 // use textwrap::wrap_iter;
-use hyphenation::*;
-use hyphenation;
 use crate::util;
 use colored::*;
 
@@ -76,26 +74,20 @@ impl Poem {
 
     }
     pub fn print(&self) -> Self {
-        let corpus = hyphenation::load(Language::English_US).unwrap();
+
         let width = termwidth() - 12;
         let author = format!("  author: {}", self.author.purple());
         let title = format!(" a poem: \"{}\"", self.title);
         let poem = self.lines.join("\n");
-        let wrapper = Wrapper::with_splitter(width, corpus)
-            .break_words(true)
-            .subsequent_indent("        ");
 
         println!("  |{:=<1$}|", "=", width + 6);
-        for t_line in wrapper.wrap_iter(&title) {
-            let t_fmt = format!("{}", fill(&t_line, width));
+            let t_fmt = format!("{}", fill(&title, width));
             for t_l in t_fmt.lines() {
                 println!("  |  {:<1$}    |", &t_l, width);
             }
-        }
         println!("  |{:-<1$}|", "-", width + 6);
 
-        // for line in poem.lines().into_iter() {
-        for line in wrapper.wrap_iter(&poem) {
+        for line in poem.lines() {
             let formatted = format!("{}", fill(&line, width));
             // let formatted =
             // println!("  |   {:<1$}   |", fill(&formatted, width), width);
@@ -106,8 +98,7 @@ impl Poem {
                 &line.bright_green(),
                 width
                 );
-            }
-        }
+            }}
         println!("  |{:-<1$}|", "-", width + 6);
         println!("  |{:<1$}      |", fill(&author, width), width + 9);
         println!("  |{:=<1$}|", "=", width + 6);

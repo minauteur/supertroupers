@@ -2,7 +2,6 @@ extern crate supertroupers;
 extern crate tokio;
 // extern crate piston;
 // extern crate conrod;
-extern crate hyphenation;
 extern crate markov;
 extern crate serde;
 extern crate serde_json;

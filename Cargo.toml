@@ -7,18 +7,17 @@ authors = ["minauteur <Thompennington@gmail.com>"]
 [dependencies]
 # rand = "0.3"
 # slog = "*"
-hyphenation = "0.6"
 # text_io = "*"
-markov = "0.0.33"
+markov = "1.1.0"
 serde = "1.0"
-colored = "1.6"
+colored = "2.0"
 # term = "*"
 serde_derive = "1.0"
 reqwest = { version = "0.11.14", features = ["json"]}
 # indicatif = "0.8.0"
 # dialoguer = "*"
 # console = "*"
-textwrap = { version = "0.9", features = ["hyphenation", "term_size"] }
+textwrap = { version = "0.16.0", features = ["terminal_size"] }
 # conrod = "*"
 # piston = "*"
 # ggez = "0.4"
