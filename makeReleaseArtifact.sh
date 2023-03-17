@@ -11,16 +11,17 @@ echo "deleted old supertroupers folder"
 mkdir ./supertroupers
 echo "created new supertroupers folder"
 if [ -f "./target/release/supertroupers" ]; then
-    echo "found linux binary"
+    echo "found binary"
     cp -p target/release/supertroupers ./supertroupers/supertroupers
     os="MACOS"
-elif [ -f "./target/release/supertroupers.exe" ]; then
-    echo "found windows binary"
-    cp -p target/release/supertroupers.exe ./supertroupers/supertroupers.exe
-    os="WINDOWS"
 else
     echo "no binary found"
     exit 1
+fi
+
+if [ -f "./target/release/supertroupers.exe" ]; then
+    echo "set OS to WINDOWS"
+    os="WINDOWS"
 fi
 echo "copying assets..."
 cp -p names.json ./supertroupers/names.json
